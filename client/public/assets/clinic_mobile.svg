@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 60" width="80" height="60">
+  <ellipse cx="40" cy="52" rx="36" ry="6" fill="#1e293b" opacity="0.25" />
+
+  <!-- Lều bạt y tế dã chiến / điểm lưu động -->
+  <polygon points="10,50 40,15 70,50" fill="#e0f2fe" stroke="#0284c7" stroke-width="2" />
+  <polygon points="25,50 40,15 55,50" fill="#bae6fd" />
+
+  <!-- Cửa lều mở -->
+  <polygon points="32,50 40,32 48,50" fill="#1e293b" />
+
+  <!-- Bàn khám dã chiến phía trước -->
+  <rect x="26" y="44" width="28" height="8" fill="#f8fafc" stroke="#475569" stroke-width="1" rx="1" />
+  <rect x="28" y="52" width="3" height="4" fill="#475569" />
+  <rect x="49" y="52" width="3" height="4" fill="#475569" />
+
+  <!-- Hòm thuốc y tế trên bàn -->
+  <rect x="36" y="40" width="8" height="6" fill="#ffffff" stroke="#e11d48" stroke-width="1" rx="1" />
+  <rect x="39" y="41" width="2" height="4" fill="#e11d48" />
+  <rect x="38" y="42" width="4" height="2" fill="#e11d48" />
+
+  <!-- Cờ hiệu Y TẾ LƯU ĐỘNG -->
+  <line x1="40" y1="15" x2="40" y2="4" stroke="#475569" stroke-width="1.5" />
+  <polygon points="40,4 54,8 40,12" fill="#e11d48" />
+  <text x="44" y="9.5" font-family="Arial, sans-serif" font-size="3.5" font-weight="bold" fill="#ffffff">+</text>
+
+  <!-- Biển LƯU ĐỘNG -->
+  <rect x="20" y="24" width="40" height="5" fill="#0369a1" rx="1" />
+  <text x="40" y="28" font-family="Arial, sans-serif" font-size="3" font-weight="bold" fill="#ffffff" text-anchor="middle">TỔ LƯU ĐỘNG</text>
+</svg>

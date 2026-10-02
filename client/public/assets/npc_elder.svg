@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <ellipse cx="16" cy="28" rx="7" ry="3" fill="#0f172a" opacity="0.3" />
+  <!-- Gậy chống người cao tuổi -->
+  <line x1="22" y1="12" x2="24" y2="28" stroke="#78350f" stroke-width="1.5" />
+  <!-- Thân áo bà ba nâu ấm cúng -->
+  <rect x="11" y="13" width="10" height="11" fill="#78350f" stroke="#451a03" stroke-width="1" rx="2" />
+  <!-- Chân -->
+  <rect x="12" y="24" width="3" height="4" fill="#334155" />
+  <rect x="17" y="24" width="3" height="4" fill="#334155" />
+  <!-- Đầu & Tóc bạc phơ -->
+  <circle cx="16" cy="8" r="4.5" fill="#fed7aa" stroke="#ca8a04" stroke-width="0.8" />
+  <path d="M 11.5 7.5 Q 16 3 20.5 7.5 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0.5" />
+  <!-- Trái tim đỏ nhỏ biểu thị cần chăm sóc đặc biệt -->
+  <path d="M 16 1 Q 14 -1 13 1 Q 13 3 16 5 Q 19 3 19 1 Q 18 -1 16 1 Z" fill="#ef4444" />
+</svg>

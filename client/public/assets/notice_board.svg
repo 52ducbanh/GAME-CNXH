@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 60" width="70" height="60">
+  <ellipse cx="35" cy="54" rx="28" ry="4" fill="#1e293b" opacity="0.3" />
+
+  <!-- Chân cột gỗ của bảng thông báo -->
+  <rect x="18" y="35" width="4" height="20" fill="#78350f" stroke="#451a03" stroke-width="1" />
+  <rect x="48" y="35" width="4" height="20" fill="#78350f" stroke="#451a03" stroke-width="1" />
+
+  <!-- Bảng gỗ chính -->
+  <rect x="10" y="10" width="50" height="32" fill="#92400e" stroke="#451a03" stroke-width="2" rx="2" />
+  <!-- Nền bảng ghim giấy thông báo -->
+  <rect x="14" y="14" width="42" height="24" fill="#fef3c7" stroke="#b45309" stroke-width="1" />
+
+  <!-- Các tờ thông báo niêm yết -->
+  <rect x="17" y="17" width="10" height="18" fill="#ffffff" stroke="#94a3b8" stroke-width="0.5" />
+  <line x1="19" y1="20" x2="25" y2="20" stroke="#0284c7" stroke-width="0.8" />
+  <line x1="19" y1="23" x2="25" y2="23" stroke="#64748b" stroke-width="0.6" />
+  <line x1="19" y1="26" x2="25" y2="26" stroke="#64748b" stroke-width="0.6" />
+  <line x1="19" y1="29" x2="23" y2="29" stroke="#64748b" stroke-width="0.6" />
+
+  <rect x="29" y="17" width="12" height="18" fill="#ffffff" stroke="#94a3b8" stroke-width="0.5" />
+  <line x1="31" y1="20" x2="39" y2="20" stroke="#dc2626" stroke-width="0.8" />
+  <line x1="31" y1="23" x2="39" y2="23" stroke="#64748b" stroke-width="0.6" />
+  <line x1="31" y1="26" x2="39" y2="26" stroke="#64748b" stroke-width="0.6" />
+  <line x1="31" y1="29" x2="37" y2="29" stroke="#64748b" stroke-width="0.6" />
+  <line x1="31" y1="32" x2="38" y2="32" stroke="#16a34a" stroke-width="0.6" />
+
+  <rect x="43" y="17" width="10" height="18" fill="#ffffff" stroke="#94a3b8" stroke-width="0.5" />
+  <line x1="45" y1="20" x2="51" y2="20" stroke="#d97706" stroke-width="0.8" />
+  <line x1="45" y1="23" x2="51" y2="23" stroke="#64748b" stroke-width="0.6" />
+  <line x1="45" y1="26" x2="51" y2="26" stroke="#64748b" stroke-width="0.6" />
+
+  <!-- Mái che bảo vệ bảng tin -->
+  <polygon points="6,10 64,10 58,4 12,4" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1.5" />
+</svg>
