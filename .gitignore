@@ -20,3 +20,6 @@ dist-ui-stability/
 
 # Unified classroom dashboard preview and QA.
 dist-projector-dashboard/
+
+# Character renderer/camera QA; preserve the live bundle.
+dist-character-qa/

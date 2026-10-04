@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { WorldMap, GameSnapshot, isWalkableForMap, getProvinceDefinition, getProvinceView } from 'shared';
-import { preloadHanoi, PROP } from '../../game/hanoiAssets.js';
+import { preloadHanoi, PROP, CHARACTER_ORIGIN_Y } from '../../game/hanoiAssets.js';
+import { bodyIntersectsMask, fadeOccluder, fadeDynamicOccluder } from './occlusion.js';
 import { REGIONAL_LAYERS } from '../../game/regionalLayers.js';
 
 export function preloadRegion(scene:Phaser.Scene,map:WorldMap){
@@ -63,7 +64,7 @@ export function drawRegion(scene:Phaser.Scene,map:WorldMap){
   const image=mobile?scene.add.image(p.x,p.y-24,'hn-mobile-clinic').setOrigin(.5,1).setDepth(p.y-24).setVisible(false):null;
   if(image)dynamic.push(image);
   const caption=label(p.x,p.y-14,mobile?'ĐIỂM Y TẾ LƯU ĐỘNG':'CHỜ MỞ CỬA',9);
-  const doctor=scene.add.sprite(p.x+32,p.y,'hn-doctor',0).setOrigin(.5,1).setDepth(p.y).setVisible(false);
+  const doctor=scene.add.sprite(p.x+32,p.y,'hn-doctor',0).setOrigin(.5,CHARACTER_ORIGIN_Y).setDepth(p.y).setVisible(false);
   const supplies=[prop(p.x-39,p.y+5,PROP.crate).setVisible(false),prop(p.x+49,p.y+5,PROP.crate).setVisible(false)];
   return {image,caption,doctor,supplies,mobile};
  };
@@ -72,7 +73,7 @@ export function drawRegion(scene:Phaser.Scene,map:WorldMap){
   const p=map.points[id];
   if(!p)return;
   scene.add.ellipse(p.x,p.y+1,21,8,0x253e37,.22).setDepth(p.y-1);
-  scene.add.sprite(p.x,p.y,key,0).setOrigin(.5,1).setDepth(p.y);
+  scene.add.sprite(p.x,p.y,key,0).setOrigin(.5,CHARACTER_ORIGIN_Y).setDepth(p.y);
   scene.add.text(p.x,p.y-53,name,{fontFamily:'Arial',fontSize:'12px',fontStyle:'bold',color,stroke:'#20382e',strokeThickness:3}).setOrigin(.5).setDepth(3001);
   scene.add.text(p.x+20,p.y-40,'…',{fontSize:'13px',color:'#37493e',backgroundColor:'#fff0d5',padding:{x:3,y:0}}).setOrigin(.5).setDepth(3001);
  }
@@ -80,7 +81,7 @@ export function drawRegion(scene:Phaser.Scene,map:WorldMap){
  const walkers=[map.points.HEADQUARTERS,map.points.WAREHOUSE,map.spawn,...map.paths.slice(0,4).map(p=>p.points[1])];
  for(const p of walkers){
   const x=p.x+20,y=p.y+12;if(!isWalkableForMap(map.id,x,y)||!isWalkableForMap(map.id,x+12,y))continue;
-  const actor=scene.add.sprite(x,y,'hn-citizen',8).setOrigin(.5,1).setDepth(y).play('hn-citizen-right');
+  const actor=scene.add.sprite(x,y,'hn-citizen',8).setOrigin(.5,CHARACTER_ORIGIN_Y).setDepth(y).play('hn-citizen-right');
   scene.tweens.add({targets:actor,x:x+12,duration:3000+rand()*1200,yoyo:true,repeat:-1,onYoyo:()=>actor.play('hn-citizen-left'),onRepeat:()=>actor.play('hn-citizen-right')});
  }
  const stock:Phaser.GameObjects.Image[]=[];const wh=map.points.WAREHOUSE;
@@ -99,8 +100,8 @@ export function drawRegion(scene:Phaser.Scene,map:WorldMap){
   rescueScene?.setAlpha(visual.rescue.sceneAlpha);
   duskTint?.setAlpha(visual.rescue.duskAlpha);
   fogLayer?.setAlpha(visual.rescue.fogAlpha);
- },updateOcclusion(x:number,y:number){
-  for(const {image,layer} of foreground)image.setAlpha(x>layer.x-10&&x<layer.x+layer.width+10&&y>layer.y&&y<layer.depth-4?.4:1);
-  for(const image of dynamic){const r=image.getBounds();image.setAlpha(x>r.left-12&&x<r.right+12&&y>r.top&&y<image.y-4?.42:1);}
+ },updateOcclusion(x:number,y:number,delta:number){
+  for(const {image,layer} of foreground)fadeOccluder(image,bodyIntersectsMask(x,y,layer),delta,.4);
+  for(const image of dynamic)fadeDynamicOccluder(image,x,y,delta);
  }};
 }

@@ -8,7 +8,7 @@ globalThis.document={hidden:false,hasFocus:()=>true,activeElement:null,querySele
 const mocks={
  'phaser':"export default {Scene:class{}};",
  'hanoiMap':"export const preloadHanoi=()=>{},createCharacterAnimations=()=>{},drawHanoi=()=>{};",
- 'hanoiAssets':"export const CHARACTER_ROWS={},PROP={},createCharacterAnimations=()=>{};",
+ 'hanoiAssets':"export const CHARACTER_ROWS={},CHARACTER_ORIGIN_Y=46/48,PROP={},createCharacterAnimations=()=>{};",
  'provincePresentation':"export const getProvincePresentation=()=>({preload(){},draw(){}});",
  'regionalScene':"export const preloadRegion=()=>{},drawRegion=()=>{};",
  'soundManager':"export const soundManager={resetMovement(){}};",

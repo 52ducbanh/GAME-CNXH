@@ -49,5 +49,5 @@ try{
   const id=b.playerId;b.socket.disconnect();await new Promise(resolve=>setTimeout(resolve,200));const rejoined=await join('Movement QA B',b.playerToken);
   report.checks.push({case:'reconnect stable identity',pass:rejoined.playerId===id});
   report.pass=report.rejections===0&&report.checks.every(c=>c.pass);
-  await writeFile('docs/movement-runtime-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(!report.pass)process.exitCode=1;
+  await writeFile(process.env.QA_REPORT_PATH || 'docs/movement-runtime-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(!report.pass)process.exitCode=1;
 }finally{clients.forEach(socket=>socket.disconnect());}

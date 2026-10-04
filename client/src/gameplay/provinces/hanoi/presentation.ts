@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { POINTS_OF_INTEREST, GameSnapshot, getProvinceView, isInLake, isWalkable, NORTH_CROSSING } from 'shared';
-import { PROP } from '../../../game/hanoiAssets.js';
+import { PROP, CHARACTER_ORIGIN_Y } from '../../../game/hanoiAssets.js';
+import { bodyIntersectsMask, fadeOccluder, fadeDynamicOccluder } from '../../core/occlusion.js';
 import { SCENE_LAYERS } from '../../../game/hanoiSceneLayers.js';
 
 export function drawHanoi(scene:Phaser.Scene){
@@ -53,14 +54,14 @@ export function drawHanoi(scene:Phaser.Scene){
   base.lineStyle(1,0x8a7858,.65).strokeRoundedRect(x-55,y-32,110,37,5);
   const supplies=[prop(x-53,y+10,PROP.crate).setVisible(false),prop(x+57,y+10,PROP.crate).setVisible(false)];
   const caption=label(x,y-17,mobile?'Y TẾ LƯU ĐỘNG':'TRẠM Y TẾ',10);
-  const doctor=scene.add.sprite(x+38,y+24,'hn-doctor',0).setOrigin(.5,1).setDepth(y+24).setVisible(false);
+  const doctor=scene.add.sprite(x+38,y+24,'hn-doctor',0).setOrigin(.5,CHARACTER_ORIGIN_Y).setDepth(y+24).setVisible(false);
   return {image,base,supplies,caption,doctor};
  };
  const fixed=clinic('CLINIC_FIXED',false),mobileB=clinic('CLINIC_MOBILE_B',true),mobileC=clinic('CLINIC_MOBILE_C',true);
  function npc(id:string,name:string,key='hn-citizen',color='#fff0ca'){
   const p=POINTS_OF_INTEREST[id];
   scene.add.ellipse(p.x,p.y+1,21,8,0x253e37,.22).setDepth(p.y-1);
-  scene.add.sprite(p.x,p.y,key,0).setOrigin(.5,1).setDepth(p.y);
+  scene.add.sprite(p.x,p.y,key,0).setOrigin(.5,CHARACTER_ORIGIN_Y).setDepth(p.y);
   scene.add.text(p.x,p.y-53,name,{fontFamily:'Arial',fontSize:'12px',fontStyle:'bold',color,stroke:'#20382e',strokeThickness:3}).setOrigin(.5).setDepth(3001);
   scene.add.text(p.x+22,p.y-45,'…',{fontSize:'14px',color:'#37493e',backgroundColor:'#fff0d5',padding:{x:3,y:0}}).setOrigin(.5).setDepth(3001);
  }
@@ -68,7 +69,7 @@ export function drawHanoi(scene:Phaser.Scene){
  npc('ZONE_C','Tâm','hn-volunteer','#ffdc70');npc('CITIZEN_C1','Cụ Lan');npc('CITIZEN_C2','Cụ Bình');
  for(const [x,y] of [[453,271],[418,587],[764,698],[1198,713],[1532,407],[321,755]]){
   if(!isWalkable(x,y)||!isWalkable(x+18,y))continue;
-  const person=scene.add.sprite(x,y,'hn-citizen',8).setOrigin(.5,1).setDepth(y);person.play('hn-citizen-right');
+  const person=scene.add.sprite(x,y,'hn-citizen',8).setOrigin(.5,CHARACTER_ORIGIN_Y).setDepth(y);person.play('hn-citizen-right');
   scene.tweens.add({targets:person,x:x+18,duration:3800,yoyo:true,repeat:-1,
    onYoyo:()=>person.play('hn-citizen-left'),onRepeat:()=>person.play('hn-citizen-right')});
  }
@@ -87,15 +88,11 @@ export function drawHanoi(scene:Phaser.Scene){
    updateClinic(mobileB,visual.clinics.mobileB.deployed,visual.clinics.mobileB.crates);
    updateClinic(mobileC,visual.clinics.mobileC.deployed,visual.clinics.mobileC.crates);
   },
-  updateOcclusion(x:number,y:number){
+  updateOcclusion(x:number,y:number,delta:number){
    for(const {image,layer} of foreground){
-    const covered=x>layer.x-10&&x<layer.x+layer.width+10&&y>layer.y&&y<layer.depth-4;
-    image.setAlpha(covered?.38:1);
+    fadeOccluder(image,bodyIntersectsMask(x,y,layer),delta,.38);
    }
-   for(const image of dynamicOccluders){
-    const r=image.getBounds(),covered=x>r.left-12&&x<r.right+12&&y>r.top&&y<image.y-4;
-    image.setAlpha(covered?.42:1);
-   }
+   for(const image of dynamicOccluders)fadeDynamicOccluder(image,x,y,delta);
   }
  };
 }

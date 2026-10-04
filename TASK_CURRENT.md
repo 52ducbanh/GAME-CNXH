@@ -3,10 +3,10 @@
 Người dùng yêu cầu chia việc sửa các lỗi hình ảnh/di chuyển còn thấy trong game. Phân công chi tiết, phạm vi file và nghiệm thu ở [BUGFIX_ASSIGNMENTS](docs/BUGFIX_ASSIGNMENTS.md):
 
 - `leeduc`: nền, ảnh vật thể và lớp che/mask.
-- `chuowng`: nhân vật, depth, animation và camera khi đi.
+- `chuowng`: **đã sửa và QA**, nhân vật, depth, animation và camera khi đi. Báo cáo [bugfix-chuowng](docs/bugfix-chuowng.md), hoàn tất 05/10/2026; nhánh giao bản sửa `chuowng`, chưa mở PR.
 - `datmup`: collision, đường đi và solver di chuyển.
 
-Không giao việc cho `ducbanh`. Trạng thái mới là **đã phân công, chờ tái hiện/sửa**; chưa chứng nhận lỗi nào đã được sửa trong lượt chia việc. Mỗi bạn ghi báo cáo riêng và mở PR vào main. Giữ scope sửa lỗi, không thêm tính năng.
+Không giao việc cho `ducbanh`. Gói `chuowng` đã có sửa và evidence; `leeduc`/`datmup` vẫn chờ tái hiện/sửa. Trạng thái/test/giới hạn hiện hành ở [PROJECT_STATUS](docs/PROJECT_STATUS.md). Giữ scope sửa lỗi, không thêm tính năng. Người dùng yêu cầu commit/push bản sửa lên `chuowng` ngày05/10/2026; chưa mở PR.
 
 ---
 

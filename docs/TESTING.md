@@ -1,4 +1,40 @@
-# Kiểm tra hiện hành — Host + Projector dashboard 04/10/2026
+# Kiểm tra hiện hành — Nhân vật/camera 05/10/2026
+
+PASS root typecheck, shared/server build, client build riêng và **141/141 tests,18 suites**. Sau chỉnh framing mobile cuối chỉ kiểm lại client typecheck/build, presentation regression và browser camera; không đổi server/shared. Visual trước/sau và giới hạn ở [bugfix-chuowng](bugfix-chuowng.md).
+
+```powershell
+npm run build --workspace=shared
+npm run typecheck
+npm run build --workspace=server
+npm run build --workspace=client -- --outDir dist-character-qa
+npm test
+node scripts/verify-character-motion.mjs
+node scripts/prepare-character-qa.mjs
+$env:CHARACTER_QA_BASELINE='704b52b'
+node scripts/prepare-character-qa.mjs
+Remove-Item Env:CHARACTER_QA_BASELINE
+```
+
+Chọn cổng trống, chạy instance QA riêng với `CLIENT_DIST_PATH` trỏ `client/dist-character-qa`, HOST127.0.0.1 và PORT/SERVER_PORT cùng cổng; không restart server người dùng. Lượt này dùng3137. Mở `/qa/before/` và `/qa/after/`: thao tác các nút route/remote/occlusion, M và đổi map; viewport1280×720/390×844. Fixture dùng MainScene/InputController/Phaser/asset thật với snapshots và ACK mô phỏng, không gọi là mạng thật. Ảnh và video canvas lưu riêng ở `qa/`.
+
+```powershell
+$env:QA_REPORT_PATH='client/dist-character-qa/qa/input-controls.json'
+node scripts/verify-input-controls.mjs
+$env:QA_REPORT_PATH='client/dist-character-qa/qa/input-ack.json'
+node scripts/verify-input-ack.mjs
+$env:QA_REPORT_PATH='client/dist-character-qa/qa/input-network.json'
+node scripts/verify-input-network.mjs
+$env:PREVIEW_URL='http://127.0.0.1:3137' # instance QA disposable, không dùng phiên người chơi
+$env:QA_REPORT_PATH='client/dist-character-qa/qa/movement-runtime.json'
+node scripts/verify-movement.mjs
+node scripts/verify-character-evidence.mjs
+```
+
+Lệnh evidence đọc các JSON đã lưu từ browser: before/after-remote, before/after-occlusion, mobile-camera và sáu `<mapId>-smoke`; phải chạy thao tác fixture và lưu trace trước, không tự dựng JSON PASS. Assertions kiểm baseline tái hiện animation-tail, correction depth, hai góc canopy sai crop-box, chân0px/nhãn3001 và camera mobile vùng chơi. Motion script kiểm30/60/144Hz, hướng/stop/reset/gap và smoothing. Các input scripts dùng mocks; movement script là2 socket thật/40 MOVE/0 reject. NOT TESTED: thiết bị/Wi-Fi thật, load60, mọi vật thể/state, C11 floor/rail, full trận. Rebuild sẽ xóa outDir nếu không thêm `--emptyOutDir false`; giữ evidence trước rebuild. Không ghi đè báo cáo lịch sử.
+
+---
+
+# Lịch sử — Host + Projector dashboard 04/10/2026
 
 **PASS141/141 tests,13 suites**, typecheck ba workspace, shared/server build và client build riêng. Dashboard, player modal và input regressions bên dưới đã thực chạy. Phần UI stability/refactor phía sau là lịch sử; không dùng số132 hoặc cổng cũ làm chứng nhận bản mới.
 

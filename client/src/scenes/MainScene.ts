@@ -8,7 +8,8 @@ import { SocketClient, newActionId } from '../network/socketClient.js';
 import { createCharacterAnimations } from '../game/hanoiAssets.js';
 import { getMissionGuide } from 'shared';
 import { findWalkingRoute } from 'shared';
-import { CHARACTER_ROWS, PROP } from '../game/hanoiAssets.js';
+import { CHARACTER_ROWS, CHARACTER_ORIGIN_Y, PROP } from '../game/hanoiAssets.js';
+import { movementFacing, RemoteMotion, smoothingFactor } from '../game/characterMotion.js';
 import { soundManager } from '../game/soundManager.js';
 import { MOVEMENT_CONFIG, MapPoint, inputDisplacement, resolveMovement, collisionContact, surfaceAt } from 'shared';
 import { MovementDebug } from '../game/movementDebug.js';
@@ -19,6 +20,7 @@ export class MainScene extends Phaser.Scene {
   private localPlayerId = '';
   private localPlayerSprite: Phaser.GameObjects.Container | null = null;
   private otherPlayerSprites = new Map<string, Phaser.GameObjects.Container>();
+  private remoteMotion = new Map<string, RemoteMotion>();
   private crateSprites = new Map<string, Phaser.GameObjects.Container>();
   private landmarks!: ReturnType<ReturnType<typeof getProvincePresentation>['draw']>;
   private map = getGameMap();
@@ -81,7 +83,7 @@ export class MainScene extends Phaser.Scene {
     document.addEventListener('visibilitychange',this.resetInput);
     this.events.on('resume',this.resetInput);
     soundManager.beginMovement();
-    const offJoined=this.socketClient.onJoined(()=>{this.reconcileNext=true;this.moveEpoch++;this.movePath=[];this.moveInFlight=false;this.resetInput();});
+    const offJoined=this.socketClient.onJoined(()=>{this.reconcileNext=true;this.moveEpoch++;this.movePath=[];this.moveInFlight=false;this.remoteMotion.clear();this.resetInput();});
     const offStatus=this.socketClient.onConnectionStatusChange(status=>{if(status!=='CONNECTED'){this.reconcileNext=true;this.moveEpoch++;this.movePath=[];this.moveInFlight=false;this.resetInput();}});
     this.cameras.main.setBounds(0,0,WORLD_WIDTH,WORLD_HEIGHT).setBackgroundColor('#52773f');
     this.resizeCamera();
@@ -96,6 +98,7 @@ export class MainScene extends Phaser.Scene {
     const top=phone?195:landscape?78:0,bottom=phone?116:landscape?100:0;
     const right=landscape&&!phone?200:0;
     camera.setViewport(0,0,w,h);
+    camera.roundPixels=false;
     camera.setBackgroundColor('#176f69');
     if(this.overview){
       camera.stopFollow();camera.useBounds=false;
@@ -104,15 +107,13 @@ export class MainScene extends Phaser.Scene {
     }else{
       camera.setBounds(0,-top,WORLD_WIDTH+right,WORLD_HEIGHT+top+bottom);
       camera.setZoom(1);
-      if(this.localPlayerSprite)camera.startFollow(this.localPlayerSprite,true,.18,.18);
-      camera.setFollowOffset(-right/2,0);
+      if(this.localPlayerSprite)camera.startFollow(this.localPlayerSprite,false,.18,.18);
+      camera.setFollowOffset(-right/2,(top-bottom)/2);
     }
     document.querySelectorAll('#btn-map,#btn-map-icon').forEach(el=>el.setAttribute('aria-pressed',String(this.overview)));
   }
   public toggleOverview(){
     this.overview=!this.overview;
-    if(this.overview)this.cameras.main.stopFollow();
-    else if(this.localPlayerSprite)this.cameras.main.startFollow(this.localPlayerSprite,true,.14,.14);
     this.resizeCamera();
     document.querySelectorAll('#btn-map,#btn-map-icon').forEach(el=>el.setAttribute('aria-pressed',String(this.overview)));
   }
@@ -194,20 +195,23 @@ export class MainScene extends Phaser.Scene {
     if(!this.currentSnapshot||!this.localPlayerSprite)return;
     this.handleMovement(delta);
     this.flushMovement();
+    const now=performance.now();
+    if(!this.overview){const lerp=smoothingFactor(Math.min(delta,MOVEMENT_CONFIG.maxFrameMs),84);this.cameras.main.setLerp(lerp,lerp);}
+    this.syncPlayerPresentation(this.localPlayerSprite);
     for(const [id,c] of this.otherPlayerSprites){
       const p=this.currentSnapshot.players[id];if(!p)continue;
-      const dx=p.x-c.x,dy=p.y-c.y,moving=Math.hypot(dx,dy)>1;
-      c.x=Phaser.Math.Linear(c.x,p.x,Math.min(1,delta/90));c.y=Phaser.Math.Linear(c.y,p.y,Math.min(1,delta/90));c.setDepth(c.y);
-      this.animate(c,p.direction,moving);
+      const pose=this.remoteMotion.get(id)?.sample(now);
+      if(pose){c.setPosition(pose.x,pose.y);this.animate(c,pose.direction,!this.currentSnapshot.isPaused&&pose.speed>.5,pose.speed);}
+      this.syncPlayerPresentation(c);
     }
     const actors:[string,Phaser.GameObjects.Container][]=[[this.localPlayerId,this.localPlayerSprite],...this.otherPlayerSprites];
     for(const [id,c] of actors){
       const group=actors.filter(([,a])=>Math.abs(a.x-c.x)<100&&Math.abs(a.y-c.y)<65)
         .sort(([a],[b])=>a===this.localPlayerId?-1:b===this.localPlayerId?1:a.localeCompare(b));
-      const name=c.getByName('playerName') as Phaser.GameObjects.Text;
+      const name=(c.getData('overlay') as Phaser.GameObjects.Container).getByName('playerName') as Phaser.GameObjects.Text;
       name.setY(group.length>1?Math.min(...group.map(([,a])=>a.y))-c.y-57-15*group.findIndex(([a])=>a===id):-57);
     }
-    this.landmarks.updateOcclusion(this.localPlayerSprite.x,this.localPlayerSprite.y);
+    this.landmarks.updateOcclusion(this.localPlayerSprite.x,this.localPlayerSprite.y,delta);
     this.checkNearestPoi();
     this.drawGroundHotspots();
     if(Date.now()-this.lastRoute>1000){this.lastRoute=Date.now();this.drawRoute();}
@@ -232,8 +236,8 @@ export class MainScene extends Phaser.Scene {
     const isMoving=movedDist>MOVEMENT_CONFIG.idleEpsilon;
     soundManager.movementFrame(movedDist,surfaceAt(this.map.id,c),result.contacts.length>0&&!isMoving,delta);
     this.movementDebug.update({position:c,input:{x:dx,y:dy},desired,actual:{x:c.x-oldX,y:c.y-oldY},contacts:result.contacts,lock,authoritative:s.players[this.localPlayerId],correction:this.lastCorrection},delta,this.collisionContext());
-    const dir=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';
-    this.animate(c,dir,isMoving);c.setDepth(c.y);
+    const dir=movementFacing(isMoving?c.x-oldX:dx,isMoving?c.y-oldY:dy,c.getData('direction')||'down');
+    this.animate(c,dir,isMoving,delta>0?movedDist*1000/delta:0);
   }
 
   private flushMovement(){
@@ -248,15 +252,15 @@ export class MainScene extends Phaser.Scene {
       this.socketClient.sendIntent({actionId:`mv_${now}`,type:'MOVE',payload:{...end,path,dir}}).then(ack=>{
         if(epoch!==this.moveEpoch)return;
         this.moveInFlight=false;
-        if(!ack.success&&this.currentSnapshot){const p=this.currentSnapshot.players[this.localPlayerId];if(p){this.lastCorrection={reason:ack.reason,from:{x:c.x,y:c.y},to:{x:p.x,y:p.y}};c.x=p.x;c.y=p.y;this.movePath=[];soundManager.resetMovement();}}
+        if(!ack.success&&this.currentSnapshot){const p=this.currentSnapshot.players[this.localPlayerId];if(p){this.lastCorrection={reason:ack.reason,from:{x:c.x,y:c.y},to:{x:p.x,y:p.y}};c.x=p.x;c.y=p.y;this.syncPlayerPresentation(c);this.movePath=[];soundManager.resetMovement();}}
       });
     }
   }
 
-  private animate(c:Phaser.GameObjects.Container,dir:Player['direction'],moving:boolean){
+  private animate(c:Phaser.GameObjects.Container,dir:Player['direction'],moving:boolean,speed=PLAYER_SPEED){
     const sprite=c.getByName('body') as Phaser.GameObjects.Sprite;
     c.setData('direction',dir);
-    if(moving)sprite.play(`${sprite.texture.key}-${dir}`,true);
+    if(moving){sprite.play(`${sprite.texture.key}-${dir}`,true);sprite.anims.timeScale=Math.max(.15,Math.min(2,speed/PLAYER_SPEED));}
     else {sprite.anims.stop();sprite.setFrame(CHARACTER_ROWS[dir]*4);}
   }
 
@@ -311,7 +315,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   private updateFromSnapshot(s:GameSnapshot){
-    if(this.currentSnapshot?.phase!==s.phase&&s.phase==='LOBBY')this.reconcileNext=true;
+    if(this.currentSnapshot?.phase!==s.phase&&s.phase==='LOBBY'){this.reconcileNext=true;this.remoteMotion.clear();}
     if(this.previousScore!==undefined&&s.totalScore>this.previousScore){
       const diff=s.totalScore-this.previousScore;
       if(this.localPlayerSprite){
@@ -324,6 +328,7 @@ export class MainScene extends Phaser.Scene {
     this.currentSnapshot=s;this.localPlayerId=this.socketClient.getPlayerId();
     this.landmarks.practiceLabel.setVisible(s.phase==='PRACTICE');
     this.landmarks.updateState(s);
+    const now=performance.now();
     const ids=new Set<string>();
     for(const p of Object.values(s.players)){
       if(!p.isOnline)continue;ids.add(p.id);
@@ -333,13 +338,16 @@ export class MainScene extends Phaser.Scene {
         } else if(this.reconcileNext||!isWalkableForMap(this.map.id,this.localPlayerSprite.x,this.localPlayerSprite.y,this.collisionContext())||(!this.moveInFlight&&!this.movePath.length&&Math.hypot(this.localPlayerSprite.x-p.x,this.localPlayerSprite.y-p.y)>55)){this.lastCorrection={reason:'authoritative-snapshot',from:{x:this.localPlayerSprite.x,y:this.localPlayerSprite.y},to:{x:p.x,y:p.y}};this.localPlayerSprite.setPosition(p.x,p.y);this.movePath=[];this.moveEpoch++;this.moveInFlight=false;soundManager.resetMovement();}
         this.reconcileNext=false;
         this.updatePlayerDetails(this.localPlayerSprite,p);
+        this.syncPlayerPresentation(this.localPlayerSprite);
       } else {
         let c=this.otherPlayerSprites.get(p.id);
         if(!c){c=this.createPlayerContainer(p,false);this.otherPlayerSprites.set(p.id,c);}
+        const motion=this.remoteMotion.get(p.id);
+        if(motion)motion.push(p,now);else this.remoteMotion.set(p.id,new RemoteMotion(p,now));
         this.updatePlayerDetails(c,p);
       }
     }
-    for(const [id,c] of this.otherPlayerSprites)if(!ids.has(id)){c.destroy();this.otherPlayerSprites.delete(id);}
+    for(const [id,c] of this.otherPlayerSprites)if(!ids.has(id)){c.destroy();this.otherPlayerSprites.delete(id);this.remoteMotion.delete(id);}
     for(const [id,crate] of Object.entries(s.crates)){
       if(crate.state==='DROPPED'){
         if(!this.crateSprites.has(id)){
@@ -354,17 +362,28 @@ export class MainScene extends Phaser.Scene {
     const shadow=this.add.ellipse(0,-1,23,9,0x274634,.3);
     const ring=this.add.ellipse(0,-1,32,17).setStrokeStyle(2,local?0xfff0c2:parseInt(p.color.slice(1),16),.95);
     const key='hn-volunteer';
-    const sprite=this.add.sprite(0,0,key,0).setOrigin(.5,1).setName('body');
+    const sprite=this.add.sprite(0,0,key,CHARACTER_ROWS[p.direction]*4).setOrigin(.5,CHARACTER_ORIGIN_Y).setName('body');
     const name=this.add.text(0,-57,p.name,{fontFamily:'Arial, sans-serif',fontSize:'12px',fontStyle:'bold',color:local?'#fff4c8':p.color,stroke:'#203c37',strokeThickness:3}).setOrigin(.5).setName('playerName');
     const progress=this.add.graphics().setName('progressBar');
     const crate=this.add.sprite(17,-14,'hn-props',PROP.crate).setOrigin(.5,1).setScale(.7).setName('crateIcon').setVisible(!!p.carriedCrateId);
-    c.add([shadow,ring,sprite,name,progress,crate]);this.updatePlayerDetails(c,p);return c;
+    const ground=this.add.container(p.x,p.y,[shadow,ring]).setDepth(3);
+    const overlay=this.add.container(p.x,p.y,[name,progress]).setDepth(3001);
+    c.setData('ground',ground);c.setData('overlay',overlay);c.setData('direction',p.direction);
+    c.once('destroy',()=>{ground.destroy();overlay.destroy();});
+    c.add([sprite,crate]);this.updatePlayerDetails(c,p);return c;
+  }
+
+  private syncPlayerPresentation(c:Phaser.GameObjects.Container){
+    c.setDepth(c.y);
+    (c.getData('ground') as Phaser.GameObjects.Container).setPosition(c.x,c.y);
+    (c.getData('overlay') as Phaser.GameObjects.Container).setPosition(c.x,c.y);
   }
 
   private updatePlayerDetails(c:Phaser.GameObjects.Container,p:Player){
     (c.getByName('crateIcon') as Phaser.GameObjects.Sprite).setVisible(!!p.carriedCrateId);
-    (c.getByName('playerName') as Phaser.GameObjects.Text).setText(p.name);
-    const bar=c.getByName('progressBar') as Phaser.GameObjects.Graphics;bar.clear();
+    const overlay=c.getData('overlay') as Phaser.GameObjects.Container;
+    (overlay.getByName('playerName') as Phaser.GameObjects.Text).setText(p.name);
+    const bar=overlay.getByName('progressBar') as Phaser.GameObjects.Graphics;bar.clear();
     if(p.activeJob){bar.fillStyle(0x374b3f).fillRoundedRect(-20,-69,40,7,2);bar.fillStyle(0x95bf5c).fillRoundedRect(-18,-67,36*p.activeJob.progress,3,1);}
   }
 }

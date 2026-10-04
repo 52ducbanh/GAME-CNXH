@@ -37,6 +37,7 @@ Hà Nội: WALKWAYS + polygon hồ/kênh + footprint nhà/thân cây; NORTH_CROS
 ## Camera và điểm tương tác hiện tại
 
 - `MainScene.resizeCamera`: phone theo width<=700, landscape theo height<550. Follow zoom1, mở bounds chừa HUD/controls: phone top195/bottom116; landscape top78/bottom100/right200 khi không phải phone. Overview căn giữa cảnh, fit phone/landscape; desktop dùng fill. Framing này không đổi world coordinates/collision.
+- Sửa 05/10/2026: follow offset `(-right/2, (top-bottom)/2)` đặt chân giữa phần màn hình còn lại; không làm tròn scroll, smoothing theo delta với hằng số84ms. Actor/NPC dùng baseline46 trong frame48px; nhãn người chơi và shadow/ring có lớp riêng, thân/crate vẫn sort theo world foot-y. Fade foreground theo giao thân/polygon, chuyển alpha90ms; không đổi crop/polygon sinh từ pipeline.
 - M hoặc Map/minimap đổi overview/follow; đi bộ/sprint không tự đóng overview. `setWaypoint` chuyển follow. Menu khóa input cá nhân; drawer lựa chọn không khóa movement.
 - Vòng tương tác theo `resolveInteraction`, gồm POI và từng kiện DROPPED có ID. Range72 kiểm predicted và authoritative. Sửa POI cần kiểm prompt/HUD/drawer/server cùng lúc.
 

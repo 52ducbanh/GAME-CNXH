@@ -1,4 +1,16 @@
-# Hiện hành — Phân công sửa lỗi hình ảnh/di chuyển — 04/10/2026
+# Hiện hành — Sửa nhân vật/depth/animation/camera — 05/10/2026
+
+Đã sửa phần `chuowng` theo ảnh người dùng; nhánh giao bản sửa là `chuowng` theo yêu cầu push ngày05/10/2026, chưa mở PR. Baseline để tái hiện là `704b52b` (code của mốc phân công). Bằng chứng và giới hạn ở [bugfix-chuowng](bugfix-chuowng.md). Các gói `leeduc` và `datmup` vẫn chờ xử lý riêng.
+
+Đã chứng minh/sửa: neo chân lệch 2px; depth cũ sau authoritative correction; tên bị che cùng thân; fade theo crop box thay vì giao thân/polygon; animation đồng đội có đuôi nội suy và quay theo snapshot mới trước đoạn đang vẽ. Camera bỏ lượng tử hóa scroll, smoothing theo thời gian; follow mobile đặt chân giữa vùng chơi trừ HUD/controls. Animation dùng dịch chuyển thực và tốc độ; không sửa solver/collision, pixel ảnh/mask nguồn hoặc luật nhiệm vụ.
+
+PASS thực chạy: build shared/server, typecheck ba workspace, client build riêng `dist-character-qa`, **141/141 tests, 18 suites**; regression presentation 30/60/144Hz; InputController/ACK/rejoin transport mocks; 2 Socket.IO thật **40 MOVE, 0 reject**, contact/slide/shore/peer pass-through/rejoin. Browser fixture so trước/sau tại Hà Nội: chân −2→0, depth khớp correction ngay, đồng đội dừng đúng vị trí, crop corner không fade sai và mép thân/tán cây có fade. Viewport 390×844 follow/overview; chưa thiết bị/Wi-Fi thật hoặc mọi vật thể ở mọi state.
+
+QA dùng server/bundle riêng; không ghi đè `client/dist`, không restart phiên người dùng. Sáu regional scenes smoke foot/depth/name PASS, production player Hà Nội socket thật đã nhìn mobile overview/follow/HUD/joystick. Evidence ignored trong `client/dist-character-qa/qa/`, gồm JSON, ảnh và video canvas trước/sau với snapshot mô phỏng. Báo cáo Socket.IO thật tách riêng; không gọi fixture là trận multiplayer thực hoặc đo latency Wi-Fi. Lệnh/giới hạn ở [TESTING](TESTING.md).
+
+---
+
+# Lịch sử — Phân công sửa lỗi hình ảnh/di chuyển — 04/10/2026
 
 Theo phản hồi người dùng, game còn lỗi hình ảnh và di chuyển. Đã lập [BUGFIX_ASSIGNMENTS](BUGFIX_ASSIGNMENTS.md): leeduc sửa nền/ảnh/mask; chuowng sửa nhân vật/depth/animation/camera; datmup sửa collision/route/movement. Không giao nhiệm vụ cho ducbanh. Baseline source `69d95bb`; chưa có sửa code hoặc root cause mới được chứng minh trong lượt phân công.
 
