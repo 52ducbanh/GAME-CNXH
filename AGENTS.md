@@ -21,14 +21,17 @@ Trạng thái/test/runtime cập nhật ở PROJECT_STATUS; phạm vi tiếp the
 
 | Việc | Điểm vào |
 | --- | --- |
-| Gameplay, job, vật tư, biểu quyết | `server/src/gameEngine.ts`; thông số/types ở `shared/src/constants.ts`, `types.ts` |
+| Gameplay tỉnh / luật dùng chung | `shared/src/gameplay/provinces/<id>/`; rules/state ở `server/src/gameplay/presets/public-service/` và `server/src/gameplay/provinces/ha-tinh/`; registry chọn runtime/module |
+| Coordination / capability chung | `server/src/gameEngine.ts`, `server/src/gameplay/core/`; types/commands ở `shared/src/gameplay/core/`, thông số `shared/src/constants.ts` |
 | API, Socket.IO, session/phòng | `server/src/server.ts`, `roomManager.ts`; `client/src/network/socketClient.ts` |
 | Map/collision/route | `scripts/collision-layout.json`, `scripts/prepare-regions.py`, `shared/src/worldMaps.ts`, `mapData.ts`, `collisionGeometry.ts`, `movement.ts`, `navigation.ts`; xem [MAPS](docs/MAPS.md) |
-| Renderer/camera | `client/src/scenes/MainScene.ts`, `game/hanoiScene.ts`, `game/regionalScene.ts` |
+| Renderer/camera | Một `client/src/scenes/MainScene.ts`; `client/src/gameplay/registry.ts`, `core/regionalRenderer.ts`, `provinces/hanoi/presentation.ts`; metadata/view ở shared province/preset |
 | Input/tương tác/ACK | `client/src/game/inputController.ts`, `shared/src/interactions.ts`, `MainScene.ts::executeAction`, `socketClient.ts`; server `gameEngine.ts::handleIntent` |
-| UI/mobile | `client/src/ui/`, `client/src/game.css`, `client/src/regions.css` |
+| UI/mobile | `client/src/ui/`, CSS; gameplay presentation qua ProvinceView, không thêm branch tỉnh vào HUD/minimap/TaskPanel |
 | Học thuật | `shared/src/knowledgeMap.ts`, `docs/KNOWLEDGE_MAP.md` |
-| Test | `server/src/__tests__/`, `scripts/verify-regions.mjs`; xem [TESTING](docs/TESTING.md) |
+| Test | `server/src/__tests__/`, `scripts/verify-province-parity.mjs`, `verify-province-network.mjs`, `verify-hatinh-runtime.mjs`; xem [TESTING](docs/TESTING.md) |
+
+Tính năng tỉnh dùng capability hiện có: ưu tiên module + test, không sửa GameEngine/UI core. Province handler nhận narrow ports, không import GameEngine. m1/m2/m3 là wire projections; test cần canonical state dùng fixture runtime factory, không ghi vào getter/projection. Locality proof test-only không được đăng ký production.
 
 Collision-only: sửa nguồn rồi `python scripts/prepare-regions.py --geometry-only`; build shared trước test/server. Không overwite client/dist đang được server cũ phục vụ; dùng CLIENT_DIST_PATH và bundle riêng nếu cần QA cách ly.
 

@@ -1,19 +1,13 @@
-# TASK_CURRENT — Refactor gameplay 7 province modules
+# TASK_CURRENT — Province modular refactor hoàn tất
 
-Architecture đã được duyệt; user cho phép implement và checkpoint commits trên `refactor/province-modules`.
+**READY về kiến trúc; 7/7 provinces DONE.** Branch `refactor/province-modules`, baseline `b76710245e8f19f2a871de67ff4b4d7d2e586546`. Working tree sản phẩm cũ đã được bảo toàn bằng archive và checkpoint; không dùng master HEAD cũ thay implementation.
 
-Mục tiêu: core coordination + reusable capabilities/public-service preset + bảy province modules, behavior preserving. Current working tree và baseline `b76710245e8f19f2a871de67ff4b4d7d2e586546` là nguồn thật. Không reset/revert/di chuyển art hoặc làm mất file user.
+Core coordination + reusable capabilities/public-service preset + bảy shared province definitions/modules đã hoạt động qua static registries. Hà Tĩnh custom runtime/canonical rescue state; Hà Nội native presentation. Một MainScene/InputController/network loop. Semantic internal state, derived total/summary, detached wire projections; legacy engine handlers/fallback/facade renderer đã bỏ.
 
-Đã làm: safety archive/checkpoint; baseline 103 tests; Phase 1 contracts, static shared registry và definitions 7 tỉnh, 9 contract tests PASS. Runtime migration **7/7**, registry/runtime migration và full 125 tests PASS.
+Đã kiểm: typecheck/build;132 tests;426 catalogue/guide fixtures và1489 ACK/snapshot checkpoints khớp baseline; controls/ACK/transport mocks; hai sockets race/rejoin; bảy phòng đồng thời isolation; full Hà Tĩnh100 bằng MOVE/intents thật; browser bảy cảnh/guide/checklist/overview, rescue/dusk/fog/projector100. Locality proof Nghệ An3/3 chỉ module + test, không sửa core/UI, không đưa objective thử vào production.
 
-Đã extract Phase 2: task/item/vote/resource capabilities và public-service preset qua narrow ports; 14 tests/typecheck/build PASS, chưa đổi production routing.
+Không còn phase refactor phải implement. Known issues, FAIL visual modal có trước, phạm vi NOT TESTED, Git/checkpoint và bằng chứng mới trong [PROJECT_STATUS](docs/PROJECT_STATUS.md). Review/merge hoặc sửa known issues chỉ khi người dùng giao; không tự restart phiên server người dùng, không tự tạo province feature branches.
 
-Cleanup hoàn tất: typed boundary, semantic internal state, UI/presentation đọc ProvinceView, xóa facade renderer không còn dùng; 129 tests/parity/typecheck/build/client controls/ACK/transport mocks PASS.
+Điểm vào: province local ở `shared/src/gameplay/provinces/<id>/`; luật chung ở `server/src/gameplay/presets/public-service/`; rescue ở `server/src/gameplay/provinces/ha-tinh/`; capability chung ở `server/src/gameplay/core/`; presentation qua `client/src/gameplay/registry.ts`. GameEngine chỉ sửa khi thay coordination/infrastructure. Chi tiết [ARCHITECTURE](docs/ARCHITECTURE.md).
 
-Locality proof đã PASS 3/3 bằng đúng module Nghệ An + test, không sửa core/UI; production không kích hoạt objective thử.
-
-Đang làm: socket/browser QA và final docs. Core handlers/fallback đã xóa; không coi extraction PASS là toàn bộ task READY.
-
-Giữ geometry foot14/sweep/sliding/prediction, input E/G/M, receipt/ACK/rejoin, score/content/role gợi ý, phase order và range72/107 Hà Tĩnh. Không thay phiên server người dùng. Build client với `--outDir dist-province-refactor`.
-
-Trạng thái và chứng cứ trong [PROJECT_STATUS](docs/PROJECT_STATUS.md); implementation hiện tại quyết định hành vi thật.
+Giữ art/geometry/score/content, foot14/sweep/sliding/prediction/reconcile/rejoin, roles gợi ý, E/G/M/pending ACK, range72/107. Build QA client bằng `--outDir dist-province-refactor`; không ghi đè bundle của phiên người dùng. Asset/report lịch sử và291 files archive-only còn nguyên, không stage/xóa để làm sạch status.

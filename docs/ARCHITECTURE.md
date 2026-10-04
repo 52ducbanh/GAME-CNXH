@@ -1,3 +1,81 @@
+# Kiến trúc hiện hành — Province modules (04/10/2026)
+
+Bảy tỉnh đã migrate; chi tiết Git và lần kiểm thật ở [PROJECT_STATUS](PROJECT_STATUS.md). Core điều phối, capability thực hiện cơ chế chung, province/preset sở hữu luật và dữ liệu trình bày. Một room có một runtime gameplay, state không chia sẻ giữa các phòng.
+
+```text
+shared/src/gameplay/
+  core/                      contracts, commands, catalogue/guide và timed objective composition
+  presets/public-service/    composition, interactions, guide, view và voting options dùng chung sáu tỉnh
+  provinces/
+    hanoi/ ninh-binh/ quang-ninh/ hai-phong/ thanh-hoa/ nghe-an/  definitions/bindings local
+    ha-tinh/                 definition, commands, state/selectors, interactions, guide, view
+  registry.ts                static module/definition registry
+
+server/src/gameplay/
+  core/                      ports, task, item, resource, vote, timed objective capability
+  presets/public-service/    semantic state và ONE implementation luật dịch vụ công
+  provinces/ha-tinh/         canonical rescue state + custom runtime
+  registry.ts                factory đủ bảy MapIds; runtime mới cho mỗi phòng
+
+client/src/gameplay/
+  core/regionalRenderer.ts   renderer nhận metadata/ProvinceView
+  provinces/hanoi/           native presentation giữ crops/layers/depth
+  registry.ts                chọn presentation; một MainScene bên ngoài thư mục này
+```
+
+Các tỉnh đơn giản chỉ cần definition và compose preset; không tạo sáu runtime/scene trống cho đối xứng. Hà Tĩnh dùng regional renderer qua metadata và visual state của module, không copy scene/movement/network.
+
+```mermaid
+flowchart LR
+  Room[RoomManager / session] --> Engine[GameEngine coordination]
+  Engine --> Registry[Static composition registry]
+  Registry --> Runtime[ProvinceRuntime contract]
+  Runtime --> Ports[Task / item / vote / resource ports]
+  Runtime --> State[Canonical domain state]
+  State --> Projection[Selectors / detached snapshot projection]
+  Projection --> View[Shared province module / ProvinceView]
+  View --> UI[HUD / tasks / minimap / results / projector]
+  View --> Render[Presentation / MainScene]
+```
+
+## Trách nhiệm và authority
+
+- RoomManager/server/SocketClient giữ room/session/socket/host/rejoin; GameEngine giữ player, lifecycle, receipts và transport. MOVE dùng shared segment validation; movement/collision/navigation/input/prediction không copy vào runtime tỉnh.
+- PublicServiceRuntime nhận GameplayPorts, chỉ chứa luật medicalService/bridgeResponse/citizenRights. Task/vote/resource/item capability sở hữu cơ chế chung, runtime kiểm dependency/điều kiện/range và áp kết quả nghiệp vụ. Province không import GameEngine hoặc sửa toàn bộ engine qua context.
+- HatinhRuntime sở hữu va/dg/dl và compose public-service capability cho practice/clinical facts/side paths vốn tồn tại. Không có handleHatinhAction trong GameEngine, không mutable sync rescue progression về m1/m2/m3. Tổng score và rescue summary derive; normalize chỉ clamp leaf scores và clear compatibility rewards theo behavior cũ.
+- Shared ProvinceDefinition gồm quest composition/objectives, MapId, NPC/POI bindings và visual metadata. Guide/checklist/actions/markers/results/visual flags nằm ở preset/module. UI chung không quyết định nhiệm vụ tỉnh. getProvinceWorldState là selector nhẹ cho movement, tránh tạo recap/view mỗi frame.
+- Registry là composition root có thể import concrete modules; GameEngine nhận ProvinceRuntime abstraction. Không dynamic discovery/event bus/DSL/container. Core không có branch theo MapId để hiểu luật cứu hộ hay dịch vụ công.
+
+## State và compatibility
+
+Public-service canonical state: medicalService, bridgeResponse, citizenRights, citizens và completion facts của standard objectives. Semantic quest IDs: medical-service, bridge-response, citizen-rights; rescue IDs ở definition Hà Tĩnh. Cơ chế resource ledger/item/vote/task có một owner infrastructure; domain state chỉ ghi sự kiện/điểm thuộc luật của mình.
+
+m1/m2/m3/hatinhState trong GameSnapshot và read getters chỉ là detached compatibility projections. Không giữ totalScore mutable riêng, không cho getter trở thành writer. Test fixture capture concrete runtime qua injected factory để dựng trạng thái, không sửa legacy getters rồi mong ảnh hưởng room.
+
+Wire IDs M1/M2/M3, DTO type aliases và facade catalogue/guide còn vì client/shared/QA đang tiêu thụ protocol này. Deletion gate: tất cả consumers/protocol cùng migrate và parity/conformance đạt; không xóa chỉ để đổi tên wire trong task behavior-preserving. Facade hanoiMap/hanoiScene/regionalScene và fallback registry migration đã xóa vì không còn consumer. HOST_COMMAND/type host lịch sử không được core dispatch thành host action; event thực là host_command như trước.
+
+## Commands / dependency boundary
+
+ClientIntent/GameplayCommand là union discriminated, StartTaskType có helper intents; ProvinceCommand và HatinhQuestCommand hỗ trợ caller có province/quest tĩnh. Compile checks bắt action không có, thiếu payload, sai coordinate type, plan không thuộc quest, rescue command không thuộc province. Province thực tại network luôn lấy từ room, không tin provinceId client gửi.
+
+client_intent bắt đầu unknown; envelope/field shape được đọc an toàn và handler kiểm player/phase/range/dependency/resource/ownership như trước. Receipt fingerprint vẫn dựa trên raw type/payload, playerId + actionId, bounded2000/phòng, clear reset; không decode/rewrite trước fingerprint. Valid commands/ACK giữ behavior; missing/malformed envelope/task payload được reject thay vì crash. Đây không phải full security schema audit; các enum/auth legacy chưa harden toàn bộ được ghi trong PROJECT_STATUS.
+
+## Thêm tính năng và phối hợp
+
+Một objective tiêu chuẩn dùng timer hiện có: thêm objective definition ở module tỉnh (id/questId/pointId/JobType/duration/score/available), compose publicServiceModule/runtime, kiểm test. Capability tự đưa vào catalogue/guide/view/markers, sở hữu completion facts và derive score. Locality fixture Nghệ An chứng minh bằng module + test, không sửa core/UI/registry và không tham gia production bundle.
+
+Feature cơ chế riêng: runtime/policy/view của tỉnh qua contract/ports; chỉ bổ sung capability chung khi cần cơ chế mới thực sự dùng lại. Presentation riêng: adapter/metadata của tỉnh; một MainScene giữ camera/input/network. Thêm tỉnh mới còn cần đăng ký MapId/map/module/runtime/presentation ở composition roots; không thêm branch nghiệp vụ vào core.
+
+Hà Nội/Nghệ An/Hà Tĩnh có thể phát triển ở worktree riêng với thay đổi local. Shared preset/capability/contracts, wire/schema, registry và nguồn geometry/generator là phần cần phối hợp. Không coi refactor là đảm bảo merge không conflict đối với thay đổi cùng shared behavior.
+
+Geometry/generator/asset paths và runtime ESM/CJS pipeline giữ nguyên; xem [MAPS](MAPS.md), [TESTING](TESTING.md). Asset relocation là task khác, không thuộc đợt này. Các luật có trước chưa hoàn chỉnh và giới hạn QA ở PROJECT_STATUS.
+
+---
+
+# Lịch sử kiến trúc trước / trong migration
+
+Những entry points/handler/facade được mô tả phía dưới có thể đã bị xóa. Dùng phần hiện hành phía trên và repository để sửa code.
+
 # Kiến trúc province modules — 7/7 đã migrate 04/10/2026
 
 - Shared `gameplay/core`: contracts, typed commands, generic catalogue/lifecycle guide; `gameplay/presets/public-service`: composition, interactions/guide/view; `gameplay/provinces/<id>/definition.ts`: bảy cấu hình local; Hà Tĩnh có policy riêng. Static registry chọn module, không plugin discovery.

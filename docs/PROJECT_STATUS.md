@@ -1,4 +1,77 @@
-# Refactor gameplay theo province — hiện hành 04/10/2026
+# Hiện hành — Province modular refactor hoàn tất 04/10/2026
+
+**READY về kiến trúc refactor; 7/7 tỉnh đã migrate.** Repository là nguồn implementation; đọc AGENTS → phần này → TASK_CURRENT. Các mốc phía dưới là lịch sử.
+
+- Branch: `refactor/province-modules`.
+- REFRACTOR_BASELINE: `b76710245e8f19f2a871de67ff4b4d7d2e586546`, bảo toàn working tree sản phẩm trước refactor; HEAD master cũ không chứa toàn bộ sản phẩm đó.
+- HEAD code/QA đã kiểm: `45431f366e6432b4b8b78d0bd153b1c6f878e264`. Commit tài liệu bàn giao tiếp sau; lấy HEAD cuối bằng `git rev-parse HEAD`, các checkpoint bằng `git log b767102^..HEAD`.
+- Hoàn tất Phase 0 baseline, contracts/registry, reusable capabilities/preset, migration từng tỉnh, canonical state/semantic cleanup, locality proof và final regression. Không merge/push hoặc thay phiên server của người dùng.
+
+| Tỉnh | Trạng thái | Composition thực tế |
+| --- | --- | --- |
+| Hà Nội | DONE | Public-service preset + definition; native presentation adapter giữ layers/depth |
+| Ninh Bình | DONE | Public-service preset + map/NPC metadata |
+| Quảng Ninh | DONE | Public-service preset + map/NPC metadata |
+| Hải Phòng | DONE | Public-service preset + map/NPC/palms metadata |
+| Thanh Hóa | DONE | Public-service preset + map/NPC metadata |
+| Nghệ An | DONE | Public-service preset + map/NPC/palms metadata |
+| Hà Tĩnh | DONE | HatinhRuntime + va/dg/dl state/actions/selectors/guide/view; compose capability practice/clinic vốn có |
+
+## Kiến trúc và ownership
+
+GameEngine chỉ điều phối lifecycle, player/receipt/snapshot và capabilities chung. Task/reservation/manpower, item ownership, resource ledger, vote/timer được dùng lại; movement/input/network/session/rejoin vẫn một implementation. Luật sáu tỉnh ở một PublicServiceRuntime; Hà Tĩnh ở runtime riêng. Static registries chọn definition/runtime/presentation; không có fallback engine cũ, plugin framework hoặc bảy Phaser scenes.
+
+State public-service dùng medicalService/bridgeResponse/citizenRights, quest IDs medical-service/bridge-response/citizen-rights; Hà Tĩnh sở hữu va/dg/dl. Tổng điểm và rescue summary derive. m1/m2/m3/hatinhState là detached wire projections, không sync mutable rescue state vào ba state khác. Clinical facts/compatibility rewards của Hà Tĩnh là capability riêng để giữ side paths cũ, không là bản sao rescue progression.
+
+HUD, TaskPanel, voting, guide, minimap, results, projector và renderer nhận ProvinceView/metadata. ClientIntent là discriminated commands; raw client_intent nhận unknown, room chọn module theo map authoritative, giữ fingerprint/dedupe actionId. Không thay geometry, art, điểm, nội dung, range72/107, E/G/M hoặc protocol của valid commands.
+
+## Kiểm tra cuối — thực sự đã chạy
+
+**PASS**:
+
+- `npm run typecheck`: ba workspace; shared/server build và client build riêng `npm run build --workspace=client -- --outDir dist-province-refactor`.
+- `npm test`: **132/132, 12 suites**, gồm 103 baseline tests và contract/capability/boundary/locality tests. Movement solver tới mọi POI của bảy maps, cầu nguyên/hỏng; collision/deployment và server kiểm cả đoạn MOVE.
+- `node scripts/verify-province-parity.mjs`: **426 catalogue/guide fixtures + 1489 ACK/snapshot checkpoints** khớp baseline, 24 trận public-service (sáu tỉnh × bốn tổ hợp) và một trận Hà Tĩnh đủ100. Đây là rule fixtures đặt vị trí, không phải browser playtest.
+- verify-input-controls: 8 nhóm PC/mobile bằng mocks. verify-input-ack: actual MainScene.executeAction với renderer/transport mock, pending đến ACK350ms, chống spam và không tự sửa cargo. verify-input-network: actual SocketClient/transport mock, lock/rejoin/no replay.
+- verify-input-multiplayer trên instance QA riêng: hai sockets thật tranh kiện/job, ACK duplicate/reject, reconnect cargo; delay350ms là ACK consumer giả lập, không phải LAN latency.
+- verify-province-network: bảy phòng đồng thời, 14 clients thật + replacement sockets, **457 MOVE segments** ở lần fixture giữ mở; hai client đồng bộ objective, duplicate receipt, cargo rejoin, room isolation. Public-service khảo sát A; Hà Tĩnh tiếp nhận Tuấn. Không teleport hoặc sửa engine qua fixture.
+- verify-hatinh-runtime: full match thật qua Socket.IO, **1007 MOVE segments**, countdown theo live ticks, score30/35/35=100 và RESULTS.
+- Browser: đủ bảy tỉnh scene/guide/checklist/overview; G ping nhận ACK, waypoint, Menu khóa/mở input cá nhân; native Hà Nội ở layout desktop1440×900 và layout hẹp498×572; Hà Tĩnh rescue/dusk/fog, đổi guide, results data100 và projector100. Host nhận RESULTS/100 qua UI. Không coi việc đọc DOM là chứng nhận modal đã hiển thị ổn định.
+- SHA256: **450 files** được kiểm gồm291 archive-only,149 runtime art (có overlap) và12 geometry/pipeline files; không thay/thiếu file. Client bundle phục vụ ở QA trùng index build riêng; API trả đúng bảy maps.
+
+**FAIL / hiện tượng có trước, chưa sửa**:
+
+- Trong IAB, modal dẫn nhập/kết quả có lúc chỉ thấy nền tối; computed opacity của child là0. Baseline đã có innerHTML rebuild mỗi snapshot + fadeIn150ms; click tự động có thể timeout vì node thay liên tục. Results data/score và projector đúng; visual modal chưa đạt kiểm ổn định. Không sửa ngoài refactor.
+- Harness mạng mới ban đầu nối socket mới trước khi ngắt socket cũ, khiến disconnect cũ đánh offline cùng player; đã đổi harness sang disconnect → peer thấy offline → rejoin và PASS. Server behavior cũ giữ nguyên, không coi đây là regression mới.
+- Không có FAIL đang mở trong unit/typecheck/build/parity/socket regression. Lỗi reset kho do extraction thiếu initCrates đã sửa ở checkpoint326428f và có regression assertion.
+
+**NOT TESTED**: held-key/sprint/audio feel trên PC người thật, mobile vật lý hai tay, Wi-Fi loss/latency, load60 người, focus/accessibility audit đầy đủ, C11 exact floor/rail alignment; browser không chơi thủ công trọn cả24 tổ hợp public-service. Không có chứng nhận auth/security công khai.
+
+Evidence mới ở `client/dist-province-refactor/qa/` (ignored): controls/ack/network/multiplayer/province-network/hatinh-runtime JSON và ảnh hanoi-desktop/hatinh-rescue/hatinh-projector-100. Rebuild outDir sẽ thay các artifact QA này; scripts và lệnh tái hiện ở TESTING. Report/ảnh lịch sử không bị ghi đè.
+
+## Locality proof và phát triển độc lập
+
+Checkpoint `e2b0b0c` chỉ thêm `shared/src/gameplay/provinces/nghe-an/locality.fixture.ts` + `server/src/__tests__/provinceLocality.test.ts` cùng cập nhật trạng thái. Dùng AUDIT_RESULT/timer có sẵn; catalogue, guide, quest4, marker, score derive, race/dedupe/pause/cancel/reset đều PASS3/3. Không sửa GameEngine, shared HUD/minimap/renderer/interaction core hoặc registry. Fixture không export qua index/registry; production cả bảy tỉnh vẫn đúng ba nhiệm vụ, zero test objective; production bundle hash không đổi sau proof.
+
+Hà Nội/Nghệ An/Hà Tĩnh có thể làm tính năng local ở branch/worktree độc lập sau merge, chủ yếu module/presentation/tests tương ứng. Thay shared preset/capability, contract/wire, global geometry hoặc registry vẫn cần phối hợp và chạy regression chung. Task này chỉ dùng một branch, không tạo ba feature branches.
+
+## Known behavior / phần còn mở ngoài refactor
+
+Giữ range catalogue72/handler Hà Tĩnh107; rescue handler chưa có phase guard chung; MOVE chưa có speed/time budget; enum payload/host authorization chưa được harden đầy đủ. Host/vote có chữ lỗi encoding. Hà Tĩnh vẫn có recap/metrics dân/bridge của public-service cũ, nên rescue100 vẫn hiện0/30 dân và bridge NONE; cần task nội dung riêng nếu muốn đổi. Modal rebuild/fade và overlapping sockets cùng token như mô tả trên. C11 chưa được chứng nhận.
+
+Compatibility còn lại: wire m1/m2/m3/M1/M2/M3, Mission1/2/3 type aliases, read getters và shared catalogue/guide facade giữ API cho consumers hiện tại. Chỉ xóa khi tất cả client/shared/QA/DTO consumers đã migrate cùng protocol; không có domain writer hoặc migration fallback phía sau các adapter. HOST_COMMAND/type host lịch sử không phải đường điều khiển thực; host dùng event host_command như trước.
+
+## Git safety và bước tiếp theo
+
+Baseline archive594 files có manifest/SHA256 tại `C:\Users\52duc\.codex\refactor-backups\province-modules-20261004-151759`. Source/config/docs/runtime assets đã checkpoint theo danh sách;291 source art/audio/screenshots/ZIP lớn vẫn nguyên tại chỗ và untracked. Không reset/stash/xóa user assets, không regenerate map assets.
+
+Refactor đã hoàn tất, không còn phase migration phải chạy. Bước tiếp theo là review/merge theo quyết định người dùng hoặc giao task riêng cho known issues; không tự triển khai TODO đó. Instance QA đã dùng loopback3124/bundle riêng, không xem cổng/phòng này là cấu hình bền vững của máy khác. Không lưu token/PID.
+
+---
+
+## Checkpoint và kiểm tra theo giai đoạn (lịch sử)
+
+# Checkpoint theo giai đoạn — lịch sử refactor 04/10/2026
 
 - Branch: `refactor/province-modules`.
 - REFRACTOR_BASELINE: `b76710245e8f19f2a871de67ff4b4d7d2e586546`; HEAD tại lúc kiểm Phase 1 là baseline này. Checkpoint mới được ghi trong Git, xem `git log`.

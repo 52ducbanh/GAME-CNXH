@@ -1,3 +1,78 @@
+# Kiểm tra hiện hành — refactor hoàn tất 04/10/2026
+
+Kết quả mới: **132 tests/12 suites PASS**, typecheck ba workspace, shared/server/isolated-client build PASS; parity426 catalogue/guide +1489 ACK/snapshot checkpoints. Coverage, known FAIL visual modal và NOT TESTED ghi trong [PROJECT_STATUS](PROJECT_STATUS.md). Các số phía dưới là lịch sử.
+
+Build shared trước server/tests. Để bảo toàn bundle đang phục vụ, lượt này chạy build từng workspace và dùng outDir client riêng, không gọi root build ghi đè client/dist:
+
+```powershell
+npm run build --workspace=shared
+npm run typecheck
+npm run build --workspace=server
+npm run build --workspace=client -- --outDir dist-province-refactor
+npm test
+node scripts/verify-province-parity.mjs
+```
+
+Parity lấy source từ REFRACTOR_BASELINE Git (mặc định b767102), bundle baseline trong memory. Nó so catalogue/guide theo fixtures và full rule traces24 tổ hợp public-service + Hà Tĩnh100, ACK/JSON snapshot sau mỗi bước/reset/rejoin. Positions đặt trong rule fixtures; không nhận là MOVE/browser certification. Không giữ engine cũ trong production.
+
+## Locality / canonical ownership
+
+`provinceLocality.test.ts`:3 tests compose fixture ở module Nghệ An với timed objective AUDIT_RESULT; kiểm actions/guide/quest/marker/score/race/dedupe/pause/cancel/reset, đồng thời chứng minh registry production không có test objective. Không thêm fixture vào index/registry. `provinceModules.test.ts`:16 tests definitions/bindings/view/fresh room/reset. `gameplayBoundary.test.ts`:4 tests unknown/authority/projection và @ts-expect-error caller contract. `gameplayCapabilities.test.ts`:6 task/item/vote/resource/score/state tests.
+
+Fixtures cho tests cũ nằm ở `server/src/__tests__/fixtures/gameplay.ts`, capture runtime qua factory; writable domain facts thuộc runtime. m1/m2/m3 và hatinhState getter là copies, không dùng làm test writer. Test full movement/collision vẫn chạy actual solver/authoritative segment checks trên bảy maps.
+
+## QA client và socket — không ghi đè report lịch sử
+
+Sau build, tạo thư mục evidence ignored rồi đặt QA_REPORT_PATH cho từng harness:
+
+```powershell
+New-Item -ItemType Directory -Path client/dist-province-refactor/qa -Force
+$env:QA_REPORT_PATH='client/dist-province-refactor/qa/controls.json'
+node scripts/verify-input-controls.mjs
+$env:QA_REPORT_PATH='client/dist-province-refactor/qa/ack.json'
+node scripts/verify-input-ack.mjs
+$env:QA_REPORT_PATH='client/dist-province-refactor/qa/network.json'
+node scripts/verify-input-network.mjs
+```
+
+Controls/executeAction/SocketClient harness dùng production bundle với DOM/renderer/transport mocks. ACK350ms chỉ delay consumer; không được gọi là Wi-Fi latency hoặc real mobile. Chạy socket harness vào **instance QA riêng đã xác minh source/build/cổng**. Lượt này dùng loopback3124, không cam kết cổng đó còn trống/chạy ở máy khác. Không restart phiên người dùng.
+
+Trong terminal riêng, sau khi xác minh cổng QA trống:
+
+```powershell
+$env:PORT='3124'
+$env:SERVER_PORT='3124'
+$env:HOST='127.0.0.1'
+$env:PUBLIC_HOST='http://127.0.0.1:3124'
+$env:CLIENT_DIST_PATH=Join-Path $PWD.Path 'client/dist-province-refactor'
+node server/dist/server.js
+```
+
+Trong terminal QA:
+
+```powershell
+$env:PREVIEW_URL='http://127.0.0.1:3124'
+$env:QA_ISOLATED='1'
+$env:QA_REPORT_PATH='client/dist-province-refactor/qa/multiplayer.json'
+node scripts/verify-input-multiplayer.mjs
+$env:QA_REPORT_PATH='client/dist-province-refactor/qa/province-network.json'
+node scripts/verify-province-network.mjs
+$env:QA_REPORT_PATH='client/dist-province-refactor/qa/hatinh-runtime.json'
+node scripts/verify-hatinh-runtime.mjs
+```
+
+verify-province-network mở bảy disposable rooms đồng thời,14 clients + replacement sockets; navigation/MOVE, duplicate receipts, reconnect cargo, objective đại diện, room isolation. QA_KEEP_OPEN=1 giữ fixtures sau PASS để browser join; kết thúc helper sau kiểm. Rejoin đúng thứ tự disconnect → peer thấy offline → join, không nối hai socket cùng token rồi coi disconnect của một socket là reconnect chuẩn.
+
+verify-hatinh-runtime đi full Hà Tĩnh100 bằng Socket.IO/MOVE/range/dependencies/ticks thật, không teleport. QA_BROWSER_PAUSE=1 dừng tại RESCUE READY và RESULTS READY cho browser inspection, Enter để tiếp tục. Không ghi host/player tokens vào report. verify-regions cũ có giả định public-service và không dùng nó chứng nhận Hà Tĩnh custom rescue; các report cũ giữ là lịch sử.
+
+Browser lượt này dùng UI thật: bảy scene/guide/checklist/overview, G/waypoint/Menu; Hà Nội native desktop1440×900 và layout498×572; Hà Tĩnh rescue dusk/fog và projector100. Result DOM có100 nhưng visual modal có lúc opacity0; baseline rebuild innerHTML + fadeIn150ms vẫn tồn tại. Host encoding lỗi cũng còn. Không gọi mọi modal/browser workflow PASS chỉ vì DOM đúng.
+
+Evidence mới ở client/dist-province-refactor/qa; build lại outDir sẽ thay evidence, nên giữ ảnh cần dùng trước khi rebuild. Physical held-key/audio/multitouch/LAN/load60/accessibility/C11 chưa kiểm đầy đủ. Markdown-only sync không yêu cầu chạy lại toàn bộ tests.
+
+---
+
+# Lịch sử kiểm tra trước / trong refactor
+
 # Gameplay refactor checks — 04/10/2026
 
 Lượt mới/bằng chứng cụ thể trong PROJECT_STATUS. Baseline 103 tests PASS. ProvinceModules suite hiện 16 tests registry/map/view/state/reset; gameplayCapabilities 5 tests task/resource/vote/item/public-service state. Khi migrate tỉnh dùng regionalMaps `-t <tên tỉnh>` và ghi SKIPPED đúng, không gọi các tỉnh bị lọc là PASS.

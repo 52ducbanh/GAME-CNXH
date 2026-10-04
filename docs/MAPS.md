@@ -2,9 +2,9 @@
 
 Cập nhật geometry04/10/2026: xem [collision report](COLLISION_IMPLEMENTATION_REPORT.md) và [PROJECT_STATUS](PROJECT_STATUS.md). Các handover hình ảnh03/10 là lịch sử. Tất cả bảy vùng đã có registry, cảnh, geometry, POI và gameplay; không có vùng thứ tám chỉ dự kiến trong source. Đồ họa là cảnh minh họa cố định + lớp che + đối tượng động, không có Tiled/TMX hoặc thư viện tileset ghép tự do.
 
-## Gameplay/map binding sau extraction
+## Gameplay/map binding sau refactor 7/7
 
-Bảy definitions ở `shared/src/gameplay/provinces/<id>/definition.ts` bind bằng MapId đến `worldMaps.ts`. Province metadata chứa NPC/palms/waterfall/rescue scene; renderer nhận metadata. Geometry, generator, asset paths và generated TS không đổi trong refactor.
+Bảy definitions ở `shared/src/gameplay/provinces/<id>/definition.ts` bind bằng MapId đến `worldMaps.ts`. Province metadata chứa NPC/palms/waterfall/rescue scene; renderer nhận metadata. Native Hà Nội ở `client/src/gameplay/provinces/hanoi/presentation.ts`, renderer các vùng ở `client/src/gameplay/core/regionalRenderer.ts`; registry chọn presentation cho một MainScene. Hà Tĩnh module cung cấp rescue visual/minimap theo state; renderer không kiểm rescue business flags. Geometry, generator, asset paths và generated TS không đổi trong refactor.
 
 ## Registry và kích thước
 
