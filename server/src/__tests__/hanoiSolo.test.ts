@@ -1,10 +1,11 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 import {describe,it,expect} from 'vitest';
 import {POINTS_OF_INTEREST,ClientIntent,JobType} from 'shared';
 import {GameEngine} from '../gameEngine.js';
 
 describe('Mobile clinic solo completion on the Hanoi layout',()=>{
  it.each(['REPAIR','DETOUR'] as const)('MOBILE + %s completes all three missions without role locks',plan=>{
-  const engine=new GameEngine('MOBILE_SOLO','host'),p=engine.addPlayer('solo','Solo',true);
+  const engine=createTestEngine('MOBILE_SOLO','host'),p=engine.addPlayer('solo','Solo',true);
   engine.startRunning();let id=0;
   const at=(target:string)=>{const q=POINTS_OF_INTEREST[target];p.x=q.x;p.y=q.y;};
   const send=(type:ClientIntent['type'],payload?:any)=>{
@@ -19,14 +20,14 @@ describe('Mobile clinic solo completion on the Hanoi layout',()=>{
   }
   at('NOTICE_BOARD');send('PUBLISH_NOTICE',{missionId:'M1'});
   expect(engine.m1.mobileBDeployed&&engine.m1.mobileCDeployed).toBe(true);
-  at('BRIDGE_TASK_1');expect(engine.surveyBridgeM2(p).success).toBe(true);
+  at('BRIDGE_TASK_1');expect(engine.handleIntent(p.id,{actionId:'bridge_survey',type:'START_JOB',payload:{type:'SURVEY_BRIDGE',targetId:'BRIDGE'}}).success).toBe(true);
   at('HEADQUARTERS');send('PROPOSE_PLAN',{missionId:'M2',plan});
   if(plan==='REPAIR'){
    deliver('BRIDGE',2);job('REPAIR_BRIDGE_1','BRIDGE_TASK_1');job('REPAIR_BRIDGE_2','BRIDGE_TASK_2');
   }
   deliver('ZONE_B',2);job('AUDIT_RESULT','ZONE_B');at('NOTICE_BOARD');send('PUBLISH_NOTICE',{missionId:'M2'});
-  at('ZONE_C');expect(engine.receiveFeedbackM3(p).success).toBe(true);
-  at('CLINIC_MOBILE_C');expect(engine.crossCheckClinicM3(p,'CLINIC_MOBILE_C').success).toBe(true);
+  at('ZONE_C');expect(engine.handleIntent(p.id,{actionId:'m3_feedback',type:'START_JOB',payload:{type:'RECEIVE_FEEDBACK_C',targetId:'ZONE_C'}}).success).toBe(true);
+  at('CLINIC_MOBILE_C');expect(engine.handleIntent(p.id,{actionId:'m3_cross_check',type:'START_JOB',payload:{type:'CROSS_CHECK_CLINIC',targetId:'CLINIC_MOBILE_C'}}).success).toBe(true);
   at('HEADQUARTERS');send('CONFIRM_M3_PLAN');
   for(const citizen of ['CITIZEN_C1','CITIZEN_C2']){deliver(citizen,1);job('SUPPORT_CITIZEN',citizen);}
   job('AUDIT_LEDGER','WAREHOUSE');at('NOTICE_BOARD');send('PUBLISH_NOTICE',{missionId:'M3'});

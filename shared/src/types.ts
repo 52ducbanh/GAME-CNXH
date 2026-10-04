@@ -188,72 +188,8 @@ export interface PersonalContribution {
   votesParticipated: number;
 }
 
-export interface HatinhState {
-  activeScene: 'main' | 'rescue';
-  currentQuest: 1 | 2 | 3;
-  va: {
-    status: 'NOT_STARTED' | 'ACTIVE' | 'RESOLVED';
-    tuanReported: boolean;
-    cameraDeployed: boolean;
-    spillCleaned: boolean;
-    trafficDiverted: boolean;
-    weighed: boolean;
-    inspectedBang: boolean;
-    dossierPrepared: boolean;
-    negotiatedDoan: boolean;
-    routeReopened: boolean;
-    score: number;
-  };
-  dg: {
-    status: 'NOT_STARTED' | 'GATHERING' | 'COUNTDOWN' | 'ACTIVE' | 'RESOLVED';
-    gatherTimeStarted?: number;
-    readyPlayers: string[];
-    countdownRemaining: number;
-    timeOfDay: 'day' | 'afternoon' | 'dusk';
-    barrierA: boolean;
-    barrierB: boolean;
-    roadLight: boolean;
-    ravineLight: boolean;
-    anchorReady: boolean;
-    ropeReady: boolean;
-    winchReady: boolean;
-    rescuerDown: boolean;
-    rescuerPlayerId?: string;
-    namComforted: boolean;
-    bikeHazardSecured: boolean;
-    firstAidGiven: boolean;
-    namSplinted: boolean;
-    readyToWinch: boolean;
-    winchOperating: boolean;
-    winchOperatorId?: string;
-    winchProgress: number;
-    winchSignal: 'PULL' | 'HOLD' | 'STOP';
-    namLifted: boolean;
-    receptionReady: boolean;
-    medicalReceived: boolean;
-    rescuerSafe: boolean;
-    bikeRecovered: boolean;
-    score: number;
-  };
-  dl: {
-    status: 'NOT_STARTED' | 'ACTIVE' | 'RESOLVED';
-    tungBriefed: boolean;
-    sauVerified: boolean;
-    teoVerified: boolean;
-    dossierFiled: boolean;
-    flowOrganized: boolean;
-    haiAssisted: boolean;
-    incenseSupplied: boolean;
-    tiktokerCorrected: boolean;
-    score: number;
-  };
-  score: {
-    va: number;
-    dg: number;
-    dl: number;
-    total: number;
-  };
-}
+export type { HatinhState } from './gameplay/provinces/ha-tinh/state.js';
+import type { HatinhState } from './gameplay/provinces/ha-tinh/state.js';
 
 export interface GameSnapshot {
   objectiveProgress?: Record<string, boolean>;

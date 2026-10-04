@@ -2,7 +2,7 @@
 
 - Branch: `refactor/province-modules`.
 - REFRACTOR_BASELINE: `b76710245e8f19f2a871de67ff4b4d7d2e586546`; HEAD tại lúc kiểm Phase 1 là baseline này. Checkpoint mới được ghi trong Git, xem `git log`.
-- Tiến độ runtime: **6/7**. Phase 0/1 hoàn tất; Phase 2 đã extract task, items, voting, resource và public-service rules qua narrow ports, đã có Ninh Bình đi qua registry.
+- Tiến độ runtime: **7/7**. Phase 0/1 hoàn tất; Phase 2 đã extract task, items, voting, resource và public-service rules qua narrow ports, đã có Ninh Bình đi qua registry.
 - Baseline hiện tại: **PASS** typecheck ba workspace, shared/server build, client build riêng `dist-province-refactor`, 103/103 tests (8 suites). Chưa dùng số tests lịch sử làm bằng chứng.
 - Phase 1: **PASS** typecheck/build; 9/9 contract tests. Đủ bảy definitions, semantic quest IDs, typed command/envelope boundary, ProvinceView và runtime contract.
 - **NOT TESTED** trong phase này: browser, socket hai client thực, host/projector trực quan. Unit tests đã kiểm authority, reset/rejoin, score, E/G catalogue, movement/collision.
@@ -14,7 +14,8 @@
 - Thanh Hóa: **PASS** typecheck/build, 23 province/input + 6 region checks (24 SKIPPED). Giữ POI mobile B/C2 và paths/geometry nguyên trạng.
 - Nghệ An: **PASS** typecheck/build, 29 contract/input/capability + 6 region checks (24 SKIPPED), parity 426 fixtures. TimedObjective capability nhận definition, sở hữu completion facts, derive score/guide/markers; production cả bảy province vẫn có zero thử nghiệm. Locality proof riêng sẽ chạy sau cleanup.
 - Hà Nội: **PASS** typecheck/build và 45/45 province/input/gameEngine/solo/map tests. `verify-province-parity`: 426 catalogue/guide fixtures + 1489 ACK/snapshot checkpoints của 24 trận public-service và 1 trận Hà Tĩnh khớp baseline; rule fixtures đặt vị trí, không nhận là movement/browser playtest. Native renderer giữ crops/depth/layers.
-- Tiếp theo: Hà Tĩnh, rồi xóa legacy engine/routing; không thay art/geometry/scoring/protocol.
+- Hà Tĩnh: **PASS** typecheck/shared/server/isolated-client build, 125/125 tests (10 suites) và parity 426 + 1489 checkpoints. va/dg/dl có một owner trong HatinhRuntime; score summary là getter/selector; m1/m2/m3 là detached wire projections. Core GameEngine giảm xuống 573 dòng, không chứa handlers/rules/branch tỉnh. Partial registry/fallback đã xóa.
+- Tiếp theo: typed boundary/semantic cleanup, locality proof, client/socket/browser QA và final docs; task chưa gọi READY. không thay art/geometry/scoring/protocol.
 - Safety: source/config/runtime assets đã checkpoint; 594 file versioned/non-ignored được lưu zip có SHA256 ở thư mục backup Codex ngoài repo. 291 file art-source/screenshots/ZIP lớn được lưu archive, giữ nguyên tại chỗ và chưa stage.
 
 ---

@@ -17,3 +17,5 @@ export { publicServiceModule } from './gameplay/presets/public-service/module.js
 export { buildInteractionCatalogue } from './gameplay/core/interactions.js';
 export { buildMissionGuide } from './gameplay/core/guide.js';
 export * from './gameplay/registry.js';
+
+export { selectHatinhScore, selectHatinhStatuses } from './gameplay/provinces/ha-tinh/state.js';

@@ -1,3 +1,4 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 import { describe, it, expect } from 'vitest';
 import { GameEngine } from '../gameEngine.js';
 import { getGameMap, resolveInteraction, getInteractionActions } from 'shared';
@@ -12,7 +13,7 @@ describe('Hà Tĩnh Complete Gameplay - 3 Quests & Multiplayer', () => {
   };
 
   const setupEngine = (playerCount = 1) => {
-    const e = new GameEngine('HT_TEST', 'host', 'ha-tinh');
+    const e = createTestEngine('HT_TEST', 'host', 'ha-tinh');
     const players = [];
     for (let i = 1; i <= playerCount; i++) {
       players.push(e.addPlayer(`p${i}`, `Người chơi ${i}`, i === 1));
@@ -121,7 +122,7 @@ describe('Hà Tĩnh Complete Gameplay - 3 Quests & Multiplayer', () => {
 
   it('T03: Quest 2 (Đèo Ngang) Ready check, 3-2-1 countdown, and dusk/fog transition', () => {
     const { e, p1 } = setupEngine(1);
-    e.hatinhState!.currentQuest = 2;
+    rescueStateOf(e).currentQuest = 2;
 
     // Trigger alert
     at(p1, 'DEO_GATHER');
@@ -151,7 +152,7 @@ describe('Hà Tĩnh Complete Gameplay - 3 Quests & Multiplayer', () => {
 
   it('T04: Quest 2 strictly enforces safety dependencies before rescuer descends and winches', () => {
     const { e, p1 } = setupEngine(1);
-    e.hatinhState!.currentQuest = 2;
+    rescueStateOf(e).currentQuest = 2;
 
     at(p1, 'DEO_GATHER');
     e.handleIntent(p1.id, { actionId: 'al', type: 'HATINH_ACTION', payload: { action: 'DG_TRIGGER_ALERT' } });
@@ -260,11 +261,11 @@ describe('Hà Tĩnh Complete Gameplay - 3 Quests & Multiplayer', () => {
 
   it('T05: Quest 3 (Đồng Lộc) 3 parallel branches & match conclusion at 100 points', () => {
     const { e, p1 } = setupEngine(1);
-    e.hatinhState!.va.score = 30;
-    e.hatinhState!.va.status = 'RESOLVED';
-    e.hatinhState!.dg.score = 35;
-    e.hatinhState!.dg.status = 'RESOLVED';
-    e.hatinhState!.currentQuest = 3;
+    rescueStateOf(e).va.score = 30;
+    rescueStateOf(e).va.status = 'RESOLVED';
+    rescueStateOf(e).dg.score = 35;
+    rescueStateOf(e).dg.status = 'RESOLVED';
+    rescueStateOf(e).currentQuest = 3;
 
     // Briefing with Bac Tung
     at(p1, 'DONG_LOC_TUNG');
@@ -318,10 +319,10 @@ describe('Hà Tĩnh Complete Gameplay - 3 Quests & Multiplayer', () => {
   it('T06: Multiplayer 4-player team coordination and individual contributions', () => {
     const { e, players } = setupEngine(4);
     const [p1, p2, p3, p4] = players;
-    e.hatinhState!.currentQuest = 2;
-    e.hatinhState!.dg.status = 'ACTIVE';
-    e.hatinhState!.activeScene = 'rescue';
-    e.hatinhState!.dg.timeOfDay = 'dusk';
+    rescueStateOf(e).currentQuest = 2;
+    rescueStateOf(e).dg.status = 'ACTIVE';
+    rescueStateOf(e).activeScene = 'rescue';
+    rescueStateOf(e).dg.timeOfDay = 'dusk';
 
     // Player 1 sets Traffic A
     at(p1, 'RESCUE_TRAFFIC_A');

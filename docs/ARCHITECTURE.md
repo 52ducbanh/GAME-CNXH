@@ -1,9 +1,10 @@
 # Kiến trúc province modules — đang migrate 04/10/2026
 
 - Shared `gameplay/core`: contracts, typed commands, generic catalogue/lifecycle guide; `gameplay/presets/public-service`: composition, interactions/guide/view; `gameplay/provinces/<id>/definition.ts`: bảy cấu hình local; Hà Tĩnh có policy riêng. Static registry chọn module, không plugin discovery.
-- Server `gameplay/core`: task/item/resource/voting capabilities qua ports; `presets/public-service`: semantic state medicalService/bridgeResponse/citizenRights và rules một implementation. Registry đang migrate tuần tự; optional fallback chỉ được giữ đến 7/7.
+- Server `gameplay/core`: task/item/resource/voting capabilities qua ports; `presets/public-service`: semantic state medicalService/bridgeResponse/citizenRights và rules một implementation. Registry đã migrate đủ 7/7, không còn optional fallback. HatinhRuntime sở hữu rescue state + capability public-service còn cần cho practice/legacy clinic fields; core không chứa domain handlers.
 - Client `gameplay/registry.ts` chọn presentation; một MainScene/input/network loop. Core regionalRenderer nhận metadata/ProvinceView, Hà Nội giữ native adapter. HUD/minimap/results/projector không đọc m1/m2/hatinh booleans; recap text giữ nguyên hành vi trước.
 - Wire m1/m2/m3 và HATINH_ACTION giữ compatibility, deletion gate là tất cả client/QA consumers cùng phiên bản mới. Source internal preset đã dùng semantic IDs; không đổi protocol khi extraction.
+- Projection m1/m2/m3/hatinhState được copy để không trở thành writer. Fixtures giữ reference runtime qua injected factory, chỉ test sửa canonical state. Hatinh score summary derive, không sync scores/status vào state khác. Legacy clinic capability giữ các side paths trước đó và world flags, không là fallback của migration.
 - Runtime migration hiện tại/bằng chứng trong PROJECT_STATUS. Các mục dưới mô tả implementation trước refactor; không dùng chúng để suy ra boundary mới.
 
 ---

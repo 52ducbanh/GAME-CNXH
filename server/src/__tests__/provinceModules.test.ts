@@ -1,3 +1,4 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 import { describe, expect, it } from 'vitest';
 import { MAP_IDS, getGameMap, getProvinceDefinition, getProvinceView, getInteractionActions, PROVINCES } from 'shared';
 import { GameEngine } from '../gameEngine.js';
@@ -21,7 +22,7 @@ describe('Province contract and static registry', () => {
     expect(getProvinceDefinition('ha-tinh').gameplay).toBe('hatinh-rescue');
   });
   it.each(MAP_IDS)('%s owns fresh room state, reset and presentation selectors', id => {
-    const a = new GameEngine('A', 'host', id), b = new GameEngine('B', 'host', id);
+    const a = createTestEngine('A', 'host', id), b = createTestEngine('B', 'host', id);
     const p = a.addPlayer('p', 'P'); a.startRunning();
     const before = a.getSnapshot(), view = getProvinceView(before, p.id);
     expect(view.quests.map(q => q.id)).toEqual(getProvinceDefinition(id).quests.map(q => q.id));
@@ -32,7 +33,7 @@ describe('Province contract and static registry', () => {
     expect(getInteractionActions(before, p.id).length).toBeGreaterThan(0);
     p.x = a.map.points.WAREHOUSE.x; p.y = a.map.points.WAREHOUSE.y;
     expect(a.handleIntent(p.id, { actionId: 'stock', type: 'PICK_CRATE' }).success).toBe(true);
-    a.m1.surveys.A = true;
+    serviceStateOf(a).medicalService.surveys.A = true;
     expect(b.m1.surveys.A).toBe(false);
     a.resetToLobby();
     expect(a.m1.surveys.A).toBe(false);

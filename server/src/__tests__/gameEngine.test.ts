@@ -1,3 +1,4 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 ﻿import { describe, it, expect, beforeEach } from 'vitest';
 import { GameEngine } from '../gameEngine.js';
 import { RoomManager } from '../roomManager.js';
@@ -8,7 +9,7 @@ describe('GameEngine - Full MVP Verification', () => {
   const hostToken = 'TEST_HOST_TOKEN';
 
   beforeEach(() => {
-    engine = new GameEngine('TEST_ROOM', hostToken);
+    engine = createTestEngine('TEST_ROOM', hostToken);
   });
 
   it('Scenario 1: Solo player can perform entire game from start to finish without locks', () => {
@@ -181,7 +182,7 @@ describe('GameEngine - Full MVP Verification', () => {
     // M2: REPAIR
     // 1. Survey bridge
     p1.x = POINTS_OF_INTEREST.BRIDGE.x; p1.y = POINTS_OF_INTEREST.BRIDGE.y;
-    engine.surveyBridgeM2(p1);
+    engine.handleIntent(p1.id,{actionId:'bridge_survey',type:'START_JOB',payload:{type:'SURVEY_BRIDGE',targetId:'BRIDGE'}});
     expect(engine.m2.surveyDone).toBe(true);
 
     // 2. Propose & commit REPAIR at HQ
@@ -240,12 +241,12 @@ describe('GameEngine - Full MVP Verification', () => {
     // M3
     // 1. Receive feedback at C
     p1.x = POINTS_OF_INTEREST.ZONE_C.x; p1.y = POINTS_OF_INTEREST.ZONE_C.y;
-    engine.receiveFeedbackM3(p1);
+    engine.handleIntent(p1.id,{actionId:'m3_feedback',type:'START_JOB',payload:{type:'RECEIVE_FEEDBACK_C',targetId:'ZONE_C'}});
     expect(engine.m3.receivedFeedbackC).toBe(true);
 
     // 2. Cross-check list at clinic
     p1.x = POINTS_OF_INTEREST.CLINIC_FIXED.x; p1.y = POINTS_OF_INTEREST.CLINIC_FIXED.y;
-    engine.crossCheckClinicM3(p1, 'CLINIC_FIXED');
+    engine.handleIntent(p1.id,{actionId:'m3_cross_check',type:'START_JOB',payload:{type:'CROSS_CHECK_CLINIC',targetId:'CLINIC_FIXED'}});
     expect(engine.m3.crossCheckedList).toBe(true);
 
     // 3. Confirm M3 plan at HQ (costs 20 budget)
@@ -328,7 +329,7 @@ describe('GameEngine - Full MVP Verification', () => {
 
     // M2: DETOUR
     p1.x = POINTS_OF_INTEREST.BRIDGE.x; p1.y = POINTS_OF_INTEREST.BRIDGE.y;
-    engine.surveyBridgeM2(p1);
+    engine.handleIntent(p1.id,{actionId:'bridge_survey',type:'START_JOB',payload:{type:'SURVEY_BRIDGE',targetId:'BRIDGE'}});
 
     p1.x = POINTS_OF_INTEREST.HEADQUARTERS.x; p1.y = POINTS_OF_INTEREST.HEADQUARTERS.y;
     engine.handleIntent('p1', { actionId: 'm2_detour', type: 'PROPOSE_PLAN', payload: { missionId: 'M2', plan: 'DETOUR' } });
@@ -359,9 +360,9 @@ describe('GameEngine - Full MVP Verification', () => {
 
     // M3
     p1.x = POINTS_OF_INTEREST.ZONE_C.x; p1.y = POINTS_OF_INTEREST.ZONE_C.y;
-    engine.receiveFeedbackM3(p1);
+    engine.handleIntent(p1.id,{actionId:'m3_feedback',type:'START_JOB',payload:{type:'RECEIVE_FEEDBACK_C',targetId:'ZONE_C'}});
     p1.x = POINTS_OF_INTEREST.CLINIC_FIXED.x; p1.y = POINTS_OF_INTEREST.CLINIC_FIXED.y;
-    engine.crossCheckClinicM3(p1, 'CLINIC_FIXED');
+    engine.handleIntent(p1.id,{actionId:'m3_cross_check',type:'START_JOB',payload:{type:'CROSS_CHECK_CLINIC',targetId:'CLINIC_FIXED'}});
 
     p1.x = POINTS_OF_INTEREST.HEADQUARTERS.x; p1.y = POINTS_OF_INTEREST.HEADQUARTERS.y;
     engine.handleIntent('p1', { actionId: 'm3_conf', type: 'CONFIRM_M3_PLAN' });
@@ -495,8 +496,8 @@ describe('GameEngine - Full MVP Verification', () => {
     engine.startRunning();
 
     // Prepare M1 fixed deployed prerequisites
-    engine.m1.planCommitted = 'FIXED';
-    engine.m1.deliveredCratesFixed = 2;
+    serviceStateOf(engine).medicalService.planCommitted = 'FIXED';
+    serviceStateOf(engine).medicalService.deliveredCratesFixed = 2;
 
     p1.x = POINTS_OF_INTEREST.CLINIC_FIXED.x;
     p1.y = POINTS_OF_INTEREST.CLINIC_FIXED.y;
@@ -639,9 +640,9 @@ describe('GameEngine - Full MVP Verification', () => {
     engine.startRunning();
 
     // Surveys
-    engine.m1.surveys.A = true;
-    engine.m1.surveys.B = true;
-    engine.m1.surveys.C = true;
+    serviceStateOf(engine).medicalService.surveys.A = true;
+    serviceStateOf(engine).medicalService.surveys.B = true;
+    serviceStateOf(engine).medicalService.surveys.C = true;
 
     // Propose plan at HQ
     p1.x = POINTS_OF_INTEREST.HEADQUARTERS.x;
@@ -680,15 +681,15 @@ describe('GameEngine - Full MVP Verification', () => {
     engine.startRunning();
 
     // Setup M2 active
-    engine.m1.status = 'RESOLVED';
-    engine.m2.status = 'ACTIVE';
-    engine.m2.planCommitted = 'REPAIR';
-    engine.m2.surveyDone = true;
-    engine.m2.bridgeBroken = true;
+    serviceStateOf(engine).medicalService.status = 'RESOLVED';
+    serviceStateOf(engine).bridgeResponse.status = 'ACTIVE';
+    serviceStateOf(engine).bridgeResponse.planCommitted = 'REPAIR';
+    serviceStateOf(engine).bridgeResponse.surveyDone = true;
+    serviceStateOf(engine).bridgeResponse.bridgeBroken = true;
 
     // Deliver 2 relief crates to B and verify B
-    engine.m2.reliefCratesDeliveredB = 2;
-    engine.m2.verifiedB = true;
+    serviceStateOf(engine).bridgeResponse.reliefCratesDeliveredB = 2;
+    serviceStateOf(engine).bridgeResponse.verifiedB = true;
 
     // Bridge is NOT yet repaired
     expect(engine.m2.bridgeRepaired).toBe(false);
@@ -705,9 +706,9 @@ describe('GameEngine - Full MVP Verification', () => {
     expect(ack.reason).toContain('REPAIR');
 
     // Now complete bridge repair
-    engine.m2.bridgeRepairTask1 = true;
-    engine.m2.bridgeRepairTask2 = true;
-    engine.m2.bridgeRepaired = true;
+    serviceStateOf(engine).bridgeResponse.bridgeRepairTask1 = true;
+    serviceStateOf(engine).bridgeResponse.bridgeRepairTask2 = true;
+    serviceStateOf(engine).bridgeResponse.bridgeRepaired = true;
 
     // Now publish notice succeeds
     ack = engine.handleIntent('p1', {

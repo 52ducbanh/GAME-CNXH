@@ -1,3 +1,4 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 import {describe,it,expect} from 'vitest';
 import {GAME_MAPS,findWalkingRoute,isWalkableForMap,getMissionGuide,ClientIntent,JobType} from 'shared';
 import {GameEngine} from '../gameEngine.js';
@@ -6,12 +7,12 @@ import {RoomManager} from '../roomManager.js';
 const regional=GAME_MAPS.filter(m=>m.id!=='hanoi'&&m.id!=='ha-tinh');
 describe('Regional worlds',()=>{
  it.each(regional)('$name has accessible POIs, a blocked bridge and a working detour',map=>{
-  const e=new GameEngine('REGION_WALK','host',map.id),p=e.addPlayer('walker','Walker');e.startRunning();
+  const e=createTestEngine('REGION_WALK','host',map.id),p=e.addPlayer('walker','Walker');e.startRunning();
   const midpoint={x:(map.bridge.a.x+map.bridge.b.x)/2,y:(map.bridge.a.y+map.bridge.b.y)/2};
   expect(isWalkableForMap(map.id,midpoint.x,midpoint.y,false),'intact bridge').toBe(true);
   expect(isWalkableForMap(map.id,midpoint.x,midpoint.y,true),'broken bridge').toBe(false);
   for(const blocked of [false,true]){
-   e.m2.bridgeBroken=blocked;p.x=map.spawn.x;p.y=map.spawn.y;
+   serviceStateOf(e).bridgeResponse.bridgeBroken=blocked;p.x=map.spawn.x;p.y=map.spawn.y;
    for(const poi of Object.values(map.points)){
     expect(isWalkableForMap(map.id,poi.x,poi.y,blocked),`${map.id}/${poi.id} walkable`).toBe(true);
     const route=findWalkingRoute(p,poi,blocked,map.id);
@@ -26,7 +27,7 @@ describe('Regional worlds',()=>{
    }
   }
   for(const water of map.water){const point=water[0];if(!isWalkableForMap(map.id,point[0],point[1]))expect(e.handleIntent(p.id,{actionId:`water_${point}`,type:'MOVE',payload:{x:point[0],y:point[1]}}).success).toBe(false);}
-  e.m1.surveys={A:true,B:true,C:true};e.m1.planCommitted='FIXED';
+  serviceStateOf(e).medicalService.surveys={A:true,B:true,C:true};serviceStateOf(e).medicalService.planCommitted='FIXED';
   expect(getMissionGuide(e.getSnapshot(),p.id).target).toEqual(map.points.WAREHOUSE);
  },15000);
 
@@ -44,7 +45,7 @@ describe('Regional worlds',()=>{
 
 describe.each(regional)('$name mission rules',map=>{
  it.each([['FIXED','REPAIR'],['FIXED','DETOUR'],['MOBILE','REPAIR'],['MOBILE','DETOUR']] as const)('%s + %s completes the academic missions with 100 points',(clinicPlan,bridgePlan)=>{
-  const e=new GameEngine('REGION_SOLO','host',map.id),p=e.addPlayer('solo','Solo',true);e.startRunning();let id=0;
+  const e=createTestEngine('REGION_SOLO','host',map.id),p=e.addPlayer('solo','Solo',true);e.startRunning();let id=0;
   const at=(target:string)=>{const q=map.points[target];p.x=q.x;p.y=q.y;};
   const send=(type:ClientIntent['type'],payload?:unknown)=>{const ack=e.handleIntent(p.id,{actionId:`solo_${++id}`,type,payload});expect(ack.success,`${type}: ${ack.reason}`).toBe(true);};
   const job=(type:JobType,targetId:string)=>{at(targetId);send('START_JOB',{type,targetId});expect(p.activeJob).not.toBeNull();e.tick(p.activeJob!.durationMs+100);};
@@ -54,10 +55,10 @@ describe.each(regional)('$name mission rules',map=>{
   const clinics=clinicPlan==='FIXED'?['CLINIC_FIXED']:['CLINIC_MOBILE_B','CLINIC_MOBILE_C'];
   for(const clinic of clinics){deliver(clinic,2);job(clinicPlan==='FIXED'?'DEPLOY_FIXED_CLINIC':'DEPLOY_MOBILE_CLINIC',clinic);job('AUDIT_RESULT',clinic);}
   at('NOTICE_BOARD');send('PUBLISH_NOTICE',{missionId:'M1'});
-  at('BRIDGE_TASK_1');expect(e.surveyBridgeM2(p).success).toBe(true);at('HEADQUARTERS');send('PROPOSE_PLAN',{missionId:'M2',plan:bridgePlan});
+  at('BRIDGE_TASK_1');expect(e.handleIntent(p.id,{actionId:'bridge_survey',type:'START_JOB',payload:{type:'SURVEY_BRIDGE',targetId:'BRIDGE'}}).success).toBe(true);at('HEADQUARTERS');send('PROPOSE_PLAN',{missionId:'M2',plan:bridgePlan});
   if(bridgePlan==='REPAIR'){deliver('BRIDGE',2);job('REPAIR_BRIDGE_1','BRIDGE_TASK_1');job('REPAIR_BRIDGE_2','BRIDGE_TASK_2');}
   deliver('ZONE_B',2);job('AUDIT_RESULT','ZONE_B');at('NOTICE_BOARD');send('PUBLISH_NOTICE',{missionId:'M2'});
-  at('ZONE_C');expect(e.receiveFeedbackM3(p).success).toBe(true);const operating=clinicPlan==='FIXED'?'CLINIC_FIXED':'CLINIC_MOBILE_C';at(operating);expect(e.crossCheckClinicM3(p,operating).success).toBe(true);
+  at('ZONE_C');expect(e.handleIntent(p.id,{actionId:'m3_feedback',type:'START_JOB',payload:{type:'RECEIVE_FEEDBACK_C',targetId:'ZONE_C'}}).success).toBe(true);const operating=clinicPlan==='FIXED'?'CLINIC_FIXED':'CLINIC_MOBILE_C';at(operating);expect(e.handleIntent(p.id,{actionId:'m3_cross_check',type:'START_JOB',payload:{type:'CROSS_CHECK_CLINIC',targetId:operating}}).success).toBe(true);
   at('HEADQUARTERS');send('CONFIRM_M3_PLAN');for(const citizen of ['CITIZEN_C1','CITIZEN_C2']){deliver(citizen,1);job('SUPPORT_CITIZEN',citizen);}
   job('AUDIT_LEDGER','WAREHOUSE');at('NOTICE_BOARD');send('PUBLISH_NOTICE',{missionId:'M3'});
   expect(e.phase).toBe('RESULTS');expect(e.totalScore).toBe(100);expect(e.manpower.busy).toBe(0);expect(e.getSnapshot().mapId).toBe(map.id);

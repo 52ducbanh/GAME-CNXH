@@ -1,13 +1,14 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 import { describe, it, expect } from 'vitest';
 import { GameEngine } from '../gameEngine.js';
 import { GAME_MAPS, getInteractionActions, resolveInteraction } from 'shared';
 
 describe('Shared input interaction eligibility and authority', () => {
   const at = (p:{x:number;y:number}, point:{x:number;y:number}) => {p.x=point.x;p.y=point.y;};
-  const setup = () => { const e = new GameEngine('INPUT_TEST', 'host'); const p = e.addPlayer('p1', 'Một', true); e.startRunning(); return {e,p}; };
+  const setup = () => { const e = createTestEngine('INPUT_TEST', 'host'); const p = e.addPlayer('p1', 'Một', true); e.startRunning(); return {e,p}; };
   it('every map offers the same survey, pick and planning behavior', () => {
     for (const map of GAME_MAPS.filter(m => m.id !== 'ha-tinh')) {
-      const e = new GameEngine('MAP_TEST', 'host', map.id), p = e.addPlayer('p1', 'Một'); e.startRunning();
+      const e = createTestEngine('MAP_TEST', 'host', map.id), p = e.addPlayer('p1', 'Một'); e.startRunning();
       at(p,map.points.ZONE_A);
       const action = resolveInteraction(e.getSnapshot(), p.id).primary!;
       expect(action.intent.payload).toEqual({type:'SURVEY_ZONE',targetId:'ZONE_A'});
@@ -18,14 +19,14 @@ describe('Shared input interaction eligibility and authority', () => {
   it('hides out-of-range, paused, offline and completed actions', () => {
     const {e,p}=setup(); at(p,e.map.points.ZONE_A);
     expect(resolveInteraction(e.getSnapshot(),p.id,{x:0,y:0}).primary).toBeNull();
-    e.m1.surveys.A=true;
+    serviceStateOf(e).medicalService.surveys.A=true;
     expect(getInteractionActions(e.getSnapshot(),p.id).some(a=>a.targetId==='ZONE_A')).toBe(false);
     e.isPaused=true;expect(resolveInteraction(e.getSnapshot(),p.id).secondary).toBeNull();
     e.isPaused=false;e.removeOrDisconnectPlayer(p.id);expect(getInteractionActions(e.getSnapshot(),p.id)).toEqual([]);
   });
   it('one claimant per objective, released on cancel, completed audits cannot score twice', () => {
     const {e,p}=setup(), peer=e.addPlayer('p2','Hai');
-    e.m1.planCommitted='FIXED';e.m1.deliveredCratesFixed=2;e.m1.fixedDeployed=true;
+    serviceStateOf(e).medicalService.planCommitted='FIXED';serviceStateOf(e).medicalService.deliveredCratesFixed=2;serviceStateOf(e).medicalService.fixedDeployed=true;
     at(p,e.map.points.CLINIC_FIXED);at(peer,e.map.points.CLINIC_FIXED);
     const job={type:'START_JOB' as const,payload:{type:'AUDIT_RESULT',targetId:'CLINIC_FIXED'}};
     expect(e.handleIntent(p.id,{...job,actionId:'audit'}).success).toBe(true);
@@ -61,7 +62,7 @@ describe('Shared input interaction eligibility and authority', () => {
     expect(resolveInteraction(e.getSnapshot(),p.id).secondary?.intent.type).toBe('CANCEL_JOB');
   });
   it('helper inquiries use actionId receipts, phase/range/pause and reject invalid job targets', () => {
-    const {e,p}=setup();e.m2.status='ACTIVE';at(p,e.map.points.BRIDGE);
+    const {e,p}=setup();serviceStateOf(e).bridgeResponse.status='ACTIVE';at(p,e.map.points.BRIDGE);
     const ask={actionId:'ask',type:'START_JOB' as const,payload:{type:'SURVEY_BRIDGE',targetId:'BRIDGE'}};
     const first=e.handleIntent(p.id,ask);expect(first).toEqual({actionId:'ask',success:true});const score=e.totalScore;
     expect(e.handleIntent(p.id,ask)).toEqual(first);expect(e.totalScore).toBe(score);

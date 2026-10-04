@@ -1,3 +1,4 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 import { describe, it, expect } from 'vitest';
 import { GameEngine } from '../gameEngine.js';
 import { MAP_CONFIG, POINTS_OF_INTEREST, LAKE, LAKE_OUTLINE, CANAL, NORTH_CROSSING, isInLake, isWalkable } from 'shared';
@@ -23,19 +24,19 @@ describe('Hanoi map and mission guidance',()=>{
     expect(isWalkable(POINTS_OF_INTEREST.BRIDGE.x,POINTS_OF_INTEREST.BRIDGE.y,false)).toBe(true);
   });
   it('server rejects lake, building and broken bridge movement at the rendered positions',()=>{
-    const e=new GameEngine('MAP_TEST','host'),p=e.addPlayer('p','Tester');
+    const e=createTestEngine('MAP_TEST','host'),p=e.addPlayer('p','Tester');
     for(const [i,target] of [{x:LAKE.x,y:LAKE.y},{x:POINTS_OF_INTEREST.HEADQUARTERS.x,y:140},{x:CANAL.x+CANAL.width/2,y:600}].entries()){
       const original={x:p.x,y:p.y};
       const ack=e.handleIntent(p.id,{actionId:`blocked_${i}`,type:'MOVE',payload:target});
       expect(ack.success).toBe(false);expect({x:p.x,y:p.y}).toEqual(original);
     }
-    e.m2.status='ACTIVE';e.m2.bridgeBroken=true;
+    serviceStateOf(e).bridgeResponse.status='ACTIVE';serviceStateOf(e).bridgeResponse.bridgeBroken=true;
     expect(e.handleIntent(p.id,{actionId:'bridge',type:'MOVE',payload:POINTS_OF_INTEREST.BRIDGE}).success).toBe(false);
   });
   it('every route segment can be walked through the authoritative server',()=>{
     for(const blocked of [false,true]){
-      const e=new GameEngine('WALK_TEST','host'),player=e.addPlayer('walker','Walker');
-      e.startRunning();e.m2.status=blocked?'ACTIVE':'LOCKED';e.m2.bridgeBroken=blocked;
+      const e=createTestEngine('WALK_TEST','host'),player=e.addPlayer('walker','Walker');
+      e.startRunning();serviceStateOf(e).bridgeResponse.status=blocked?'ACTIVE':'LOCKED';serviceStateOf(e).bridgeResponse.bridgeBroken=blocked;
       for(const poi of Object.values(POINTS_OF_INTEREST)){
         const end=blocked&&poi.type==='BRIDGE'?{x:poi.x-70,y:poi.y}:poi;
         const route=findWalkingRoute({x:player.x,y:player.y},end,blocked);
@@ -52,34 +53,34 @@ describe('Hanoi map and mission guidance',()=>{
     }
   });
   it('polygon shoreline and persistent detour bridge match server collision',()=>{
-    const e=new GameEngine('SHORE_TEST','host'),p=e.addPlayer('p','Tester');
+    const e=createTestEngine('SHORE_TEST','host'),p=e.addPlayer('p','Tester');
     for(const point of LAKE_OUTLINE){
       expect(isInLake(point.x,point.y,14)).toBe(true);
       expect(e.handleIntent(p.id,{actionId:`shore_${point.x}`,type:'MOVE',payload:point}).success).toBe(false);
     }
-    e.m2.status='RESOLVED';e.m2.bridgeBroken=true;e.m3.status='ACTIVE';
+    serviceStateOf(e).bridgeResponse.status='RESOLVED';serviceStateOf(e).bridgeResponse.bridgeBroken=true;serviceStateOf(e).citizenRights.status='ACTIVE';
     const target=POINTS_OF_INTEREST.BRIDGE;
     expect(e.handleIntent(p.id,{actionId:'still_broken',type:'MOVE',payload:target}).success).toBe(false);
-    e.m2.bridgeRepaired=true;
+    serviceStateOf(e).bridgeResponse.bridgeRepaired=true;
     // Validate entering the repaired crossing from its shore, not teleporting from spawn.
     p.x=1338;p.y=414;
     expect(e.handleIntent(p.id,{actionId:'repaired',type:'MOVE',payload:target}).success).toBe(true);
   });
   it('guidance follows the carried crate and the unfinished mobile clinic',()=>{
-    const e=new GameEngine('GUIDE_TEST','host'),p=e.addPlayer('p','Tester');
-    e.phase='RUNNING';e.m1.status='ACTIVE';e.m1.surveys={A:true,B:true,C:true};e.m1.planCommitted='MOBILE';e.m1.deliveredCratesMobileB=2;
+    const e=createTestEngine('GUIDE_TEST','host'),p=e.addPlayer('p','Tester');
+    e.phase='RUNNING';serviceStateOf(e).medicalService.status='ACTIVE';serviceStateOf(e).medicalService.surveys={A:true,B:true,C:true};serviceStateOf(e).medicalService.planCommitted='MOBILE';serviceStateOf(e).medicalService.deliveredCratesMobileB=2;
     expect(getMissionGuide(e.getSnapshot(),p.id).target?.id).toBe('WAREHOUSE');
     p.carriedCrateId='crate';expect(getMissionGuide(e.getSnapshot(),p.id).target?.id).toBe('CLINIC_MOBILE_C');
-    e.m1.deliveredCratesMobileC=2;e.m1.mobileBDeployed=true;
+    serviceStateOf(e).medicalService.deliveredCratesMobileC=2;serviceStateOf(e).medicalService.mobileBDeployed=true;
     expect(getMissionGuide(e.getSnapshot(),p.id).target?.id).toBe('CLINIC_MOBILE_C');
-    e.m1.mobileCDeployed=true;e.m1.verifiedB=true;
+    serviceStateOf(e).medicalService.mobileCDeployed=true;serviceStateOf(e).medicalService.verifiedB=true;
     expect(getMissionGuide(e.getSnapshot(),p.id).target?.id).toBe('CLINIC_MOBILE_C');
   });
   it('M3 points to the operating clinic and to C2 after C1 is served',()=>{
-    const e=new GameEngine('GUIDE_TEST','host'),p=e.addPlayer('p','Tester');
-    e.phase='RUNNING';e.m1.status='RESOLVED';e.m1.planCommitted='MOBILE';e.m3.status='ACTIVE';e.m3.receivedFeedbackC=true;
+    const e=createTestEngine('GUIDE_TEST','host'),p=e.addPlayer('p','Tester');
+    e.phase='RUNNING';serviceStateOf(e).medicalService.status='RESOLVED';serviceStateOf(e).medicalService.planCommitted='MOBILE';serviceStateOf(e).citizenRights.status='ACTIVE';serviceStateOf(e).citizenRights.receivedFeedbackC=true;
     expect(getMissionGuide(e.getSnapshot(),p.id).target?.id).toBe('CLINIC_MOBILE_C');
-    e.m3.crossCheckedList=true;e.m3.planConfirmed=true;e.m3.deployedC1=true;p.carriedCrateId='crate';
+    serviceStateOf(e).citizenRights.crossCheckedList=true;serviceStateOf(e).citizenRights.planConfirmed=true;serviceStateOf(e).citizenRights.deployedC1=true;p.carriedCrateId='crate';
     expect(getMissionGuide(e.getSnapshot(),p.id).target?.id).toBe('CITIZEN_C2');
   });
 });

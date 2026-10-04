@@ -1,3 +1,4 @@
+import { createTestEngine, serviceStateOf, rescueStateOf } from './fixtures/gameplay.js';
 import {describe,it,expect} from 'vitest';
 import {GAME_MAPS,getMapFootprints,isWalkableForMap,isMovementSegmentClear,findWalkingRoute,resolveMovement,CollisionState,MOVEMENT_CONFIG} from 'shared';
 import {GameEngine} from '../gameEngine.js';
@@ -36,8 +37,8 @@ describe('Approved collision C01–C12',()=>{
   }
  },15000);
  it.each(GAME_MAPS)('$name resolves a player overlap when deployment completes on the server',map=>{
-  const e=new GameEngine('TENT_QA','host',map.id),builder=e.addPlayer('builder','Builder'),peer=e.addPlayer('peer','Peer');
-  e.startRunning();e.m1.planCommitted='MOBILE';e.m1.deliveredCratesMobileB=2;
+  const e=createTestEngine('TENT_QA','host',map.id),builder=e.addPlayer('builder','Builder'),peer=e.addPlayer('peer','Peer');
+  e.startRunning();serviceStateOf(e).medicalService.planCommitted='MOBILE';serviceStateOf(e).medicalService.deliveredCratesMobileB=2;
   const p=map.points.CLINIC_MOBILE_B;builder.x=p.x;builder.y=p.y;
   // Authorized fixture placement on the undeployed rear wall; no client teleport.
   const rear=getMapFootprints(map.id,{mobileBDeployed:true}).find(f=>f.id.endsWith(':CLINIC_MOBILE_B:rear'))!;
@@ -58,7 +59,7 @@ describe('Approved collision C01–C12',()=>{
   let previous=start;for(const q of r.path){expect(isMovementSegmentClear('hanoi',previous,q)).toBe(true);previous=q;}
  });
  it('keeps segment authority: an otherwise valid lake-side endpoint cannot tunnel across water',()=>{
-  const e=new GameEngine('WATER_QA','host'),p=e.addPlayer('p','P');
+  const e=createTestEngine('WATER_QA','host'),p=e.addPlayer('p','P');
   expect(isWalkableForMap('hanoi',1144,729)).toBe(true);
   expect(e.handleIntent(p.id,{actionId:'lake',type:'MOVE',payload:{x:1144,y:729}}).success).toBe(false);
  });
