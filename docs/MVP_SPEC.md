@@ -6,7 +6,7 @@
 
 ## 1. Mục đích & Giới hạn phạm vi
 - **Chủ đề bài tập (Nhóm chẵn):** “Thiết kế một trò chơi liên quan đến Nhà nước và Nhà nước XHCN, đặc điểm của Nhà nước pháp quyền XHCN Việt Nam.”
-- **Phạm vi hiện tại:** Bảy lựa chọn Hà Nội, Hải Phòng, Quảng Ninh, Ninh Bình, Thanh Hóa, Nghệ An, Hà Tĩnh. Mỗi phòng dùng một bản đồ cố định và một đội co-op. Mục tiêu sử dụng 1–10 người/phòng; source chưa có hard cap 10 hoặc kiểm thử tải 10 người. Chưa có giải đấu bảy đội, scoreboard tổng hay xếp hạng cạnh tranh liên đội.
+- **Phạm vi hiện tại:** Bảy lựa chọn Hà Nội, Hải Phòng, Quảng Ninh, Ninh Bình, Thanh Hóa, Nghệ An, Hà Tĩnh. Mỗi phòng dùng một bản đồ cố định và một đội co-op. Mục tiêu sử dụng 1–10 người/phòng; source chưa có hard cap 10 hoặc kiểm thử tải 10 người. Host + Projector dùng một dashboard chung: bảng so điểm/tiến độ của bảy phòng mặc định; mở phòng riêng thì thay dòng tỉnh đó bằng phòng đang xem. Đồng điểm đồng hạng; % theo điểm/maxScore, không tạo tiến độ giả. Chưa có giải đấu hay bộ điều phối trận liên đội.
 - **Tiêu chí cốt lõi:**
   - **Một người (solo)** phải làm trọn cả ba nhiệm vụ, không phụ thuộc quân số/vai trò; mục tiêu hoàn thành trong 600 giây. Các happy path rules/routes đã được kiểm tra, nhưng chưa có phép đo đủ sáu vùng bằng input người thật ở tốc độ 180/giây.
   - **Nhiều người (co-op)** chia việc, phối hợp làm song song sẽ nhanh và thuận tiện hơn.
@@ -87,3 +87,12 @@ Manpower 3 là pool chung cho triển khai trạm, sửa cầu, chăm sóc Cụ;
 - Phòng/session lưu RAM, restart mất trận. Không có database, tournament controller, cross-room leaderboard, tài khoản đăng nhập hoặc saved campaign. Hình học là đường trace trên cảnh cố định, không editor tilemap.
 
 Nguồn rules: `shared/src/constants.ts`, `types.ts`, `server/src/gameEngine.ts`; network thực tại `server/src/server.ts`. Map tại [MAPS](MAPS.md), kiểm tra và giới hạn chứng cứ tại [TESTING](TESTING.md).
+
+
+## Host + Projector dashboard — cập nhật 04/10/2026
+
+Chỉ hai loại giao diện khi chơi: Player Screen và Host + Projector Screen. `/host/:roomCode` và `/projector/:roomCode` dùng cùng dashboard; route projector khóa điều khiển. Timer và featured mission theo phòng đang xem; online count và feed từ bảy phòng được liệt kê. Bảng điểm chỉ so state hiện hành của các phòng độc lập, không thay luật/điểm hoặc đồng bộ start/pause giữa các đội. Chọn dòng tỉnh để xem/điều khiển phòng đó.
+
+QR chung trên dashboard mở sảnh `/`, để người chơi chọn đủ bảy tỉnh, nhập tên và chơi solo/co-op như cũ. Link vào phòng đang xem và QR phòng riêng `/api/qr/:roomCode` vẫn dùng khi muốn mời đúng đồng đội. Gia hạn đồng hồ dùng ADD_60S đã có, theo phút và ACK của phòng/giai đoạn đang xem; default phase60s/60s/600s không đổi.
+
+Layout có header/logo, timer lớn, online/đã tham gia, bảng bảy tỉnh ngang toàn màn hình; hàng dưới là events, featured mission và controls. Không có panel bản đồ Việt Nam chữ S. % và điểm lấy từ projection server, thumbnail tái sử dụng scene hiện có; Player Screen và tài sản nghệ thuật giữ nguyên. Các lệnh host giữ nguyên authority và protocol.

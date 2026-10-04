@@ -1,5 +1,5 @@
 import { GameEngine } from './gameEngine.js';
-import { MapId } from 'shared';
+import { GAME_MAPS, selectDashboardRoom, type DashboardOverview, type MapId } from 'shared';
 
 export interface PlayerSession {
   playerId: string;
@@ -78,5 +78,14 @@ export class RoomManager {
     for (const engine of this.rooms.values()) {
       engine.tick(dtMs);
     }
+  }
+
+  /** Seven independent rooms; a custom viewed room replaces its province's default. */
+  public getDashboardOverview(viewedRoomCode?: string): DashboardOverview {
+    const viewed = viewedRoomCode ? this.getRoom(viewedRoomCode) : undefined;
+    return { rooms: GAME_MAPS.flatMap(map => {
+      const engine = viewed?.map.id === map.id ? viewed : this.getRoom(map.defaultRoom);
+      return engine ? [selectDashboardRoom(engine.getSnapshot())] : [];
+    }) };
   }
 }

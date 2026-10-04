@@ -2,6 +2,7 @@ import type { ActionIntent, StartTaskType } from './commands.js';
 import type { ClientIntent, GameSnapshot } from '../../types.js';
 import { INTERACTION_RADIUS } from '../../constants.js';
 import { getGameMap } from '../../worldMaps.js';
+import { getProvincePoiCoordinates } from '../registry.js';
 export type InteractionType = 'NPC' | 'ITEM' | 'DEVICE' | 'OBJECTIVE' | 'CARRYABLE' | 'GENERIC';
 export interface InteractionAction {
   id: string;
@@ -31,10 +32,15 @@ export function buildInteractionCatalogue(s: GameSnapshot, playerId: string, app
   const p = s.players[playerId], map = getGameMap(s.mapId), actions: InteractionAction[] = [];
   if (!p?.isOnline || p.roomCode !== s.roomCode || s.isPaused) return actions;
   const add = (targetId: string, label: string, intent: InteractionAction['intent'], priority = 80, type: InteractionType = 'OBJECTIVE', point: {x:number;y:number;name?:string} | undefined = map.points[targetId]) => {
-    if (!point) return;
+    let resolvedPoint = point;
+    if (!resolvedPoint) {
+      const coords = getProvincePoiCoordinates(s.mapId, targetId);
+      if (coords) resolvedPoint = { x: coords[0], y: coords[1], name: targetId };
+    }
+    if (!resolvedPoint) return;
     actions.push({ id: `${targetId}:${intent.type}:${JSON.stringify(intent.payload ?? {})}`, targetId, label, intent, priority, type: targetId.startsWith('ZONE_') || targetId.startsWith('CITIZEN_') ? 'NPC' : type,
       description: describe(intent),
-      x: point.x, y: point.y, range: INTERACTION_RADIUS, available: true, serverValidation: true });
+      x: resolvedPoint.x, y: resolvedPoint.y, range: INTERACTION_RADIUS, available: true, serverValidation: true });
   };
   const job = (target: string, type: StartTaskType, label: string, manpower = false) => {
     if (manpower && s.manpower.busy >= s.manpower.total) return;

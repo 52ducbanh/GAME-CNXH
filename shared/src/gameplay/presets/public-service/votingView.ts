@@ -6,29 +6,29 @@ const options: ProvinceView['votingOptions'] = [
     "id": "vote-opt-fixed",
     "plan": "FIXED",
     "color": "amber",
-    "title": "Tráº¡m Cá»‘ Ä‘á»‹nh (Gáº§n A)",
-    "description": "40 ngÃ¢n sÃ¡ch, 2 kiá»‡n váº­t tÆ°. Phá»¥c vá»¥ 22 dÃ¢n (A12, B10). Ãt chuyáº¿n Ä‘i nhÆ°ng Khu C chÆ°a tiáº¿p cáº­n."
+    "title": "Trạm Cố định (Gần A)",
+    "description": "40 ngân sách, 2 kiện vật tư. Phục vụ 22 dân (A12, B10). Ít chuyến đi nhưng Khu C chưa tiếp cận."
   },
   {
     "id": "vote-opt-mobile",
     "plan": "MOBILE",
     "color": "sky",
-    "title": "Äiá»ƒm LÆ°u Ä‘á»™ng (B & C)",
-    "description": "30 ngÃ¢n sÃ¡ch, 4 kiá»‡n váº­t tÆ°. Phá»¥c vá»¥ 24 dÃ¢n (A10, B8, C6). NgÃ¢n sÃ¡ch tháº¥p hÆ¡n, bao phá»§ rá»™ng hÆ¡n."
+    "title": "Điểm Lưu động (B & C)",
+    "description": "30 ngân sách, 4 kiện vật tư. Phục vụ 24 dân (A10, B8, C6). Ngân sách thấp hơn, bao phủ rộng hơn."
   },
   {
     "id": "vote-opt-repair",
     "plan": "REPAIR",
     "color": "emerald",
-    "title": "Sá»­a cáº§u (REPAIR)",
-    "description": "25 ngÃ¢n sÃ¡ch, 4 kiá»‡n váº­t tÆ° (2 sá»­a + 2 cá»©u trá»£). KhÃ´i phá»¥c lÃ¢u dÃ i háº¡ táº§ng giao thÃ´ng sang Khu B."
+    "title": "Sửa cầu (REPAIR)",
+    "description": "25 ngân sách, 4 kiện vật tư (2 sửa + 2 cứu trợ). Khôi phục lâu dài hạ tầng giao thông sang Khu B."
   },
   {
     "id": "vote-opt-detour",
     "plan": "DETOUR",
     "color": "amber",
-    "title": "Tuyáº¿n vÃ²ng (DETOUR)",
-    "description": "10 ngÃ¢n sÃ¡ch, 2 kiá»‡n cá»©u trá»£. Tiáº¿t kiá»‡m 15 ngÃ¢n sÃ¡ch nhÆ°ng cáº§u váº«n há»ng, Ä‘Æ°á»ng Ä‘i dÃ i hÆ¡n gáº¥p Ä‘Ã´i."
+    "title": "Tuyến vòng (DETOUR)",
+    "description": "10 ngân sách, 2 kiện cứu trợ. Tiết kiệm 15 ngân sách nhưng cầu vẫn hỏng, đường đi dài hơn gấp đôi."
   }
 ];
 

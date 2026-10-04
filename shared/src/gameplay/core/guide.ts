@@ -1,13 +1,24 @@
 import { GameSnapshot } from '../../types.js';
 import { PointOfInterest } from '../../mapData.js';
 import { getGameMap } from '../../worldMaps.js';
+import { getProvincePoiCoordinates } from '../registry.js';
 
 export interface MissionGuide { title: string; step: string; target: PointOfInterest | null; checks: { text: string; done: boolean }[] }
 export function buildMissionGuide(s: GameSnapshot, playerId: string, running:(context:GuideContext)=>MissionGuide): MissionGuide {
   const map=getGameMap(s.mapId),POINTS_OF_INTEREST=map.points;
   const carrying = !!s.players[playerId]?.carriedCrateId;
   const guide: MissionGuide = { title: 'CÙNG XÂY DỰNG THÀNH PHỐ', step: 'Chờ chủ phòng bắt đầu. Bạn có thể khám phá bản đồ.', target: null, checks: [] };
-  const to=(id:string,step:string) => {guide.target=POINTS_OF_INTEREST[id];guide.step=step;};
+  const to=(id:string,step:string) => {
+    let p = POINTS_OF_INTEREST[id];
+    if (!p) {
+      const coords = getProvincePoiCoordinates(s.mapId, id);
+      if (coords) {
+        p = { id, name: id, type: 'HEADQUARTERS' as any, x: coords[0], y: coords[1], radius: 48, description: step, vietnameseLabel: step };
+      }
+    }
+    guide.target=p ?? null;
+    guide.step=step;
+  };
   const deliver=(id:string,text:string) => to(carrying?id:'WAREHOUSE',carrying?text:'Đến kho lấy một kiện vật tư.');
   if(s.phase==='PRACTICE') {
     guide.title='TẬP DƯỢT VẬN CHUYỂN';

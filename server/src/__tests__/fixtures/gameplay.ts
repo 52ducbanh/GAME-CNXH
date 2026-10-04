@@ -18,10 +18,18 @@ export function serviceStateOf(engine: GameEngine) {
   const runtime = runtimes.get(engine);
   if (runtime instanceof PublicServiceRuntime) return runtime.state;
   if (runtime instanceof HatinhRuntime) return runtime.service.state;
+  if (runtime && 'service' in (runtime as any) && (runtime as any).service instanceof PublicServiceRuntime) {
+    return (runtime as any).service.state;
+  }
   throw new Error('Engine was not created by the fixture factory');
 }
 export function rescueStateOf(engine: GameEngine) {
   const runtime = runtimes.get(engine);
   if (runtime instanceof HatinhRuntime) return runtime.state;
   throw new Error('Expected Hà Tĩnh fixture');
+}
+export function provinceRuntimeOf(engine: GameEngine) {
+  const runtime = runtimes.get(engine);
+  if (!runtime) throw new Error('Engine was not created by the fixture factory');
+  return runtime as any;
 }

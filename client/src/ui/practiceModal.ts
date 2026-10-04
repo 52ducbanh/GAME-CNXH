@@ -1,3 +1,4 @@
+import { patchMarkup } from './patchMarkup.js';
 import { GameSnapshot } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
@@ -24,7 +25,7 @@ export class PracticeModal {
     const totalSecs = Math.max(0, Math.ceil(snapshot.phaseTimerRemainingMs / 1000));
     const isHost = this.socketClient.getHostToken() !== '';
 
-    this.container.innerHTML = `
+    patchMarkup(this.container, `
       <div class="practice-content flex items-center justify-between">
         <div class="practice-copy flex items-center space-x-2">
           <span class="text-lg">🎯</span>
@@ -46,13 +47,13 @@ export class PracticeModal {
           ` : ''}
         </div>
       </div>
-    `;
+    `);
 
-    const btnSkip = this.container.querySelector('#btn-skip-practice');
+    const btnSkip = this.container.querySelector<HTMLButtonElement>('#btn-skip-practice');
     if (btnSkip) {
-      btnSkip.addEventListener('click', () => {
+      btnSkip.onclick = () => {
         this.socketClient.sendHostCommand('SKIP_PRACTICE');
-      });
+      };
     }
   }
 }

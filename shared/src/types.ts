@@ -194,6 +194,16 @@ export interface PersonalContribution {
 
 export type { HatinhState } from './gameplay/provinces/ha-tinh/state.js';
 import type { HatinhState } from './gameplay/provinces/ha-tinh/state.js';
+export type { NinhBinhState } from './gameplay/provinces/ninh-binh/state.js';
+import type { NinhBinhState } from './gameplay/provinces/ninh-binh/state.js';
+export type { QuangNinhState } from './gameplay/provinces/quang-ninh/state.js';
+import type { QuangNinhState } from './gameplay/provinces/quang-ninh/state.js';
+export type { HaiPhongState } from './gameplay/provinces/hai-phong/state.js';
+import type { HaiPhongState } from './gameplay/provinces/hai-phong/state.js';
+export type { ThanhHoaState } from './gameplay/provinces/thanh-hoa/state.js';
+import type { ThanhHoaState } from './gameplay/provinces/thanh-hoa/state.js';
+export type { NgheAnState } from './gameplay/provinces/nghe-an/state.js';
+import type { NgheAnState } from './gameplay/provinces/nghe-an/state.js';
 
 export interface GameSnapshot {
   objectiveProgress?: Record<string, boolean>;
@@ -220,6 +230,11 @@ export interface GameSnapshot {
   practiceCrateDelivered: boolean;
   ruleVersion: number;
   hatinhState?: HatinhState;
+  ninhBinhState?: NinhBinhState;
+  quangNinhState?: QuangNinhState;
+  haiPhongState?: HaiPhongState;
+  thanhHoaState?: ThanhHoaState;
+  ngheAnState?: NgheAnState;
 }
 
 export type ClientIntent = import('./gameplay/core/commands.js').GameplayCommand | {actionId:string;type:'HOST_COMMAND';payload?:unknown};

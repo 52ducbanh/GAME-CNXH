@@ -14,3 +14,9 @@ dist-input/
 
 # Dedicated gameplay refactor QA bundle.
 dist-province-refactor/
+
+# Isolated UI stability/UTF-8 QA bundle.
+dist-ui-stability/
+
+# Unified classroom dashboard preview and QA.
+dist-projector-dashboard/

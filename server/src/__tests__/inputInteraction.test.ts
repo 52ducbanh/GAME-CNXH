@@ -7,7 +7,7 @@ describe('Shared input interaction eligibility and authority', () => {
   const at = (p:{x:number;y:number}, point:{x:number;y:number}) => {p.x=point.x;p.y=point.y;};
   const setup = () => { const e = createTestEngine('INPUT_TEST', 'host'); const p = e.addPlayer('p1', 'Một', true); e.startRunning(); return {e,p}; };
   it('every map offers the same survey, pick and planning behavior', () => {
-    for (const map of GAME_MAPS.filter(m => m.id !== 'ha-tinh')) {
+    for (const map of GAME_MAPS.filter(m => m.id === 'hanoi')) {
       const e = createTestEngine('MAP_TEST', 'host', map.id), p = e.addPlayer('p1', 'Một'); e.startRunning();
       at(p,map.points.ZONE_A);
       const action = resolveInteraction(e.getSnapshot(), p.id).primary!;

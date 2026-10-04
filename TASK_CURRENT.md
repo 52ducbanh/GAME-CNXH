@@ -1,3 +1,45 @@
+# TASK_CURRENT — Triển khai 5 tỉnh hoàn tất (Ninh Bình, Quảng Ninh, Hải Phòng, Thanh Hóa, Nghệ An)
+
+**DONE — HOÀN THÀNH TOÀN DIỆN 7/7 TỈNH.**
+Đã tiếp quản dự án, đối chiếu và triển khai đầy đủ 5 gói nhiệm vụ đã duyệt (`source/7-tinh-agent-packages-repaired`), bổ sung 15 nhiệm vụ mới đạt chuẩn 100 điểm/tỉnh, bảo toàn tuyệt đối gameplay Hà Nội và Hà Tĩnh (zero regression).
+
+### Kết quả nghiệm thu thực tế:
+1. **Kiểm thử & Build:**
+   - `npm test`: **PASS 141/141 tests (18 test suites)**
+   - `npm run typecheck`: **PASS 100% (shared, server, client)**
+   - `npm run build`: **PASS 100% (shared, server tsc, client vite build)**
+2. **Chi tiết 5 tỉnh mới (15 nhiệm vụ - 100 điểm/tỉnh):**
+   - **Ninh Bình (`ninh-binh`):** Bái Đính (30đ - bảo vệ tín ngưỡng, niêm phong hòm công đức tự phát, chấn chỉnh livestream), Cúc Phương (35đ - tuần tra đêm, gỡ bẫy thú, sơ cứu thả động vật, thu giữ gỗ lậu), Tam Cốc (35đ - xử lý bến đò Cô Thắm, niêm yết giá vé công khai, trang bị áo phao, điều phối xuất bến).
+   - **Quảng Ninh (`quang-ninh`):** Tờ rơi (30đ - bóc gỡ tờ rơi độc hại, tuyên truyền số hóa cùng Bác Hoàng), Công trường Bãi Cháy (35đ - thu gom rác thải, lắp phao chắn dầu ngăn ô nhiễm vịnh), Than lậu ven nước & Hai cầu (35đ - chốt chặn 2 đầu cầu, kiểm tra kho than lậu, tịch thu tang vật).
+   - **Hải Phòng (`hai-phong`):** Foodtour bánh đa cua (30đ - kẻ vạch phân luồng hè phố quán Cô Hoa, lập bãi đỗ xe trật tự), Lò đúc Chè Lò (35đ - kiểm tra nồng độ khói bụi, lắp hệ thống lọc khí tuần hoàn), Đồ Sơn (35đ - đối thoại minh bạch đền bù quy hoạch ven biển, rào chắn an toàn thi công).
+   - **Thanh Hóa (`thanh-hoa`):** Nem chua Thành Nhà Hồ (30đ - phân giải xô xát hai cơ sở nem B/C, kiểm định ATTP, gắn tem truy xuất nguồn gốc), Hành lang đường ray (35đ - phát hiện bu lông lỏng, tuần tra bắt quả tang kẻ gian, siết chặt ray an toàn), Vụ vali mười tỏi (35đ - từ chối hối lộ kiên quyết, đấu trí nghiệp vụ, lập biên bản niêm phong tang vật).
+   - **Nghệ An (`nghe-an`):** Khu phố cháo lươn (30đ - hòa giải tranh chấp Dì Hoa & Chú Tuấn, kẻ vạch hè phố 1.5m), Vây bắt lừa đảo đất đai (35đ - tiếp nhận đơn mệ Bảy, truy xét ngõ chợ, chặn đường tắt ngõ cụt bắt giữ nghi phạm), Quỹ khuyến học khối phố (35đ - trấn an dư luận tại Nhà văn hóa, khám nghiệm hộc tủ/cửa sổ, suy đoán vô tội, thẩm vấn vạch trần thủ phạm thu hồi 10 triệu đồng).
+3. **Bảo toàn & Tương thích:**
+   - Hà Nội (`hanoiSolo`, `hanoiMap`) và Hà Tĩnh (`hatinhGameplay`) giữ nguyên 100% gameplay, route, score và presentation.
+   - Collision, sweep movement, sliding, tent overlap resolution hoạt động hoàn hảo trên toàn bộ 7 tỉnh (`collisionLayout.test.ts` 27/27 PASS).
+   - Điều hướng và bản đồ vùng (`regionalMaps.test.ts` 10/10 PASS).
+   - Projector dashboard và classroom overview hiển thị chính xác điểm số, trạng thái và nhiệm vụ của cả 7 tỉnh.
+
+---
+
+# Lịch sử — TASK_CURRENT — Host + Projector dashboard hoàn tất
+
+**DONE, chưa commit.** `/host/:room` và `/projector/:room` dùng một dashboard; mode projector chỉ đọc. Hiển thị bảy phòng mặc định, thay dòng tỉnh bằng phòng riêng đang xem theo xác nhận của người dùng. Scoreboard toàn chiều ngang, timer/online/QR trên header, events/featured/controls ở hàng dưới; không có panel bản đồ chữ S. QR chung vào sảnh chọn7 tỉnh; liên kết phòng riêng vẫn có. Controls/gia hạn chỉ áp dụng phòng đang xem, không tạo giải đấu hoặc thay gameplay/Player Screen.
+
+Điểm vào: `client/src/ui/dashboard/` (coordinator/panels/viewModel/CSS), `shared/src/projectorDashboard.ts` (readonly DTO/selector), `server/src/roomManager.ts` + `server.ts` (readonly overview/root QR API). Hai view cũ đã bỏ, không giữ implementation song song.
+
+PASS typecheck/shared/server/isolated-client build; **141 tests/13 suites**; Chrome dashboard với7 sockets/điểm thật, host commands/ACK/timer/QR/counters/feed/featured, custom-room replacement, layout1440/Full HD/720p/mobile; player lobby→scene/HUD/touch; UI stability5 modals và input mock regressions. Chưa kiểm máy chiếu/điện thoại/Wi-Fi vật lý, load/accessibility đầy đủ. Chi tiết [PROJECT_STATUS](docs/PROJECT_STATUS.md), lệnh [TESTING](docs/TESTING.md).
+
+Preview riêng lượt này `http://127.0.0.1:3126/host/HANOI_01`, bundle `client/dist-projector-dashboard`; không coi cổng là cấu hình bền vững. Phiên3125/bundle UI cũ và asset/report lịch sử giữ nguyên. Không còn phase dashboard phải chạy; chỉ review hoặc task mới theo người dùng, không tự commit/merge/restart server hoặc chạy known issues.
+
+---
+
+# Lịch sử — TASK_CURRENT — UI host ổn định, tiếng Việt đã sửa
+
+Theo yêu cầu mới của người dùng, đã sửa snapshot repaint/fade-in và mojibake ở host/vote; áp dụng cập nhật DOM ổn định cho các modal/ledger/projector. Source chưa commit. PASS typecheck, shared/isolated-client build,132 tests, Chrome DOM regression và lệnh host qua Socket.IO thật; briefing/results hiển thị. Chi tiết/evidence/lệnh ở [PROJECT_STATUS](docs/PROJECT_STATUS.md) và [TESTING](docs/TESTING.md). Bản cũ không tự cập nhật nếu đang mở bundle cũ; preview riêng dùng `client/dist-ui-stability`, không overwrite/restart phiên cũ. Không tự chạy các known issues còn lại.
+
+---
+
 # TASK_CURRENT — Province modular refactor hoàn tất
 
 **READY về kiến trúc; 7/7 provinces DONE.** Branch `refactor/province-modules`, baseline `b76710245e8f19f2a871de67ff4b4d7d2e586546`. Working tree sản phẩm cũ đã được bảo toàn bằng archive và checkpoint; không dùng master HEAD cũ thay implementation.

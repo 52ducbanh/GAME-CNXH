@@ -1,4 +1,5 @@
 export * from './types.js';
+export * from './projectorDashboard.js';
 export * from './constants.js';
 export * from './mapData.js';
 export * from './knowledgeMap.js';
@@ -19,3 +20,8 @@ export { buildMissionGuide } from './gameplay/core/guide.js';
 export * from './gameplay/registry.js';
 
 export { selectHatinhScore, selectHatinhStatuses } from './gameplay/provinces/ha-tinh/state.js';
+export * from './gameplay/provinces/ninh-binh/state.js';
+export * from './gameplay/provinces/quang-ninh/state.js';
+export * from './gameplay/provinces/hai-phong/state.js';
+export * from './gameplay/provinces/thanh-hoa/state.js';
+export * from './gameplay/provinces/nghe-an/state.js';

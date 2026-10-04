@@ -17,7 +17,7 @@ describe('Province contract and static registry', () => {
     for (const npc of definition.presentation.npcs) expect(map.points[npc.pointId]).toBeDefined();
   });
   it('shares the public-service composition while keeping local presentation bindings', () => {
-    expect(getProvinceDefinition('nghe-an').quests).toBe(getProvinceDefinition('hanoi').quests);
+    expect(getProvinceDefinition('nghe-an').quests).not.toBe(getProvinceDefinition('hanoi').quests);
     expect(getProvinceDefinition('nghe-an').presentation.palms).not.toEqual(getProvinceDefinition('hai-phong').presentation.palms);
     expect(getProvinceDefinition('ha-tinh').gameplay).toBe('hatinh-rescue');
   });

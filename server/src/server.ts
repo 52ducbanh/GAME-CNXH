@@ -68,6 +68,25 @@ const publicBaseUrl = process.env.PUBLIC_HOST || `http://${lanIp}:${PORT}`;
 console.log(`[LAN INFO] IP: ${lanIp}, Base URL: ${publicBaseUrl}`);
 
 // API Endpoints
+const qrOptions = { margin: 2, width: 280, color: { dark: '#1e293b', light: '#ffffff' } };
+// General invitation opens the existing seven-province lobby; room QR remains compatible.
+app.get('/api/qr', async (_req, res) => {
+  const joinUrl = `${publicBaseUrl.replace(/\/$/, '')}/`;
+  try {
+    res.json({ joinUrl, qrDataUrl: await QRCode.toDataURL(joinUrl, qrOptions) });
+  } catch {
+    res.status(500).json({ error: 'Không thể tạo mã QR tham gia.' });
+  }
+});
+
+app.get('/api/dashboard', (req, res) => {
+  const room = typeof req.query.room === 'string' ? req.query.room : undefined;
+  if (room && !roomManager.getRoom(room)) {
+    res.status(404).json({ error: 'Phòng chưa được tạo.' }); return;
+  }
+  res.json(roomManager.getDashboardOverview(room));
+});
+
 app.get('/api/network-info', (req, res) => {
   res.json({
     lanIp,

@@ -1,3 +1,4 @@
+import { patchMarkup } from './patchMarkup.js';
 import { GameSnapshot } from 'shared';
 
 export class LedgerModal {
@@ -46,7 +47,7 @@ export class LedgerModal {
       if (c.state === 'DELIVERED') cratesDeliveredCount++;
     }
 
-    this.container.innerHTML = `
+    patchMarkup(this.container, `
       <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl p-6 shadow-2xl text-white animate-fade-in max-h-[88vh] flex flex-col">
         <div class="flex justify-between items-center pb-3 border-b border-slate-800">
           <div class="flex items-center space-x-2">
@@ -95,9 +96,9 @@ export class LedgerModal {
           </table>
         </div>
       </div>
-    `;
+    `);
 
-    const btnClose = this.container.querySelector('#btn-close-ledger');
-    if (btnClose) btnClose.addEventListener('click', () => this.toggle());
+    const btnClose = this.container.querySelector<HTMLButtonElement>('#btn-close-ledger');
+    if (btnClose) btnClose.onclick = () => this.toggle();
   }
 }

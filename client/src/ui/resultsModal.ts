@@ -1,3 +1,4 @@
+import { patchMarkup } from './patchMarkup.js';
 import { GameSnapshot, getProvinceView, KNOWLEDGE_SOURCES, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
@@ -39,7 +40,7 @@ export class ResultsModal {
       </div>
     `).join('');
 
-    this.container.innerHTML = `
+    patchMarkup(this.container, `
       <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl p-6 sm:p-8 shadow-2xl text-white animate-fade-in max-h-[92vh] overflow-y-auto">
         <!-- Header -->
         <div class="text-center pb-5 border-b border-slate-800">
@@ -109,13 +110,13 @@ export class ResultsModal {
           ` : '<span class="text-xs text-slate-500 italic">Chờ Host điều khiển trận mới...</span>'}
         </div>
       </div>
-    `;
+    `);
 
-    const btnReset = this.container.querySelector('#btn-reset-match');
+    const btnReset = this.container.querySelector<HTMLButtonElement>('#btn-reset-match');
     if (btnReset) {
-      btnReset.addEventListener('click', () => {
+      btnReset.onclick = () => {
         this.socketClient.sendHostCommand('RESET');
-      });
+      };
     }
   }
 }

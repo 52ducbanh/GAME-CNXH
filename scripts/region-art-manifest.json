@@ -1,0 +1,78 @@
+{
+  "version": "approved-20261004",
+  "dimensions": [
+    1672,
+    941
+  ],
+  "origin": [
+    0,
+    0
+  ],
+  "regions": {
+    "ninh-binh": {
+      "approved": "source/extracted/ninh-binh/ninh-binh/images/concepts/01_map_approved.png",
+      "approvedSha256": "b83cd414e5062de01b16239c855bd5320363b15ea33e95555c2fedcc0164ed35",
+      "production": "docs/art-source/regions/ninh-binh/approved-20261004/production-scene.png",
+      "baseUrl": "/assets/regions/ninh-binh/approved-20261004",
+      "iconCrop": [
+        420,
+        300,
+        795,
+        590
+      ],
+      "patches": []
+    },
+    "quang-ninh": {
+      "approved": "source/extracted/quang-ninh/quang-ninh/images/concepts/01_map_approved.png",
+      "approvedSha256": "f64f51f1d36343899b2bd60ed48fea7288f34bbc65cdaa1a9a097e3a015446b3",
+      "production": "docs/art-source/regions/quang-ninh/approved-20261004/production-scene.png",
+      "baseUrl": "/assets/regions/quang-ninh/approved-20261004",
+      "iconCrop": [
+        780,
+        70,
+        1090,
+        355
+      ],
+      "patches": []
+    },
+    "hai-phong": {
+      "approved": "source/extracted/hai-phong/hai-phong/images/concepts/01_map_approved.png",
+      "approvedSha256": "bdc97def2ee2770b0b0d8b219b41b39e4ba18458a78fdd3e151e259de19f6517",
+      "production": "docs/art-source/regions/hai-phong/approved-20261004/production-scene.png",
+      "baseUrl": "/assets/regions/hai-phong/approved-20261004",
+      "iconCrop": [
+        560,
+        150,
+        1050,
+        480
+      ],
+      "patches": []
+    },
+    "thanh-hoa": {
+      "approved": "source/extracted/thanh-hoa/thanh-hoa/images/concepts/01_map_approved.png",
+      "approvedSha256": "813ad4ed4ab1d554035f31564f37d0dae5ae23132d544e82a6e8f7e5dc76d14c",
+      "production": "docs/art-source/regions/thanh-hoa/approved-20261004/production-scene.png",
+      "baseUrl": "/assets/regions/thanh-hoa/approved-20261004",
+      "iconCrop": [
+        580,
+        150,
+        1110,
+        345
+      ],
+      "patches": []
+    },
+    "nghe-an": {
+      "approved": "source/extracted/nghe-an/nghe-an/images/concepts/01_map_approved.png",
+      "approvedSha256": "27ad12ff0b93404c11ddcf0c6eae629b626e2c2d562b56e174ad114076f96018",
+      "production": "docs/art-source/regions/nghe-an/approved-20261004/production-scene.png",
+      "baseUrl": "/assets/regions/nghe-an/approved-20261004",
+      "iconCrop": [
+        710,
+        240,
+        1040,
+        440
+      ],
+      "patches": []
+    }
+  }
+}

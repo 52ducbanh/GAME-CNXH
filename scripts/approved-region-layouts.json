@@ -1,0 +1,4749 @@
+{
+  "ninh-binh": {
+    "artVersion": "approved-20261004",
+    "spawn": [
+      340,
+      280
+    ],
+    "kind": "stone",
+    "bridge": [
+      [
+        965,
+        610
+      ],
+      [
+        1410,
+        465
+      ]
+    ],
+    "detour": [
+      [
+        1510,
+        735
+      ],
+      [
+        1640,
+        700
+      ]
+    ],
+    "points": {
+      "HEADQUARTERS": [
+        150,
+        250
+      ],
+      "NOTICE_BOARD": [
+        335,
+        270
+      ],
+      "WAREHOUSE": [
+        240,
+        720
+      ],
+      "ZONE_A": [
+        660,
+        585
+      ],
+      "ZONE_B": [
+        1380,
+        445
+      ],
+      "ZONE_C": [
+        520,
+        805
+      ],
+      "CLINIC_FIXED": [
+        565,
+        265
+      ],
+      "CLINIC_MOBILE_B": [
+        1570,
+        590
+      ],
+      "CLINIC_MOBILE_C": [
+        400,
+        795
+      ],
+      "BRIDGE": [
+        965,
+        610
+      ],
+      "BRIDGE_TASK_1": [
+        925,
+        625
+      ],
+      "BRIDGE_TASK_2": [
+        925,
+        650
+      ],
+      "CITIZEN_C1": [
+        500,
+        805
+      ],
+      "CITIZEN_C2": [
+        610,
+        840
+      ],
+      "PRACTICE_TARGET": [
+        340,
+        280
+      ],
+      "NB_BQL_CHU": [
+        650,
+        585
+      ],
+      "NB_BAI_DINH_GATE": [
+        715,
+        585
+      ],
+      "NB_LIVESTREAM_GROUP": [
+        580,
+        590
+      ],
+      "NB_RULE_BOARD": [
+        760,
+        570
+      ],
+      "NB_RANGERS_POST": [
+        1380,
+        445
+      ],
+      "NB_ANIMAL_TRAP": [
+        1510,
+        460
+      ],
+      "NB_WILDLIFE_RELEASE": [
+        1570,
+        540
+      ],
+      "NB_TIMBER_ZONE": [
+        1470,
+        545
+      ],
+      "NB_BOATMAN_REP": [
+        510,
+        805
+      ],
+      "NB_TICKET_BOARD": [
+        465,
+        795
+      ],
+      "NB_LIFEJACKET_STATION": [
+        590,
+        820
+      ],
+      "NB_DISPATCH_POST": [
+        620,
+        810
+      ]
+    },
+    "questPoints": {
+      "NB_BQL_CHU": [
+        650,
+        585
+      ],
+      "NB_BAI_DINH_GATE": [
+        715,
+        585
+      ],
+      "NB_LIVESTREAM_GROUP": [
+        580,
+        590
+      ],
+      "NB_RULE_BOARD": [
+        760,
+        570
+      ],
+      "NB_RANGERS_POST": [
+        1380,
+        445
+      ],
+      "NB_ANIMAL_TRAP": [
+        1510,
+        460
+      ],
+      "NB_WILDLIFE_RELEASE": [
+        1570,
+        540
+      ],
+      "NB_TIMBER_ZONE": [
+        1470,
+        545
+      ],
+      "NB_BOATMAN_REP": [
+        510,
+        805
+      ],
+      "NB_TICKET_BOARD": [
+        465,
+        795
+      ],
+      "NB_LIFEJACKET_STATION": [
+        590,
+        820
+      ],
+      "NB_DISPATCH_POST": [
+        620,
+        810
+      ]
+    },
+    "pointNames": {
+      "NB_BQL_CHU": "Bác Chúc · BQL Bái Đính",
+      "NB_LIVESTREAM_GROUP": "Nhóm livestream",
+      "NB_RANGERS_POST": "Kiểm lâm Cúc Phương",
+      "NB_BOATMAN_REP": "Cô Thắm · Tam Cốc"
+    },
+    "paths": [
+      [
+        [
+          150,
+          250
+        ],
+        [
+          335,
+          270
+        ],
+        [
+          340,
+          280
+        ],
+        [
+          380,
+          330
+        ],
+        [
+          325,
+          420
+        ],
+        [
+          375,
+          500
+        ],
+        [
+          470,
+          570
+        ],
+        [
+          580,
+          590
+        ],
+        [
+          660,
+          585
+        ],
+        [
+          760,
+          570
+        ],
+        [
+          865,
+          610
+        ],
+        [
+          965,
+          610
+        ],
+        [
+          1410,
+          465
+        ],
+        [
+          1380,
+          445
+        ]
+      ],
+      [
+        [
+          375,
+          500
+        ],
+        [
+          310,
+          555
+        ],
+        [
+          280,
+          640
+        ],
+        [
+          240,
+          720
+        ],
+        [
+          300,
+          765
+        ],
+        [
+          400,
+          795
+        ],
+        [
+          465,
+          795
+        ],
+        [
+          510,
+          805
+        ],
+        [
+          590,
+          820
+        ],
+        [
+          620,
+          810
+        ]
+      ],
+      [
+        [
+          620,
+          810
+        ],
+        [
+          660,
+          885
+        ],
+        [
+          840,
+          910
+        ],
+        [
+          1000,
+          900
+        ],
+        [
+          1170,
+          880
+        ],
+        [
+          1340,
+          830
+        ],
+        [
+          1460,
+          760
+        ],
+        [
+          1510,
+          735
+        ],
+        [
+          1640,
+          700
+        ],
+        [
+          1620,
+          625
+        ],
+        [
+          1570,
+          590
+        ],
+        [
+          1570,
+          540
+        ],
+        [
+          1470,
+          545
+        ],
+        [
+          1510,
+          460
+        ],
+        [
+          1380,
+          445
+        ]
+      ],
+      [
+        [
+          340,
+          280
+        ],
+        [
+          460,
+          280
+        ],
+        [
+          565,
+          265
+        ]
+      ],
+      [
+        [
+          925,
+          625
+        ],
+        [
+          925,
+          650
+        ],
+        [
+          865,
+          610
+        ]
+      ]
+    ],
+    "colliders": [],
+    "labels": [],
+    "foreground": [
+      {
+        "key": "bai-dinh-roof",
+        "depth": 555,
+        "polygon": [
+          [
+            600,
+            430
+          ],
+          [
+            690,
+            389
+          ],
+          [
+            781,
+            449
+          ],
+          [
+            755,
+            508
+          ],
+          [
+            625,
+            506
+          ]
+        ]
+      },
+      {
+        "key": "temple-roof",
+        "depth": 490,
+        "polygon": [
+          [
+            400,
+            322
+          ],
+          [
+            505,
+            290
+          ],
+          [
+            640,
+            348
+          ],
+          [
+            608,
+            425
+          ],
+          [
+            454,
+            415
+          ]
+        ]
+      },
+      {
+        "key": "rangers-roof",
+        "depth": 420,
+        "polygon": [
+          [
+            1260,
+            298
+          ],
+          [
+            1380,
+            252
+          ],
+          [
+            1480,
+            310
+          ],
+          [
+            1460,
+            357
+          ],
+          [
+            1290,
+            360
+          ]
+        ]
+      },
+      {
+        "key": "warehouse-roof",
+        "depth": 690,
+        "polygon": [
+          [
+            0,
+            552
+          ],
+          [
+            191,
+            521
+          ],
+          [
+            272,
+            594
+          ],
+          [
+            248,
+            640
+          ],
+          [
+            10,
+            648
+          ]
+        ]
+      }
+    ],
+    "water": [],
+    "boats": [],
+    "collision": {
+      "groundAreas": [
+        [
+          [
+            40,
+            250
+          ],
+          [
+            390,
+            245
+          ],
+          [
+            435,
+            290
+          ],
+          [
+            390,
+            370
+          ],
+          [
+            310,
+            455
+          ],
+          [
+            250,
+            525
+          ],
+          [
+            55,
+            500
+          ]
+        ],
+        [
+          [
+            275,
+            460
+          ],
+          [
+            440,
+            450
+          ],
+          [
+            515,
+            535
+          ],
+          [
+            590,
+            570
+          ],
+          [
+            810,
+            545
+          ],
+          [
+            915,
+            605
+          ],
+          [
+            935,
+            655
+          ],
+          [
+            760,
+            630
+          ],
+          [
+            605,
+            640
+          ],
+          [
+            530,
+            690
+          ],
+          [
+            370,
+            735
+          ],
+          [
+            235,
+            760
+          ],
+          [
+            235,
+            660
+          ]
+        ],
+        [
+          [
+            235,
+            755
+          ],
+          [
+            400,
+            730
+          ],
+          [
+            520,
+            785
+          ],
+          [
+            650,
+            785
+          ],
+          [
+            675,
+            860
+          ],
+          [
+            535,
+            890
+          ],
+          [
+            290,
+            835
+          ]
+        ],
+        [
+          [
+            655,
+            850
+          ],
+          [
+            840,
+            870
+          ],
+          [
+            1000,
+            870
+          ],
+          [
+            1180,
+            840
+          ],
+          [
+            1310,
+            800
+          ],
+          [
+            1430,
+            730
+          ],
+          [
+            1490,
+            760
+          ],
+          [
+            1420,
+            830
+          ],
+          [
+            1200,
+            905
+          ],
+          [
+            850,
+            930
+          ],
+          [
+            670,
+            910
+          ]
+        ],
+        [
+          [
+            1350,
+            405
+          ],
+          [
+            1500,
+            360
+          ],
+          [
+            1575,
+            410
+          ],
+          [
+            1645,
+            520
+          ],
+          [
+            1645,
+            650
+          ],
+          [
+            1610,
+            725
+          ],
+          [
+            1510,
+            735
+          ],
+          [
+            1460,
+            650
+          ],
+          [
+            1395,
+            575
+          ],
+          [
+            1340,
+            515
+          ]
+        ]
+      ],
+      "waterCollision": [
+        [
+          [
+            700,
+            270
+          ],
+          [
+            1220,
+            220
+          ],
+          [
+            1365,
+            245
+          ],
+          [
+            1270,
+            365
+          ],
+          [
+            1230,
+            415
+          ],
+          [
+            1260,
+            470
+          ],
+          [
+            1360,
+            450
+          ],
+          [
+            1425,
+            480
+          ],
+          [
+            1370,
+            590
+          ],
+          [
+            1440,
+            695
+          ],
+          [
+            1485,
+            730
+          ],
+          [
+            1370,
+            790
+          ],
+          [
+            1160,
+            835
+          ],
+          [
+            870,
+            860
+          ],
+          [
+            700,
+            815
+          ],
+          [
+            695,
+            750
+          ],
+          [
+            800,
+            725
+          ],
+          [
+            870,
+            660
+          ],
+          [
+            940,
+            645
+          ],
+          [
+            950,
+            600
+          ],
+          [
+            870,
+            560
+          ],
+          [
+            795,
+            465
+          ],
+          [
+            725,
+            420
+          ]
+        ],
+        [
+          [
+            660,
+            675
+          ],
+          [
+            730,
+            700
+          ],
+          [
+            770,
+            785
+          ],
+          [
+            665,
+            855
+          ],
+          [
+            630,
+            805
+          ],
+          [
+            645,
+            740
+          ]
+        ]
+      ],
+      "footprints": [
+        {
+          "id": "hq-base",
+          "x": 45,
+          "y": 145,
+          "width": 215,
+          "height": 88
+        },
+        {
+          "id": "clinic-base",
+          "x": 490,
+          "y": 145,
+          "width": 170,
+          "height": 90
+        },
+        {
+          "id": "temple-base",
+          "x": 445,
+          "y": 345,
+          "width": 190,
+          "height": 125
+        },
+        {
+          "id": "warehouse-base",
+          "x": 30,
+          "y": 555,
+          "width": 195,
+          "height": 130
+        },
+        {
+          "id": "rangers-base",
+          "x": 1275,
+          "y": 310,
+          "width": 190,
+          "height": 110
+        },
+        {
+          "id": "tree-west",
+          "x": 366,
+          "y": 475,
+          "width": 23,
+          "height": 26
+        },
+        {
+          "id": "temple-pillar",
+          "x": 695,
+          "y": 517,
+          "width": 24,
+          "height": 34
+        }
+      ],
+      "floors": [
+        {
+          "id": "main-bridge",
+          "a": [
+            965,
+            610
+          ],
+          "b": [
+            1410,
+            465
+          ],
+          "width": 76,
+          "missionBridge": true
+        },
+        {
+          "id": "secondary-bridge",
+          "a": [
+            1510,
+            735
+          ],
+          "b": [
+            1640,
+            700
+          ],
+          "width": 68,
+          "missionBridge": false
+        }
+      ]
+    },
+    "npcs": [
+      {
+        "pointId": "NB_BQL_CHU",
+        "name": "Bác Chúc · BQL Bái Đính",
+        "quest": 1
+      },
+      {
+        "pointId": "NB_LIVESTREAM_GROUP",
+        "name": "Nhóm livestream",
+        "quest": 1
+      },
+      {
+        "pointId": "NB_RANGERS_POST",
+        "name": "Kiểm lâm Cúc Phương",
+        "quest": 2
+      },
+      {
+        "pointId": "NB_BOATMAN_REP",
+        "name": "Cô Thắm · Tam Cốc",
+        "quest": 3
+      }
+    ],
+    "objects": [
+      {
+        "pointId": "NB_BAI_DINH_GATE",
+        "label": "Hòm công đức",
+        "statePath": "ninhBinhState.baiDinh.boxInspected",
+        "frame": "crate",
+        "quest": 1
+      },
+      {
+        "pointId": "NB_RULE_BOARD",
+        "label": "Nội quy chùa",
+        "statePath": "ninhBinhState.baiDinh.rulesPublished",
+        "frame": "board",
+        "quest": 1
+      },
+      {
+        "pointId": "NB_ANIMAL_TRAP",
+        "label": "Bẫy thú",
+        "statePath": "ninhBinhState.cucPhuong.trapDisarmed",
+        "frame": "crate",
+        "quest": 2
+      },
+      {
+        "pointId": "NB_WILDLIFE_RELEASE",
+        "label": "Sơ cứu / thả động vật",
+        "statePath": "ninhBinhState.cucPhuong.animalRescued",
+        "frame": "crate",
+        "quest": 2
+      },
+      {
+        "pointId": "NB_TIMBER_ZONE",
+        "label": "Gỗ cần kiểm tra",
+        "statePath": "ninhBinhState.cucPhuong.timberSecured",
+        "frame": "crate",
+        "quest": 2
+      },
+      {
+        "pointId": "NB_TICKET_BOARD",
+        "label": "Giá vé công khai",
+        "statePath": "ninhBinhState.tamCoc.pricesPosted",
+        "frame": "board",
+        "quest": 3
+      },
+      {
+        "pointId": "NB_LIFEJACKET_STATION",
+        "label": "Áo phao",
+        "statePath": "ninhBinhState.tamCoc.lifejacketsEquipped",
+        "frame": "crate",
+        "quest": 3
+      },
+      {
+        "pointId": "NB_DISPATCH_POST",
+        "label": "Điều phối bến",
+        "statePath": "ninhBinhState.tamCoc.boatsDispatched",
+        "frame": "flag",
+        "quest": 3
+      }
+    ]
+  },
+  "quang-ninh": {
+    "artVersion": "approved-20261004",
+    "spawn": [
+      340,
+      315
+    ],
+    "kind": "stone",
+    "bridge": [
+      [
+        1170,
+        600
+      ],
+      [
+        1450,
+        600
+      ]
+    ],
+    "detour": [
+      [
+        1395,
+        795
+      ],
+      [
+        1615,
+        775
+      ]
+    ],
+    "points": {
+      "HEADQUARTERS": [
+        200,
+        280
+      ],
+      "NOTICE_BOARD": [
+        410,
+        280
+      ],
+      "WAREHOUSE": [
+        570,
+        610
+      ],
+      "ZONE_A": [
+        300,
+        350
+      ],
+      "ZONE_B": [
+        1460,
+        710
+      ],
+      "ZONE_C": [
+        930,
+        860
+      ],
+      "CLINIC_FIXED": [
+        145,
+        800
+      ],
+      "CLINIC_MOBILE_B": [
+        1540,
+        695
+      ],
+      "CLINIC_MOBILE_C": [
+        1080,
+        840
+      ],
+      "BRIDGE": [
+        1170,
+        600
+      ],
+      "BRIDGE_TASK_1": [
+        1130,
+        600
+      ],
+      "BRIDGE_TASK_2": [
+        1130,
+        625
+      ],
+      "CITIZEN_C1": [
+        865,
+        870
+      ],
+      "CITIZEN_C2": [
+        1080,
+        850
+      ],
+      "PRACTICE_TARGET": [
+        340,
+        315
+      ],
+      "QN_ALLEY_POST": [
+        340,
+        315
+      ],
+      "QN_FLIER_WALL": [
+        280,
+        390
+      ],
+      "QN_CITIZEN_HOANG": [
+        330,
+        350
+      ],
+      "QN_PUBLIC_BOARD": [
+        410,
+        280
+      ],
+      "QN_CONSTRUCTION_SITE": [
+        345,
+        575
+      ],
+      "QN_WAREHOUSE_SITE": [
+        565,
+        610
+      ],
+      "QN_TRUCK_CHECK": [
+        415,
+        610
+      ],
+      "QN_ENVIRONMENT_OFFICE": [
+        725,
+        600
+      ],
+      "QN_HIDDEN_DEPOT": [
+        960,
+        875
+      ],
+      "QN_BARGE_DOCK": [
+        1050,
+        870
+      ],
+      "QN_SEAL_STATION": [
+        885,
+        865
+      ],
+      "QN_BRIDGE_CHECKPOINT": [
+        1135,
+        600
+      ]
+    },
+    "questPoints": {
+      "QN_ALLEY_POST": [
+        340,
+        315
+      ],
+      "QN_FLIER_WALL": [
+        280,
+        390
+      ],
+      "QN_CITIZEN_HOANG": [
+        330,
+        350
+      ],
+      "QN_PUBLIC_BOARD": [
+        410,
+        280
+      ],
+      "QN_CONSTRUCTION_SITE": [
+        345,
+        575
+      ],
+      "QN_WAREHOUSE_SITE": [
+        565,
+        610
+      ],
+      "QN_TRUCK_CHECK": [
+        415,
+        610
+      ],
+      "QN_ENVIRONMENT_OFFICE": [
+        725,
+        600
+      ],
+      "QN_HIDDEN_DEPOT": [
+        960,
+        875
+      ],
+      "QN_BARGE_DOCK": [
+        1050,
+        870
+      ],
+      "QN_SEAL_STATION": [
+        885,
+        865
+      ],
+      "QN_BRIDGE_CHECKPOINT": [
+        1135,
+        600
+      ]
+    },
+    "pointNames": {
+      "QN_CITIZEN_HOANG": "Bác Hoàng",
+      "QN_CONSTRUCTION_SITE": "Cán bộ công trường",
+      "QN_HIDDEN_DEPOT": "Người quản lý kho"
+    },
+    "paths": [
+      [
+        [
+          200,
+          280
+        ],
+        [
+          340,
+          315
+        ],
+        [
+          410,
+          280
+        ],
+        [
+          450,
+          325
+        ],
+        [
+          530,
+          370
+        ],
+        [
+          660,
+          430
+        ],
+        [
+          810,
+          490
+        ],
+        [
+          905,
+          575
+        ],
+        [
+          1135,
+          600
+        ],
+        [
+          1170,
+          600
+        ],
+        [
+          1450,
+          600
+        ],
+        [
+          1510,
+          665
+        ],
+        [
+          1540,
+          695
+        ]
+      ],
+      [
+        [
+          340,
+          315
+        ],
+        [
+          330,
+          350
+        ],
+        [
+          280,
+          390
+        ],
+        [
+          245,
+          455
+        ],
+        [
+          245,
+          555
+        ],
+        [
+          345,
+          575
+        ],
+        [
+          415,
+          610
+        ],
+        [
+          565,
+          610
+        ],
+        [
+          725,
+          600
+        ],
+        [
+          905,
+          575
+        ]
+      ],
+      [
+        [
+          245,
+          555
+        ],
+        [
+          220,
+          620
+        ],
+        [
+          250,
+          660
+        ],
+        [
+          285,
+          750
+        ],
+        [
+          330,
+          805
+        ],
+        [
+          500,
+          845
+        ],
+        [
+          670,
+          860
+        ],
+        [
+          865,
+          870
+        ],
+        [
+          885,
+          865
+        ],
+        [
+          930,
+          860
+        ],
+        [
+          960,
+          875
+        ],
+        [
+          1050,
+          870
+        ],
+        [
+          1080,
+          840
+        ],
+        [
+          1230,
+          860
+        ],
+        [
+          1330,
+          855
+        ],
+        [
+          1395,
+          795
+        ],
+        [
+          1615,
+          775
+        ],
+        [
+          1510,
+          720
+        ],
+        [
+          1460,
+          710
+        ],
+        [
+          1510,
+          665
+        ]
+      ],
+      [
+        [
+          285,
+          750
+        ],
+        [
+          145,
+          800
+        ]
+      ],
+      [
+        [
+          1135,
+          600
+        ],
+        [
+          1130,
+          625
+        ]
+      ]
+    ],
+    "colliders": [],
+    "labels": [],
+    "foreground": [
+      {
+        "key": "hq-roof",
+        "depth": 260,
+        "polygon": [
+          [
+            100,
+            165
+          ],
+          [
+            234,
+            110
+          ],
+          [
+            345,
+            190
+          ],
+          [
+            325,
+            234
+          ],
+          [
+            115,
+            225
+          ]
+        ]
+      },
+      {
+        "key": "warehouse-roof",
+        "depth": 570,
+        "polygon": [
+          [
+            425,
+            447
+          ],
+          [
+            670,
+            414
+          ],
+          [
+            750,
+            475
+          ],
+          [
+            710,
+            519
+          ],
+          [
+            449,
+            515
+          ]
+        ]
+      },
+      {
+        "key": "clinic-roof",
+        "depth": 775,
+        "polygon": [
+          [
+            5,
+            650
+          ],
+          [
+            115,
+            625
+          ],
+          [
+            260,
+            700
+          ],
+          [
+            215,
+            740
+          ],
+          [
+            40,
+            735
+          ]
+        ]
+      },
+      {
+        "key": "hidden-depot-roof",
+        "depth": 845,
+        "polygon": [
+          [
+            866,
+            773
+          ],
+          [
+            963,
+            743
+          ],
+          [
+            1031,
+            790
+          ],
+          [
+            1007,
+            823
+          ],
+          [
+            879,
+            820
+          ]
+        ]
+      }
+    ],
+    "water": [],
+    "boats": [],
+    "collision": {
+      "groundAreas": [
+        [
+          [
+            45,
+            270
+          ],
+          [
+            450,
+            255
+          ],
+          [
+            565,
+            375
+          ],
+          [
+            780,
+            470
+          ],
+          [
+            900,
+            535
+          ],
+          [
+            955,
+            595
+          ],
+          [
+            805,
+            620
+          ],
+          [
+            685,
+            645
+          ],
+          [
+            525,
+            650
+          ],
+          [
+            255,
+            615
+          ],
+          [
+            180,
+            500
+          ],
+          [
+            150,
+            350
+          ]
+        ],
+        [
+          [
+            265,
+            620
+          ],
+          [
+            570,
+            625
+          ],
+          [
+            760,
+            640
+          ],
+          [
+            850,
+            690
+          ],
+          [
+            870,
+            755
+          ],
+          [
+            860,
+            820
+          ],
+          [
+            1025,
+            850
+          ],
+          [
+            1260,
+            840
+          ],
+          [
+            1370,
+            815
+          ],
+          [
+            1420,
+            830
+          ],
+          [
+            1360,
+            900
+          ],
+          [
+            890,
+            930
+          ],
+          [
+            410,
+            895
+          ],
+          [
+            240,
+            835
+          ]
+        ],
+        [
+          [
+            1450,
+            580
+          ],
+          [
+            1645,
+            600
+          ],
+          [
+            1645,
+            770
+          ],
+          [
+            1550,
+            795
+          ],
+          [
+            1460,
+            740
+          ]
+        ],
+        [
+          [
+            30,
+            770
+          ],
+          [
+            215,
+            710
+          ],
+          [
+            315,
+            790
+          ],
+          [
+            235,
+            860
+          ],
+          [
+            35,
+            870
+          ]
+        ]
+      ],
+      "waterCollision": [
+        [
+          [
+            575,
+            25
+          ],
+          [
+            1665,
+            25
+          ],
+          [
+            1665,
+            540
+          ],
+          [
+            1490,
+            585
+          ],
+          [
+            1420,
+            615
+          ],
+          [
+            1440,
+            700
+          ],
+          [
+            1340,
+            810
+          ],
+          [
+            1175,
+            835
+          ],
+          [
+            1040,
+            805
+          ],
+          [
+            980,
+            755
+          ],
+          [
+            900,
+            675
+          ],
+          [
+            855,
+            630
+          ],
+          [
+            920,
+            600
+          ],
+          [
+            915,
+            525
+          ],
+          [
+            750,
+            480
+          ],
+          [
+            610,
+            375
+          ]
+        ],
+        [
+          [
+            1390,
+            775
+          ],
+          [
+            1470,
+            720
+          ],
+          [
+            1645,
+            770
+          ],
+          [
+            1650,
+            900
+          ],
+          [
+            1540,
+            900
+          ],
+          [
+            1450,
+            850
+          ]
+        ]
+      ],
+      "footprints": [
+        {
+          "id": "hq-base",
+          "x": 105,
+          "y": 167,
+          "width": 220,
+          "height": 87
+        },
+        {
+          "id": "warehouse-base",
+          "x": 438,
+          "y": 460,
+          "width": 280,
+          "height": 110
+        },
+        {
+          "id": "clinic-base",
+          "x": 45,
+          "y": 650,
+          "width": 190,
+          "height": 110
+        },
+        {
+          "id": "hidden-depot-base",
+          "x": 868,
+          "y": 779,
+          "width": 160,
+          "height": 62
+        },
+        {
+          "id": "alley-house",
+          "x": 40,
+          "y": 335,
+          "width": 110,
+          "height": 80
+        },
+        {
+          "id": "tree-center",
+          "x": 790,
+          "y": 505,
+          "width": 20,
+          "height": 23
+        }
+      ],
+      "floors": [
+        {
+          "id": "main-bridge",
+          "a": [
+            1170,
+            600
+          ],
+          "b": [
+            1450,
+            600
+          ],
+          "width": 76,
+          "missionBridge": true
+        },
+        {
+          "id": "secondary-bridge",
+          "a": [
+            1395,
+            795
+          ],
+          "b": [
+            1615,
+            775
+          ],
+          "width": 68,
+          "missionBridge": false
+        }
+      ]
+    },
+    "npcs": [
+      {
+        "pointId": "QN_CITIZEN_HOANG",
+        "name": "Bác Hoàng",
+        "quest": 1
+      },
+      {
+        "pointId": "QN_CONSTRUCTION_SITE",
+        "name": "Cán bộ công trường",
+        "quest": 2
+      },
+      {
+        "pointId": "QN_HIDDEN_DEPOT",
+        "name": "Người quản lý kho",
+        "quest": 3
+      }
+    ],
+    "objects": [
+      {
+        "pointId": "QN_FLIER_WALL",
+        "label": "Tờ rơi cần gỡ",
+        "statePath": "quangNinhState.toRoi.fliersPeeled",
+        "frame": "board",
+        "quest": 1
+      },
+      {
+        "pointId": "QN_PUBLIC_BOARD",
+        "label": "Bảng công khai",
+        "statePath": "quangNinhState.toRoi.boardPublished",
+        "frame": "board",
+        "quest": 1
+      },
+      {
+        "pointId": "QN_ENVIRONMENT_OFFICE",
+        "label": "Mẫu nước / hồ sơ",
+        "statePath": "quangNinhState.congTruong.waterMonitored",
+        "frame": "crate",
+        "quest": 2
+      },
+      {
+        "pointId": "QN_SEAL_STATION",
+        "label": "Niêm phong tang vật",
+        "statePath": "quangNinhState.thanXuat.violationSealed",
+        "frame": "crate",
+        "quest": 3
+      },
+      {
+        "pointId": "QN_BRIDGE_CHECKPOINT",
+        "label": "Chốt cầu",
+        "statePath": "quangNinhState.thanXuat.bridgeSecured",
+        "frame": "flag",
+        "quest": 3
+      }
+    ]
+  },
+  "hai-phong": {
+    "artVersion": "approved-20261004",
+    "spawn": [
+      485,
+      500
+    ],
+    "kind": "stone",
+    "bridge": [
+      [
+        1240,
+        435
+      ],
+      [
+        1550,
+        360
+      ]
+    ],
+    "detour": [
+      [
+        1400,
+        150
+      ],
+      [
+        1605,
+        135
+      ]
+    ],
+    "points": {
+      "HEADQUARTERS": [
+        175,
+        265
+      ],
+      "NOTICE_BOARD": [
+        450,
+        280
+      ],
+      "WAREHOUSE": [
+        200,
+        665
+      ],
+      "ZONE_A": [
+        345,
+        460
+      ],
+      "ZONE_B": [
+        1590,
+        490
+      ],
+      "ZONE_C": [
+        1330,
+        790
+      ],
+      "CLINIC_FIXED": [
+        990,
+        220
+      ],
+      "CLINIC_MOBILE_B": [
+        1580,
+        435
+      ],
+      "CLINIC_MOBILE_C": [
+        1180,
+        745
+      ],
+      "BRIDGE": [
+        1240,
+        435
+      ],
+      "BRIDGE_TASK_1": [
+        1200,
+        435
+      ],
+      "BRIDGE_TASK_2": [
+        1200,
+        465
+      ],
+      "CITIZEN_C1": [
+        1080,
+        735
+      ],
+      "CITIZEN_C2": [
+        480,
+        795
+      ],
+      "PRACTICE_TARGET": [
+        485,
+        500
+      ],
+      "HP_HOA_CRAB_NOODLE": [
+        345,
+        445
+      ],
+      "HP_SIDEWALK_BARRIER": [
+        375,
+        490
+      ],
+      "HP_PARKING_ZONE": [
+        265,
+        505
+      ],
+      "HP_PRICE_LIST": [
+        335,
+        455
+      ],
+      "HP_CHE_LO_FURNACE": [
+        1360,
+        800
+      ],
+      "HP_SAMPLE_POINT": [
+        1570,
+        765
+      ],
+      "HP_FILTER_INSPECTION": [
+        1440,
+        815
+      ],
+      "HP_DOSSIER_STATION": [
+        1280,
+        790
+      ],
+      "HP_DO_SON_RESIDENTS": [
+        470,
+        795
+      ],
+      "HP_PLANNING_BOARD": [
+        495,
+        720
+      ],
+      "HP_COMPENSATION_DESK": [
+        520,
+        775
+      ],
+      "HP_EXCAVATOR_SITE": [
+        310,
+        815
+      ]
+    },
+    "questPoints": {
+      "HP_HOA_CRAB_NOODLE": [
+        345,
+        445
+      ],
+      "HP_SIDEWALK_BARRIER": [
+        375,
+        490
+      ],
+      "HP_PARKING_ZONE": [
+        265,
+        505
+      ],
+      "HP_PRICE_LIST": [
+        335,
+        455
+      ],
+      "HP_CHE_LO_FURNACE": [
+        1360,
+        800
+      ],
+      "HP_SAMPLE_POINT": [
+        1570,
+        765
+      ],
+      "HP_FILTER_INSPECTION": [
+        1440,
+        815
+      ],
+      "HP_DOSSIER_STATION": [
+        1280,
+        790
+      ],
+      "HP_DO_SON_RESIDENTS": [
+        470,
+        795
+      ],
+      "HP_PLANNING_BOARD": [
+        495,
+        720
+      ],
+      "HP_COMPENSATION_DESK": [
+        520,
+        775
+      ],
+      "HP_EXCAVATOR_SITE": [
+        310,
+        815
+      ]
+    },
+    "pointNames": {
+      "HP_HOA_CRAB_NOODLE": "Cô Hoa · Bánh đa cua",
+      "HP_CHE_LO_FURNACE": "Chủ xưởng Chè Lò",
+      "HP_DO_SON_RESIDENTS": "Đại diện dân Đồ Sơn"
+    },
+    "paths": [
+      [
+        [
+          175,
+          265
+        ],
+        [
+          450,
+          280
+        ],
+        [
+          480,
+          350
+        ],
+        [
+          485,
+          500
+        ],
+        [
+          620,
+          520
+        ],
+        [
+          780,
+          530
+        ],
+        [
+          980,
+          525
+        ],
+        [
+          1120,
+          495
+        ],
+        [
+          1200,
+          435
+        ],
+        [
+          1240,
+          435
+        ],
+        [
+          1550,
+          360
+        ],
+        [
+          1590,
+          490
+        ],
+        [
+          1590,
+          615
+        ]
+      ],
+      [
+        [
+          485,
+          500
+        ],
+        [
+          375,
+          490
+        ],
+        [
+          345,
+          445
+        ],
+        [
+          335,
+          455
+        ],
+        [
+          265,
+          505
+        ],
+        [
+          265,
+          590
+        ],
+        [
+          315,
+          655
+        ],
+        [
+          350,
+          730
+        ],
+        [
+          310,
+          815
+        ],
+        [
+          470,
+          795
+        ],
+        [
+          520,
+          775
+        ],
+        [
+          495,
+          720
+        ]
+      ],
+      [
+        [
+          485,
+          500
+        ],
+        [
+          500,
+          600
+        ],
+        [
+          615,
+          660
+        ],
+        [
+          700,
+          685
+        ],
+        [
+          810,
+          720
+        ],
+        [
+          1000,
+          735
+        ],
+        [
+          1080,
+          735
+        ],
+        [
+          1180,
+          745
+        ],
+        [
+          1280,
+          790
+        ],
+        [
+          1360,
+          800
+        ],
+        [
+          1440,
+          815
+        ],
+        [
+          1520,
+          825
+        ],
+        [
+          1570,
+          765
+        ],
+        [
+          1590,
+          615
+        ]
+      ],
+      [
+        [
+          1120,
+          495
+        ],
+        [
+          1170,
+          360
+        ],
+        [
+          1180,
+          260
+        ],
+        [
+          1320,
+          195
+        ],
+        [
+          1400,
+          150
+        ],
+        [
+          1605,
+          135
+        ],
+        [
+          1620,
+          250
+        ],
+        [
+          1550,
+          360
+        ]
+      ],
+      [
+        [
+          1180,
+          260
+        ],
+        [
+          1080,
+          210
+        ],
+        [
+          990,
+          220
+        ]
+      ],
+      [
+        [
+          315,
+          655
+        ],
+        [
+          260,
+          655
+        ],
+        [
+          200,
+          665
+        ]
+      ],
+      [
+        [
+          1200,
+          435
+        ],
+        [
+          1200,
+          465
+        ]
+      ]
+    ],
+    "colliders": [],
+    "labels": [],
+    "foreground": [
+      {
+        "key": "opera-roof",
+        "depth": 478,
+        "polygon": [
+          [
+            570,
+            237
+          ],
+          [
+            675,
+            176
+          ],
+          [
+            839,
+            159
+          ],
+          [
+            991,
+            246
+          ],
+          [
+            1030,
+            300
+          ],
+          [
+            992,
+            355
+          ],
+          [
+            640,
+            344
+          ]
+        ]
+      },
+      {
+        "key": "noodle-shop-roof",
+        "depth": 410,
+        "polygon": [
+          [
+            170,
+            324
+          ],
+          [
+            272,
+            280
+          ],
+          [
+            410,
+            330
+          ],
+          [
+            414,
+            365
+          ],
+          [
+            192,
+            366
+          ]
+        ]
+      },
+      {
+        "key": "che-lo-roof",
+        "depth": 760,
+        "polygon": [
+          [
+            1254,
+            633
+          ],
+          [
+            1378,
+            579
+          ],
+          [
+            1520,
+            650
+          ],
+          [
+            1490,
+            687
+          ],
+          [
+            1284,
+            688
+          ]
+        ]
+      },
+      {
+        "key": "warehouse-roof",
+        "depth": 645,
+        "polygon": [
+          [
+            0,
+            555
+          ],
+          [
+            240,
+            520
+          ],
+          [
+            272,
+            580
+          ],
+          [
+            233,
+            612
+          ],
+          [
+            15,
+            616
+          ]
+        ]
+      }
+    ],
+    "water": [],
+    "boats": [],
+    "collision": {
+      "groundAreas": [
+        [
+          [
+            40,
+            260
+          ],
+          [
+            480,
+            260
+          ],
+          [
+            580,
+            350
+          ],
+          [
+            555,
+            460
+          ],
+          [
+            530,
+            530
+          ],
+          [
+            380,
+            550
+          ],
+          [
+            225,
+            535
+          ],
+          [
+            115,
+            445
+          ]
+        ],
+        [
+          [
+            500,
+            475
+          ],
+          [
+            1050,
+            445
+          ],
+          [
+            1180,
+            455
+          ],
+          [
+            1170,
+            575
+          ],
+          [
+            1060,
+            655
+          ],
+          [
+            1075,
+            725
+          ],
+          [
+            825,
+            780
+          ],
+          [
+            630,
+            735
+          ],
+          [
+            495,
+            685
+          ],
+          [
+            450,
+            590
+          ]
+        ],
+        [
+          [
+            230,
+            590
+          ],
+          [
+            500,
+            615
+          ],
+          [
+            585,
+            735
+          ],
+          [
+            535,
+            825
+          ],
+          [
+            260,
+            845
+          ],
+          [
+            70,
+            810
+          ],
+          [
+            65,
+            700
+          ]
+        ],
+        [
+          [
+            1080,
+            690
+          ],
+          [
+            1325,
+            700
+          ],
+          [
+            1360,
+            760
+          ],
+          [
+            1450,
+            770
+          ],
+          [
+            1560,
+            715
+          ],
+          [
+            1640,
+            735
+          ],
+          [
+            1625,
+            825
+          ],
+          [
+            1530,
+            860
+          ],
+          [
+            1350,
+            850
+          ],
+          [
+            1140,
+            805
+          ]
+        ],
+        [
+          [
+            1170,
+            195
+          ],
+          [
+            1300,
+            150
+          ],
+          [
+            1400,
+            95
+          ],
+          [
+            1640,
+            95
+          ],
+          [
+            1640,
+            315
+          ],
+          [
+            1570,
+            400
+          ],
+          [
+            1510,
+            580
+          ],
+          [
+            1635,
+            655
+          ],
+          [
+            1640,
+            735
+          ],
+          [
+            1560,
+            715
+          ],
+          [
+            1375,
+            580
+          ],
+          [
+            1220,
+            455
+          ]
+        ]
+      ],
+      "waterCollision": [
+        [
+          [
+            1340,
+            170
+          ],
+          [
+            1665,
+            170
+          ],
+          [
+            1665,
+            335
+          ],
+          [
+            1590,
+            375
+          ],
+          [
+            1550,
+            490
+          ],
+          [
+            1460,
+            535
+          ],
+          [
+            1535,
+            600
+          ],
+          [
+            1450,
+            650
+          ],
+          [
+            1370,
+            600
+          ],
+          [
+            1280,
+            480
+          ],
+          [
+            1215,
+            465
+          ],
+          [
+            1230,
+            340
+          ],
+          [
+            1280,
+            255
+          ]
+        ],
+        [
+          [
+            1630,
+            795
+          ],
+          [
+            1665,
+            805
+          ],
+          [
+            1665,
+            935
+          ],
+          [
+            1510,
+            935
+          ],
+          [
+            1475,
+            875
+          ],
+          [
+            1550,
+            850
+          ]
+        ]
+      ],
+      "footprints": [
+        {
+          "id": "hq-base",
+          "x": 45,
+          "y": 138,
+          "width": 305,
+          "height": 100
+        },
+        {
+          "id": "opera-base",
+          "x": 615,
+          "y": 295,
+          "width": 400,
+          "height": 180
+        },
+        {
+          "id": "noodle-shop-base",
+          "x": 180,
+          "y": 328,
+          "width": 215,
+          "height": 82
+        },
+        {
+          "id": "clinic-base",
+          "x": 915,
+          "y": 90,
+          "width": 175,
+          "height": 108
+        },
+        {
+          "id": "warehouse-base",
+          "x": 30,
+          "y": 565,
+          "width": 230,
+          "height": 80
+        },
+        {
+          "id": "furnace-base",
+          "x": 1275,
+          "y": 655,
+          "width": 235,
+          "height": 105
+        },
+        {
+          "id": "site-wall",
+          "x": 353,
+          "y": 680,
+          "width": 110,
+          "height": 65
+        },
+        {
+          "id": "tree-south",
+          "x": 710,
+          "y": 632,
+          "width": 23,
+          "height": 30
+        }
+      ],
+      "floors": [
+        {
+          "id": "main-bridge",
+          "a": [
+            1240,
+            435
+          ],
+          "b": [
+            1550,
+            360
+          ],
+          "width": 76,
+          "missionBridge": true
+        },
+        {
+          "id": "secondary-bridge",
+          "a": [
+            1400,
+            150
+          ],
+          "b": [
+            1605,
+            135
+          ],
+          "width": 68,
+          "missionBridge": false
+        }
+      ]
+    },
+    "npcs": [
+      {
+        "pointId": "HP_HOA_CRAB_NOODLE",
+        "name": "Cô Hoa · Bánh đa cua",
+        "quest": 1
+      },
+      {
+        "pointId": "HP_CHE_LO_FURNACE",
+        "name": "Chủ xưởng Chè Lò",
+        "quest": 2
+      },
+      {
+        "pointId": "HP_DO_SON_RESIDENTS",
+        "name": "Đại diện dân Đồ Sơn",
+        "quest": 3
+      }
+    ],
+    "objects": [
+      {
+        "pointId": "HP_PRICE_LIST",
+        "label": "Giá niêm yết",
+        "statePath": "haiPhongState.foodtour.pricesPosted",
+        "frame": "board",
+        "quest": 1
+      },
+      {
+        "pointId": "HP_SAMPLE_POINT",
+        "label": "Điểm lấy mẫu trên bờ",
+        "statePath": "haiPhongState.cheLo.sampleTaken",
+        "frame": "crate",
+        "quest": 2
+      },
+      {
+        "pointId": "HP_FILTER_INSPECTION",
+        "label": "Bộ lọc khí",
+        "statePath": "haiPhongState.cheLo.filterChecked",
+        "frame": "crate",
+        "quest": 2
+      },
+      {
+        "pointId": "HP_DOSSIER_STATION",
+        "label": "Hồ sơ Chè Lò",
+        "statePath": "haiPhongState.cheLo.dossierSigned",
+        "frame": "board",
+        "quest": 2
+      },
+      {
+        "pointId": "HP_PLANNING_BOARD",
+        "label": "Công khai quy hoạch",
+        "statePath": "haiPhongState.doSon.planningPosted",
+        "frame": "board",
+        "quest": 3
+      },
+      {
+        "pointId": "HP_COMPENSATION_DESK",
+        "label": "Hồ sơ bồi thường",
+        "statePath": "haiPhongState.doSon.compensationResolved",
+        "frame": "crate",
+        "quest": 3
+      }
+    ]
+  },
+  "thanh-hoa": {
+    "artVersion": "approved-20261004",
+    "spawn": [
+      460,
+      305
+    ],
+    "kind": "stone",
+    "bridge": [
+      [
+        855,
+        605
+      ],
+      [
+        1040,
+        745
+      ]
+    ],
+    "detour": [
+      [
+        1390,
+        725
+      ],
+      [
+        1595,
+        610
+      ]
+    ],
+    "points": {
+      "HEADQUARTERS": [
+        235,
+        285
+      ],
+      "NOTICE_BOARD": [
+        445,
+        265
+      ],
+      "WAREHOUSE": [
+        520,
+        760
+      ],
+      "ZONE_A": [
+        810,
+        470
+      ],
+      "ZONE_B": [
+        1455,
+        580
+      ],
+      "ZONE_C": [
+        1250,
+        905
+      ],
+      "CLINIC_FIXED": [
+        1450,
+        370
+      ],
+      "CLINIC_MOBILE_B": [
+        1575,
+        600
+      ],
+      "CLINIC_MOBILE_C": [
+        1090,
+        825
+      ],
+      "BRIDGE": [
+        855,
+        605
+      ],
+      "BRIDGE_TASK_1": [
+        825,
+        580
+      ],
+      "BRIDGE_TASK_2": [
+        825,
+        610
+      ],
+      "CITIZEN_C1": [
+        1250,
+        905
+      ],
+      "CITIZEN_C2": [
+        1080,
+        850
+      ],
+      "PRACTICE_TARGET": [
+        460,
+        305
+      ],
+      "TH_ARCH_GATE": [
+        810,
+        460
+      ],
+      "TH_NEM_B_SHOP": [
+        1450,
+        570
+      ],
+      "TH_NEM_C_SHOP": [
+        1270,
+        900
+      ],
+      "TH_SUPPLY_WAREHOUSE": [
+        520,
+        760
+      ],
+      "TH_RAIL_CORRIDOR": [
+        420,
+        745
+      ],
+      "TH_RAIL_GUARD": [
+        455,
+        760
+      ],
+      "TH_BRIDGE_ESCAPE": [
+        535,
+        735
+      ],
+      "TH_OFFICE_LOBBY": [
+        235,
+        285
+      ],
+      "TH_BRIEFCASE_TABLE": [
+        280,
+        315
+      ],
+      "TH_ALARM_BUTTON": [
+        195,
+        295
+      ]
+    },
+    "questPoints": {
+      "TH_ARCH_GATE": [
+        810,
+        460
+      ],
+      "TH_NEM_B_SHOP": [
+        1450,
+        570
+      ],
+      "TH_NEM_C_SHOP": [
+        1270,
+        900
+      ],
+      "TH_SUPPLY_WAREHOUSE": [
+        520,
+        760
+      ],
+      "TH_RAIL_CORRIDOR": [
+        420,
+        745
+      ],
+      "TH_RAIL_GUARD": [
+        455,
+        760
+      ],
+      "TH_BRIDGE_ESCAPE": [
+        535,
+        735
+      ],
+      "TH_OFFICE_LOBBY": [
+        235,
+        285
+      ],
+      "TH_BRIEFCASE_TABLE": [
+        280,
+        315
+      ],
+      "TH_ALARM_BUTTON": [
+        195,
+        295
+      ]
+    },
+    "pointNames": {
+      "TH_ARCH_GATE": "Cán bộ hòa giải",
+      "TH_NEM_B_SHOP": "Cơ sở nem B",
+      "TH_NEM_C_SHOP": "Cơ sở nem C",
+      "TH_RAIL_GUARD": "Đối tượng hành lang kho",
+      "TH_OFFICE_LOBBY": "Người mang hồ sơ"
+    },
+    "paths": [
+      [
+        [
+          235,
+          285
+        ],
+        [
+          445,
+          265
+        ],
+        [
+          460,
+          305
+        ],
+        [
+          530,
+          345
+        ],
+        [
+          670,
+          375
+        ],
+        [
+          810,
+          460
+        ],
+        [
+          810,
+          520
+        ],
+        [
+          855,
+          560
+        ],
+        [
+          855,
+          605
+        ],
+        [
+          1040,
+          745
+        ],
+        [
+          1090,
+          780
+        ],
+        [
+          1250,
+          820
+        ],
+        [
+          1270,
+          900
+        ]
+      ],
+      [
+        [
+          855,
+          560
+        ],
+        [
+          1100,
+          545
+        ],
+        [
+          1260,
+          460
+        ],
+        [
+          1450,
+          370
+        ],
+        [
+          1570,
+          405
+        ],
+        [
+          1585,
+          525
+        ],
+        [
+          1450,
+          570
+        ],
+        [
+          1455,
+          580
+        ],
+        [
+          1575,
+          600
+        ],
+        [
+          1595,
+          610
+        ],
+        [
+          1390,
+          725
+        ],
+        [
+          1250,
+          820
+        ]
+      ],
+      [
+        [
+          460,
+          305
+        ],
+        [
+          395,
+          380
+        ],
+        [
+          330,
+          430
+        ],
+        [
+          330,
+          480
+        ],
+        [
+          480,
+          535
+        ],
+        [
+          670,
+          535
+        ],
+        [
+          810,
+          520
+        ]
+      ],
+      [
+        [
+          330,
+          480
+        ],
+        [
+          300,
+          540
+        ],
+        [
+          335,
+          595
+        ],
+        [
+          340,
+          660
+        ],
+        [
+          380,
+          700
+        ],
+        [
+          420,
+          745
+        ],
+        [
+          455,
+          760
+        ],
+        [
+          520,
+          760
+        ],
+        [
+          535,
+          735
+        ]
+      ],
+      [
+        [
+          235,
+          285
+        ],
+        [
+          280,
+          315
+        ],
+        [
+          195,
+          295
+        ]
+      ],
+      [
+        [
+          825,
+          580
+        ],
+        [
+          855,
+          560
+        ],
+        [
+          825,
+          610
+        ]
+      ]
+    ],
+    "colliders": [],
+    "labels": [],
+    "foreground": [
+      {
+        "key": "citadel-wall",
+        "depth": 315,
+        "polygon": [
+          [
+            590,
+            190
+          ],
+          [
+            1070,
+            147
+          ],
+          [
+            1120,
+            245
+          ],
+          [
+            1070,
+            301
+          ],
+          [
+            915,
+            309
+          ],
+          [
+            875,
+            255
+          ],
+          [
+            815,
+            255
+          ],
+          [
+            769,
+            309
+          ],
+          [
+            612,
+            315
+          ]
+        ]
+      },
+      {
+        "key": "nem-b-roof",
+        "depth": 535,
+        "polygon": [
+          [
+            1305,
+            468
+          ],
+          [
+            1390,
+            434
+          ],
+          [
+            1490,
+            477
+          ],
+          [
+            1470,
+            517
+          ],
+          [
+            1340,
+            509
+          ]
+        ]
+      },
+      {
+        "key": "nem-c-roof",
+        "depth": 875,
+        "polygon": [
+          [
+            1105,
+            825
+          ],
+          [
+            1200,
+            796
+          ],
+          [
+            1270,
+            848
+          ],
+          [
+            1240,
+            864
+          ],
+          [
+            1125,
+            864
+          ]
+        ]
+      },
+      {
+        "key": "warehouse-roof",
+        "depth": 670,
+        "polygon": [
+          [
+            0,
+            543
+          ],
+          [
+            173,
+            513
+          ],
+          [
+            258,
+            552
+          ],
+          [
+            213,
+            602
+          ],
+          [
+            0,
+            613
+          ]
+        ]
+      }
+    ],
+    "water": [],
+    "boats": [],
+    "collision": {
+      "groundAreas": [
+        [
+          [
+            40,
+            270
+          ],
+          [
+            505,
+            250
+          ],
+          [
+            570,
+            305
+          ],
+          [
+            535,
+            350
+          ],
+          [
+            420,
+            405
+          ],
+          [
+            360,
+            440
+          ],
+          [
+            60,
+            420
+          ]
+        ],
+        [
+          [
+            540,
+            335
+          ],
+          [
+            1100,
+            315
+          ],
+          [
+            1210,
+            415
+          ],
+          [
+            1140,
+            525
+          ],
+          [
+            1050,
+            560
+          ],
+          [
+            820,
+            570
+          ],
+          [
+            615,
+            550
+          ],
+          [
+            470,
+            510
+          ],
+          [
+            330,
+            475
+          ],
+          [
+            340,
+            435
+          ]
+        ],
+        [
+          [
+            330,
+            615
+          ],
+          [
+            515,
+            660
+          ],
+          [
+            760,
+            750
+          ],
+          [
+            860,
+            785
+          ],
+          [
+            850,
+            840
+          ],
+          [
+            670,
+            825
+          ],
+          [
+            450,
+            775
+          ],
+          [
+            330,
+            730
+          ]
+        ],
+        [
+          [
+            1015,
+            740
+          ],
+          [
+            1120,
+            710
+          ],
+          [
+            1195,
+            740
+          ],
+          [
+            1340,
+            685
+          ],
+          [
+            1380,
+            755
+          ],
+          [
+            1550,
+            710
+          ],
+          [
+            1645,
+            740
+          ],
+          [
+            1645,
+            890
+          ],
+          [
+            1380,
+            935
+          ],
+          [
+            1110,
+            910
+          ],
+          [
+            1020,
+            825
+          ]
+        ],
+        [
+          [
+            1260,
+            370
+          ],
+          [
+            1640,
+            365
+          ],
+          [
+            1645,
+            595
+          ],
+          [
+            1570,
+            620
+          ],
+          [
+            1460,
+            620
+          ],
+          [
+            1380,
+            560
+          ],
+          [
+            1280,
+            480
+          ]
+        ]
+      ],
+      "waterCollision": [
+        [
+          [
+            25,
+            485
+          ],
+          [
+            310,
+            495
+          ],
+          [
+            490,
+            545
+          ],
+          [
+            695,
+            570
+          ],
+          [
+            850,
+            595
+          ],
+          [
+            975,
+            635
+          ],
+          [
+            1080,
+            660
+          ],
+          [
+            1170,
+            625
+          ],
+          [
+            1265,
+            655
+          ],
+          [
+            1350,
+            610
+          ],
+          [
+            1390,
+            660
+          ],
+          [
+            1310,
+            710
+          ],
+          [
+            1230,
+            740
+          ],
+          [
+            1150,
+            720
+          ],
+          [
+            1070,
+            760
+          ],
+          [
+            1015,
+            780
+          ],
+          [
+            880,
+            735
+          ],
+          [
+            675,
+            650
+          ],
+          [
+            400,
+            595
+          ],
+          [
+            25,
+            570
+          ]
+        ]
+      ],
+      "footprints": [
+        {
+          "id": "hq-base",
+          "x": 45,
+          "y": 150,
+          "width": 335,
+          "height": 99
+        },
+        {
+          "id": "citadel-left",
+          "x": 598,
+          "y": 245,
+          "width": 170,
+          "height": 70
+        },
+        {
+          "id": "citadel-right",
+          "x": 860,
+          "y": 225,
+          "width": 255,
+          "height": 90
+        },
+        {
+          "id": "clinic-base",
+          "x": 1350,
+          "y": 265,
+          "width": 210,
+          "height": 75
+        },
+        {
+          "id": "warehouse-base",
+          "x": 42,
+          "y": 550,
+          "width": 235,
+          "height": 120
+        },
+        {
+          "id": "nem-b-base",
+          "x": 1305,
+          "y": 470,
+          "width": 155,
+          "height": 66
+        },
+        {
+          "id": "nem-c-base",
+          "x": 1120,
+          "y": 823,
+          "width": 130,
+          "height": 47
+        },
+        {
+          "id": "tree-banyan",
+          "x": 1114,
+          "y": 388,
+          "width": 28,
+          "height": 30
+        }
+      ],
+      "floors": [
+        {
+          "id": "main-bridge",
+          "a": [
+            855,
+            605
+          ],
+          "b": [
+            1040,
+            745
+          ],
+          "width": 76,
+          "missionBridge": true
+        },
+        {
+          "id": "secondary-bridge",
+          "a": [
+            1390,
+            725
+          ],
+          "b": [
+            1595,
+            610
+          ],
+          "width": 68,
+          "missionBridge": false
+        }
+      ]
+    },
+    "npcs": [
+      {
+        "pointId": "TH_ARCH_GATE",
+        "name": "Cán bộ hòa giải",
+        "quest": 1
+      },
+      {
+        "pointId": "TH_NEM_B_SHOP",
+        "name": "Cơ sở nem B",
+        "quest": 1
+      },
+      {
+        "pointId": "TH_NEM_C_SHOP",
+        "name": "Cơ sở nem C",
+        "quest": 1
+      },
+      {
+        "pointId": "TH_RAIL_GUARD",
+        "name": "Đối tượng hành lang kho",
+        "quest": 2
+      },
+      {
+        "pointId": "TH_OFFICE_LOBBY",
+        "name": "Người mang hồ sơ",
+        "quest": 3
+      }
+    ],
+    "objects": [
+      {
+        "pointId": "TH_SUPPLY_WAREHOUSE",
+        "label": "Bộ đối chiếu nhãn",
+        "statePath": "thanhHoaState.nemChua.collectKit",
+        "frame": "crate",
+        "quest": 1
+      },
+      {
+        "pointId": "TH_RAIL_CORRIDOR",
+        "label": "Hiện trường ven kho",
+        "statePath": "thanhHoaState.duongRay.approachScene",
+        "frame": "crate",
+        "quest": 2
+      },
+      {
+        "pointId": "TH_BRIDGE_ESCAPE",
+        "label": "Chốt lối thoát",
+        "statePath": "thanhHoaState.duongRay.blockEscape",
+        "frame": "flag",
+        "quest": 2
+      },
+      {
+        "pointId": "TH_BRIEFCASE_TABLE",
+        "label": "Vali / ghi nhận chứng cứ",
+        "statePath": "thanhHoaState.valiMuoiToi.recordEvidence",
+        "frame": "crate",
+        "quest": 3
+      },
+      {
+        "pointId": "TH_ALARM_BUTTON",
+        "label": "Nút báo động",
+        "statePath": "thanhHoaState.valiMuoiToi.triggerAlarm",
+        "frame": "flag",
+        "quest": 3
+      }
+    ]
+  },
+  "nghe-an": {
+    "artVersion": "approved-20261004",
+    "spawn": [
+      470,
+      275
+    ],
+    "kind": "stone",
+    "bridge": [
+      [
+        1260,
+        695
+      ],
+      [
+        1500,
+        755
+      ]
+    ],
+    "detour": [
+      [
+        1240,
+        300
+      ],
+      [
+        1340,
+        300
+      ]
+    ],
+    "points": {
+      "HEADQUARTERS": [
+        195,
+        250
+      ],
+      "NOTICE_BOARD": [
+        465,
+        250
+      ],
+      "WAREHOUSE": [
+        270,
+        745
+      ],
+      "ZONE_A": [
+        355,
+        440
+      ],
+      "ZONE_B": [
+        1500,
+        790
+      ],
+      "ZONE_C": [
+        660,
+        860
+      ],
+      "CLINIC_FIXED": [
+        1485,
+        420
+      ],
+      "CLINIC_MOBILE_B": [
+        1580,
+        760
+      ],
+      "CLINIC_MOBILE_C": [
+        1140,
+        725
+      ],
+      "BRIDGE": [
+        1260,
+        695
+      ],
+      "BRIDGE_TASK_1": [
+        1220,
+        685
+      ],
+      "BRIDGE_TASK_2": [
+        1220,
+        715
+      ],
+      "CITIZEN_C1": [
+        620,
+        860
+      ],
+      "CITIZEN_C2": [
+        810,
+        875
+      ],
+      "PRACTICE_TARGET": [
+        470,
+        275
+      ],
+      "NA_CH_HOA_SHOP": [
+        560,
+        865
+      ],
+      "NA_CH_TUAN_SHOP": [
+        760,
+        890
+      ],
+      "NA_CH_SIDEWALK": [
+        645,
+        895
+      ],
+      "NA_CULTURE_HOUSE": [
+        875,
+        465
+      ],
+      "NA_MARKET_ALLEY": [
+        360,
+        430
+      ],
+      "NA_SHORTCUT_BLOCK": [
+        365,
+        490
+      ],
+      "NA_DEAD_END": [
+        345,
+        530
+      ],
+      "NA_CABINET_EVIDENCE": [
+        875,
+        465
+      ],
+      "NA_WINDOW_EVIDENCE": [
+        875,
+        465
+      ],
+      "NA_SUSPECTS_LINEUP": [
+        875,
+        465
+      ]
+    },
+    "questPoints": {
+      "NA_CH_HOA_SHOP": [
+        560,
+        865
+      ],
+      "NA_CH_TUAN_SHOP": [
+        760,
+        890
+      ],
+      "NA_CH_SIDEWALK": [
+        645,
+        895
+      ],
+      "NA_CULTURE_HOUSE": [
+        875,
+        465
+      ],
+      "NA_MARKET_ALLEY": [
+        360,
+        430
+      ],
+      "NA_SHORTCUT_BLOCK": [
+        365,
+        490
+      ],
+      "NA_DEAD_END": [
+        345,
+        530
+      ],
+      "NA_CABINET_EVIDENCE": [
+        875,
+        465
+      ],
+      "NA_WINDOW_EVIDENCE": [
+        875,
+        465
+      ],
+      "NA_SUSPECTS_LINEUP": [
+        875,
+        465
+      ]
+    },
+    "pointNames": {
+      "NA_CH_HOA_SHOP": "Dì Hoa · Cháo lươn",
+      "NA_CH_TUAN_SHOP": "Chú Tuấn · Cháo lươn",
+      "NA_CULTURE_HOUSE": "Mệ Bảy / đại diện khối phố",
+      "NA_MARKET_ALLEY": "Chị bán nhút",
+      "NA_DEAD_END": "Đối tượng lừa đảo"
+    },
+    "paths": [
+      [
+        [
+          195,
+          250
+        ],
+        [
+          465,
+          250
+        ],
+        [
+          470,
+          275
+        ],
+        [
+          490,
+          350
+        ],
+        [
+          560,
+          420
+        ],
+        [
+          610,
+          470
+        ],
+        [
+          755,
+          475
+        ],
+        [
+          875,
+          465
+        ],
+        [
+          1010,
+          460
+        ],
+        [
+          1160,
+          480
+        ],
+        [
+          1220,
+          555
+        ],
+        [
+          1210,
+          625
+        ],
+        [
+          1260,
+          695
+        ],
+        [
+          1500,
+          755
+        ],
+        [
+          1580,
+          760
+        ],
+        [
+          1500,
+          790
+        ]
+      ],
+      [
+        [
+          490,
+          350
+        ],
+        [
+          360,
+          430
+        ],
+        [
+          365,
+          490
+        ],
+        [
+          345,
+          530
+        ],
+        [
+          365,
+          570
+        ],
+        [
+          410,
+          650
+        ],
+        [
+          395,
+          735
+        ],
+        [
+          270,
+          745
+        ]
+      ],
+      [
+        [
+          395,
+          735
+        ],
+        [
+          465,
+          775
+        ],
+        [
+          475,
+          825
+        ],
+        [
+          560,
+          865
+        ],
+        [
+          645,
+          895
+        ],
+        [
+          760,
+          890
+        ],
+        [
+          810,
+          875
+        ],
+        [
+          1040,
+          850
+        ],
+        [
+          1140,
+          725
+        ],
+        [
+          1210,
+          625
+        ]
+      ],
+      [
+        [
+          1160,
+          480
+        ],
+        [
+          1220,
+          415
+        ],
+        [
+          1240,
+          350
+        ],
+        [
+          1240,
+          300
+        ],
+        [
+          1340,
+          300
+        ],
+        [
+          1410,
+          420
+        ],
+        [
+          1485,
+          420
+        ],
+        [
+          1540,
+          475
+        ],
+        [
+          1570,
+          540
+        ],
+        [
+          1570,
+          650
+        ],
+        [
+          1500,
+          755
+        ]
+      ],
+      [
+        [
+          1260,
+          695
+        ],
+        [
+          1220,
+          685
+        ],
+        [
+          1220,
+          715
+        ]
+      ]
+    ],
+    "colliders": [],
+    "labels": [],
+    "foreground": [
+      {
+        "key": "culture-house-roof",
+        "depth": 420,
+        "polygon": [
+          [
+            705,
+            308
+          ],
+          [
+            830,
+            250
+          ],
+          [
+            1030,
+            327
+          ],
+          [
+            1012,
+            353
+          ],
+          [
+            747,
+            351
+          ]
+        ]
+      },
+      {
+        "key": "traditional-roof",
+        "depth": 450,
+        "polygon": [
+          [
+            1044,
+            332
+          ],
+          [
+            1110,
+            312
+          ],
+          [
+            1210,
+            371
+          ],
+          [
+            1170,
+            395
+          ],
+          [
+            1060,
+            385
+          ]
+        ]
+      },
+      {
+        "key": "hoa-shop-roof",
+        "depth": 838,
+        "polygon": [
+          [
+            470,
+            740
+          ],
+          [
+            588,
+            700
+          ],
+          [
+            680,
+            755
+          ],
+          [
+            645,
+            780
+          ],
+          [
+            510,
+            785
+          ]
+        ]
+      },
+      {
+        "key": "tuan-shop-roof",
+        "depth": 866,
+        "polygon": [
+          [
+            628,
+            757
+          ],
+          [
+            738,
+            728
+          ],
+          [
+            815,
+            800
+          ],
+          [
+            792,
+            814
+          ],
+          [
+            655,
+            811
+          ]
+        ]
+      },
+      {
+        "key": "warehouse-roof",
+        "depth": 705,
+        "polygon": [
+          [
+            0,
+            610
+          ],
+          [
+            225,
+            570
+          ],
+          [
+            307,
+            620
+          ],
+          [
+            273,
+            653
+          ],
+          [
+            14,
+            655
+          ]
+        ]
+      }
+    ],
+    "water": [],
+    "boats": [],
+    "collision": {
+      "groundAreas": [
+        [
+          [
+            40,
+            250
+          ],
+          [
+            490,
+            245
+          ],
+          [
+            510,
+            325
+          ],
+          [
+            430,
+            370
+          ],
+          [
+            415,
+            465
+          ],
+          [
+            350,
+            555
+          ],
+          [
+            260,
+            510
+          ],
+          [
+            170,
+            360
+          ]
+        ],
+        [
+          [
+            490,
+            390
+          ],
+          [
+            690,
+            440
+          ],
+          [
+            730,
+            435
+          ],
+          [
+            1040,
+            425
+          ],
+          [
+            1180,
+            455
+          ],
+          [
+            1240,
+            550
+          ],
+          [
+            1200,
+            650
+          ],
+          [
+            1145,
+            700
+          ],
+          [
+            1030,
+            720
+          ],
+          [
+            910,
+            670
+          ],
+          [
+            810,
+            590
+          ],
+          [
+            660,
+            530
+          ],
+          [
+            535,
+            510
+          ]
+        ],
+        [
+          [
+            350,
+            555
+          ],
+          [
+            435,
+            540
+          ],
+          [
+            490,
+            650
+          ],
+          [
+            455,
+            750
+          ],
+          [
+            520,
+            795
+          ],
+          [
+            480,
+            850
+          ],
+          [
+            260,
+            820
+          ],
+          [
+            230,
+            730
+          ]
+        ],
+        [
+          [
+            475,
+            845
+          ],
+          [
+            790,
+            840
+          ],
+          [
+            905,
+            860
+          ],
+          [
+            1080,
+            820
+          ],
+          [
+            1140,
+            730
+          ],
+          [
+            1240,
+            745
+          ],
+          [
+            1230,
+            830
+          ],
+          [
+            1030,
+            910
+          ],
+          [
+            770,
+            930
+          ],
+          [
+            505,
+            915
+          ]
+        ],
+        [
+          [
+            1410,
+            420
+          ],
+          [
+            1645,
+            420
+          ],
+          [
+            1645,
+            765
+          ],
+          [
+            1500,
+            830
+          ],
+          [
+            1450,
+            790
+          ],
+          [
+            1460,
+            700
+          ],
+          [
+            1530,
+            600
+          ],
+          [
+            1510,
+            530
+          ]
+        ]
+      ],
+      "waterCollision": [
+        [
+          [
+            690,
+            525
+          ],
+          [
+            765,
+            505
+          ],
+          [
+            1000,
+            510
+          ],
+          [
+            1115,
+            500
+          ],
+          [
+            1160,
+            555
+          ],
+          [
+            1070,
+            600
+          ],
+          [
+            1000,
+            635
+          ],
+          [
+            895,
+            615
+          ],
+          [
+            850,
+            585
+          ],
+          [
+            735,
+            570
+          ]
+        ],
+        [
+          [
+            1235,
+            50
+          ],
+          [
+            1325,
+            50
+          ],
+          [
+            1310,
+            245
+          ],
+          [
+            1345,
+            310
+          ],
+          [
+            1380,
+            390
+          ],
+          [
+            1350,
+            470
+          ],
+          [
+            1310,
+            580
+          ],
+          [
+            1380,
+            635
+          ],
+          [
+            1470,
+            690
+          ],
+          [
+            1520,
+            705
+          ],
+          [
+            1550,
+            830
+          ],
+          [
+            1470,
+            930
+          ],
+          [
+            1320,
+            930
+          ],
+          [
+            1240,
+            875
+          ],
+          [
+            1275,
+            785
+          ],
+          [
+            1230,
+            745
+          ],
+          [
+            1220,
+            685
+          ],
+          [
+            1245,
+            580
+          ],
+          [
+            1280,
+            515
+          ],
+          [
+            1260,
+            420
+          ],
+          [
+            1220,
+            360
+          ]
+        ]
+      ],
+      "footprints": [
+        {
+          "id": "hq-base",
+          "x": 60,
+          "y": 140,
+          "width": 295,
+          "height": 88
+        },
+        {
+          "id": "culture-house-base",
+          "x": 730,
+          "y": 315,
+          "width": 290,
+          "height": 105
+        },
+        {
+          "id": "traditional-house-base",
+          "x": 1045,
+          "y": 340,
+          "width": 150,
+          "height": 110
+        },
+        {
+          "id": "warehouse-base",
+          "x": 30,
+          "y": 620,
+          "width": 275,
+          "height": 85
+        },
+        {
+          "id": "hoa-shop-base",
+          "x": 510,
+          "y": 746,
+          "width": 128,
+          "height": 92
+        },
+        {
+          "id": "tuan-shop-base",
+          "x": 655,
+          "y": 771,
+          "width": 140,
+          "height": 95
+        },
+        {
+          "id": "clinic-base",
+          "x": 1410,
+          "y": 305,
+          "width": 190,
+          "height": 80
+        },
+        {
+          "id": "culture-tree",
+          "x": 640,
+          "y": 380,
+          "width": 24,
+          "height": 30
+        }
+      ],
+      "floors": [
+        {
+          "id": "main-bridge",
+          "a": [
+            1260,
+            695
+          ],
+          "b": [
+            1500,
+            755
+          ],
+          "width": 76,
+          "missionBridge": true
+        },
+        {
+          "id": "secondary-bridge",
+          "a": [
+            1240,
+            300
+          ],
+          "b": [
+            1340,
+            300
+          ],
+          "width": 68,
+          "missionBridge": false
+        }
+      ]
+    },
+    "npcs": [
+      {
+        "pointId": "NA_CH_HOA_SHOP",
+        "name": "Dì Hoa · Cháo lươn",
+        "quest": 1
+      },
+      {
+        "pointId": "NA_CH_TUAN_SHOP",
+        "name": "Chú Tuấn · Cháo lươn",
+        "quest": 1
+      },
+      {
+        "pointId": "NA_CULTURE_HOUSE",
+        "name": "Mệ Bảy / đại diện khối phố",
+        "quest": 2
+      },
+      {
+        "pointId": "NA_MARKET_ALLEY",
+        "name": "Chị bán nhút",
+        "quest": 2
+      },
+      {
+        "pointId": "NA_DEAD_END",
+        "name": "Đối tượng lừa đảo",
+        "quest": 2
+      }
+    ],
+    "objects": [
+      {
+        "pointId": "NA_CH_SIDEWALK",
+        "label": "Ranh giới hè phố",
+        "statePath": "ngheAnState.chaoLuon.measureBoundary",
+        "frame": "flag",
+        "quest": 1
+      },
+      {
+        "pointId": "NA_SHORTCUT_BLOCK",
+        "label": "Chốt lối tắt",
+        "statePath": "ngheAnState.luaDaoDat.blockShortcut",
+        "frame": "flag",
+        "quest": 2
+      }
+    ]
+  }
+}

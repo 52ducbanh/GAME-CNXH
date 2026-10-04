@@ -1,4 +1,5 @@
-﻿import { escapeHtml } from './utils.js';
+import { patchMarkup } from './patchMarkup.js';
+import { escapeHtml } from './utils.js';
 import { GameSnapshot, getProvinceView } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
@@ -40,26 +41,26 @@ export class VotingModal {
       <button id="${option.id}" class="p-4 rounded-xl border text-left transition ${myVote === option.plan ? styles[option.color].selected : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
         <div class="flex justify-between items-center mb-1">
           <span class="font-bold ${styles[option.color].text} text-sm">${option.title}</span>
-          ${myVote === option.plan ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
+          ${myVote === option.plan ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiếu của bạn</span>' : ''}
         </div>
         <p class="text-xs text-slate-300">${option.description}</p>
       </button>`).join('')}</div>`;
 
-    this.container.innerHTML = `
+    patchMarkup(this.container, `
       <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-6 shadow-2xl text-white animate-fade-in mx-4">
         <div class="flex justify-between items-center mb-2">
           <div class="flex items-center space-x-2">
-            <span class="text-xl">ðŸ—³ï¸</span>
-            <h2 class="text-lg font-bold text-white tracking-wide">BIá»‚U QUYáº¾T Táº¬P THá»‚</h2>
+            <span class="text-xl">🗳️</span>
+            <h2 class="text-lg font-bold text-white tracking-wide">BIỂU QUYẾT TẬP THỂ</h2>
           </div>
           <span class="px-2 py-0.5 rounded bg-blue-600/40 text-blue-300 border border-blue-500/50 text-xs font-mono font-bold">
-            ${remainingSecs}s cÃ²n láº¡i
+            ${remainingSecs}s còn lại
           </span>
         </div>
 
         <p class="text-xs text-slate-400">
-          Äá»“ng chÃ­ <strong class="text-amber-400">${escapeHtml(voting.proposerName)}</strong> Ä‘Ã£ Ä‘á» xuáº¥t phÆ°Æ¡ng Ã¡n cho <strong>${voting.missionId}</strong>.
-          Má»i thÃ nh viÃªn Ä‘á»u cÃ³ quyá»n bá» phiáº¿u vÃ  thay Ä‘á»•i phiáº¿u trÆ°á»›c khi háº¿t giá».
+          Đồng chí <strong class="text-amber-400">${escapeHtml(voting.proposerName)}</strong> đã đề xuất phương án cho <strong>${voting.missionId}</strong>.
+          Mọi thành viên đều có quyền bỏ phiếu và thay đổi phiếu trước khi hết giờ.
         </p>
 
         <!-- Progress bar -->
@@ -70,23 +71,23 @@ export class VotingModal {
         ${optionsHtml}
 
         <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
-          <span>Tiáº¿n Ä‘á»™ biá»ƒu quyáº¿t: <strong class="text-white">${totalVotes}/${voting.totalOnlineVoters}</strong> ngÆ°á»i</span>
-          <span class="italic text-[11px]">NguyÃªn táº¯c Táº­p trung dÃ¢n chá»§</span>
+          <span>Tiến độ biểu quyết: <strong class="text-white">${totalVotes}/${voting.totalOnlineVoters}</strong> người</span>
+          <span class="italic text-[11px]">Nguyên tắc Tập trung dân chủ</span>
         </div>
       </div>
-    `;
+    `);
 
     // Bind voting buttons
     const bindVote = (btnId: string, plan: 'FIXED' | 'MOBILE' | 'REPAIR' | 'DETOUR') => {
-      const btn = this.container.querySelector(`#${btnId}`);
+      const btn = this.container.querySelector<HTMLButtonElement>(`#${btnId}`);
       if (btn) {
-        btn.addEventListener('click', () => {
+        btn.onclick = () => {
           this.socketClient.sendIntent({
             actionId: `vote_${Date.now()}`,
             type: 'CAST_VOTE',
             payload: { plan }
           });
-        });
+        };
       }
     };
 

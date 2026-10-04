@@ -1,6 +1,7 @@
 import './utilities.css';
 import './game.css';
 import './regions.css';
+import './ui/dashboard/dashboard.css';
 import { createGame } from './game/phaserGame.js';
 import { MainScene } from './scenes/MainScene.js';
 import { SocketClient } from './network/socketClient.js';
@@ -14,8 +15,7 @@ import { ResultsModal } from './ui/resultsModal.js';
 import { LedgerModal } from './ui/ledgerModal.js';
 import { TouchControls } from './ui/touchControls.js';
 import { LobbyView } from './ui/lobbyView.js';
-import { HostView } from './ui/hostView.js';
-import { ProjectorView } from './ui/projectorView.js';
+import { ProjectorDashboard } from './ui/dashboard/projectorDashboard.js';
 import { PointOfInterest, MapId, isMapId } from 'shared';
 
 function parseRoute(): { path: string; param?: string } {
@@ -47,19 +47,12 @@ async function initApp() {
     return;
   }
 
-  if (route.path === 'host') {
+  if (route.path === 'host' || route.path === 'projector') {
     const roomCode = (route.param || 'HANOI_01').toUpperCase();
-    const hostView = new HostView(socketClient, roomCode);
-    hostView.show();
-    socketClient.joinRoom(roomCode, 'Host Thủ đô', true, true);
-    return;
-  }
-
-  if (route.path === 'projector') {
-    const roomCode = (route.param || 'HANOI_01').toUpperCase();
-    const projectorView = new ProjectorView(socketClient, roomCode);
-    projectorView.show();
-    socketClient.joinRoom(roomCode, 'Máy chiếu Projector', false, true);
+    const mode = route.path;
+    const dashboard = new ProjectorDashboard(socketClient, roomCode, mode);
+    dashboard.show();
+    socketClient.joinRoom(roomCode, mode === 'host' ? 'Host' : 'Máy chiếu', mode === 'host', true);
     return;
   }
 

@@ -1,3 +1,4 @@
+import { patchMarkup } from './patchMarkup.js';
 import { GameSnapshot, KNOWLEDGE_INTRO, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
@@ -24,7 +25,7 @@ export class BriefingModal {
     const totalSecs = Math.max(0, Math.ceil(snapshot.phaseTimerRemainingMs / 1000));
     const isHost = this.socketClient.getHostToken() !== '';
 
-    this.container.innerHTML = `
+    patchMarkup(this.container, `
       <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl p-6 sm:p-8 shadow-2xl text-white animate-fade-in max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center pb-4 border-b border-slate-800">
           <div>
@@ -66,13 +67,13 @@ export class BriefingModal {
           ` : '<span class="text-xs text-slate-400 italic">Chờ Host hoặc hết giờ...</span>'}
         </div>
       </div>
-    `;
+    `);
 
-    const btnSkip = this.container.querySelector('#btn-skip-briefing');
+    const btnSkip = this.container.querySelector<HTMLButtonElement>('#btn-skip-briefing');
     if (btnSkip) {
-      btnSkip.addEventListener('click', () => {
+      btnSkip.onclick = () => {
         this.socketClient.sendHostCommand('SKIP_BRIEFING');
-      });
+      };
     }
   }
 }

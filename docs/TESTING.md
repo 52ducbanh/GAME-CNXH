@@ -1,3 +1,83 @@
+# Kiểm tra hiện hành — Host + Projector dashboard 04/10/2026
+
+**PASS141/141 tests,13 suites**, typecheck ba workspace, shared/server build và client build riêng. Dashboard, player modal và input regressions bên dưới đã thực chạy. Phần UI stability/refactor phía sau là lịch sử; không dùng số132 hoặc cổng cũ làm chứng nhận bản mới.
+
+```powershell
+npm run build --workspace=shared
+npm run typecheck
+npm run build --workspace=server
+npm run build --workspace=client -- --outDir dist-projector-dashboard
+npm test
+```
+
+`server/src/__tests__/projectorDashboard.test.ts`:9 tests, gồm7 tỉnh lấy points/quests/counters thật, projection không mutate/không lộ players/tokens, custom room thay đúng tỉnh, Hà Tĩnh rescue thumbnail và featured quest. Client viewModel kiểm trong Chrome bundle: đồng điểm đồng hạng, active snapshot mới ưu tiên overview cũ, clock, progress0/source không mutate. Không import client fixtures vào server rootDir.
+
+Sau xác minh cổng QA trống, chạy **server disposable riêng** trong terminal riêng (ví dụ cổng đã dùng lượt này, không restart phiên người dùng):
+
+```powershell
+$env:PORT='3126'
+$env:SERVER_PORT='3126'
+$env:HOST='0.0.0.0'
+$env:CLIENT_DIST_PATH=Join-Path $PWD.Path 'client/dist-projector-dashboard'
+node server/dist/server.js
+```
+
+Terminal QA, với Playwright đã cài hoặc runtime desktop:
+
+```powershell
+$env:UI_QA_PLAYWRIGHT_PATH='<runtime>/node_modules/playwright/index.mjs'
+$env:PREVIEW_URL='http://127.0.0.1:3126'
+$env:QA_ISOLATED='1'
+node scripts/verify-projector-dashboard.mjs
+node scripts/verify-ui-stability.mjs
+New-Item -ItemType Directory -Path client/dist-projector-dashboard/qa -Force
+$env:QA_REPORT_PATH='client/dist-projector-dashboard/qa/input-controls.json'
+node scripts/verify-input-controls.mjs
+$env:QA_REPORT_PATH='client/dist-projector-dashboard/qa/input-ack.json'
+node scripts/verify-input-ack.mjs
+$env:QA_REPORT_PATH='client/dist-projector-dashboard/qa/input-network.json'
+node scripts/verify-input-network.mjs
+```
+
+Dashboard harness **RESET bảy phòng mặc định của instance QA**, tạo phòng riêng, nối7 sockets rồi thực hiện MOVE/action khảo sát/tiếp nhận hợp lệ để lấy điểm2/3 thật. Không chạy trên instance đang dùng cho người chơi. Kiểm Start/Pause/Resume/Skip/End/Reset/gia hạn2 phút, clock đứng khi pause, counters khớp state kể cả participants offline từ reruns, feed/featured/progress/rank đúng, rootQR dẫn sảnh7 tỉnh/roomQR tương thích, projector không điều khiển, custom room thay dòng. Node/focus/input giữ qua snapshots; deferred ACK/reject/offline kiểm bằng mock riêng, không optimistic mutate state.
+
+Ảnh và bounds assertions1440×900/1920×1080/1280×720: các panel chính vừa một khung, không overflow chính hoặc chữ hàng vượt bounds.390×844 dashboard có scroll, sảnh→player Hà Tĩnh desktop và Nghệ An mobile vẫn có canvas/HUD/joystick/E và không dashboard. Zero pageerror. Đã nhìn ảnh desktop/Full HD/720p và player mobile; chưa đo khả năng đọc từ xa trên máy chiếu thật.
+
+UI stability harness hiện hành kiểm5 player modal/ledger40 snapshots/node/focus/scroll/listener/voting, sau đó app thật host commands + briefing/results hiển thị opacity1. `UI_QA_BASELINE=831c6ef...` optional đọc old Host/Projector từ Git trong harness, không checkout/reset; phần này chỉ là tái hiện lịch sử. Input8 nhóm/executeAction ACK350ms/SocketClient rejoin-no replay dùng mocks như báo cáo trước.
+
+Evidence ignored ở `client/dist-projector-dashboard/qa/`; dashboard JSON/6PNG, player-ui JSON/PNG, input3JSON. Rebuild xóa outDir: giữ evidence ngoài outDir trước build hoặc tái chạy harness. Không ghi đè bundle/evidence lịch sử của server cũ. **NOT TESTED:** projector/mobile/Wi-Fi vật lý, load60/mất mạng, full accessibility, full match thủ công cả7 tỉnh. Full parity/socket/Hà Tĩnh100 phía sau thuộc lượt refactor, không được nhận là đã chạy lại ở task dashboard.
+
+---
+
+# Lịch sử — Kiểm tra UI stability / UTF-8 — 04/10/2026
+
+Lượt sửa UI mới: shared build/typecheck/client build riêng PASS; npm test **132/132,12 suites PASS**. Chrome headless regression và production app với sockets thật PASS; baseline UI commit831c6ef tái hiện lỗi thay node. Không dùng kết quả refactor lịch sử phía dưới làm chứng nhận lượt UI.
+
+```powershell
+npm run build --workspace=shared
+npm run typecheck
+npm run build --workspace=client -- --outDir dist-ui-stability
+npm test
+```
+
+Chạy server QA riêng với CLIENT_DIST_PATH trỏ `client/dist-ui-stability`, PORT/SERVER_PORT cùng cổng trống; không restart instance cũ. Server build hiện hành không đổi trong lượt này; khi checkout khác phải build server tương ứng. Với Playwright đã cài hoặc bundled runtime Codex:
+
+```powershell
+# Nếu Playwright không ở node_modules, đặt UI_QA_PLAYWRIGHT_PATH tới index.mjs của runtime.
+$env:UI_QA_PLAYWRIGHT_PATH='<runtime>/node_modules/playwright/index.mjs'
+$env:PREVIEW_URL='http://127.0.0.1:3125' # chỉ ví dụ của instance QA đã xác minh
+$env:QA_ISOLATED='1'
+node scripts/verify-ui-stability.mjs
+# Optional: đọc UI baseline từ Git, không checkout/reset; phải FAIL Host replaced a live node.
+$env:UI_QA_BASELINE='831c6eff8ea6041a8f5ee2d438b055d3e17a2ac3'
+node scripts/verify-ui-stability.mjs
+Remove-Item Env:UI_QA_BASELINE
+```
+
+Harness dùng production UI bundle/source + stylesheet compiled trong Chrome thật. Fixture DOM25 host ticks100ms đo đúng1 animation/focus/button persistence, QR async/copy, pause state;40 snapshots mỗi modal/ledger/projector, no duplicate handlers, option/selection M1→M2. Fixture socket được mock cho DOM assertions; phần tiếp theo dùng production app + server Socket.IO thật START/PAUSE/RESUME/ADD_60S/SKIP/END/RESET và render briefing/results. Chỉ disposable room trên instance riêng. Evidence ở `client/dist-ui-stability/qa/`; rebuild outDir xóa evidence, giữ ảnh cần dùng trước khi rebuild. Đã nhìn ảnh host desktop/mobile và modal desktop. Headless viewport390 không phải điện thoại vật lý; chưa load/Wi-Fi/accessibility audit. Assertion opacity đo sau khi animation đầu đã hoàn tất, tránh đồng hồ render khởi động trễ khi CPU bận.
+
+---
+
 # Kiểm tra hiện hành — refactor hoàn tất 04/10/2026
 
 Kết quả mới: **132 tests/12 suites PASS**, typecheck ba workspace, shared/server/isolated-client build PASS; parity426 catalogue/guide +1489 ACK/snapshot checkpoints. Coverage, known FAIL visual modal và NOT TESTED ghi trong [PROJECT_STATUS](PROJECT_STATUS.md). Các số phía dưới là lịch sử.

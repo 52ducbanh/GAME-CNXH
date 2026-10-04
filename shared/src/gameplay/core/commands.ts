@@ -1,5 +1,10 @@
 import type { JobType, M1Plan, M2Plan, PlayerRole } from '../../types.js';
 import type { HatinhAction } from '../provinces/ha-tinh/commands.js';
+import type { NinhBinhAction } from '../provinces/ninh-binh/commands.js';
+import type { QuangNinhAction } from '../provinces/quang-ninh/commands.js';
+import type { HaiPhongAction } from '../provinces/hai-phong/commands.js';
+import type { ThanhHoaAction } from '../provinces/thanh-hoa/commands.js';
+import type { NgheAnAction } from '../provinces/nghe-an/commands.js';
 import type { MapId } from '../../worldMaps.js';
 
 type Command<T extends string, P> = { actionId: string; type: T; payload: P };
@@ -18,6 +23,11 @@ export type GameplayCommand =
   | Command<'PUBLISH_NOTICE', { missionId: 'M1' | 'M2' | 'M3' }>
   | Command<'PING_LOCATION', { x: number; y: number }>
   | Command<'HATINH_ACTION', { action: HatinhAction }>
+  | Command<'NINHBINH_ACTION', { action: NinhBinhAction }>
+  | Command<'QUANGNINH_ACTION', { action: QuangNinhAction }>
+  | Command<'HAIPHONG_ACTION', { action: HaiPhongAction }>
+  | Command<'THANHHOA_ACTION', { action: ThanhHoaAction }>
+  | Command<'NGHEAN_ACTION', { action: NgheAnAction }>
   | EmptyCommand<'CANCEL_JOB' | 'DROP_CRATE' | 'RETURN_CRATE' | 'CONFIRM_M3_PLAN'>;
 
 export type ActionIntent = GameplayCommand extends infer C

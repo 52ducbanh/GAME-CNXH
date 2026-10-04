@@ -1,29 +1,55 @@
+# Host + Projector dashboard hiện hành — 04/10/2026
+
+`main.ts` dùng một `ui/dashboard/ProjectorDashboard` cho cả route host/projector; hai view cũ đã xóa. Projector là cùng layout ở chế độ đọc. Player branch, InputController, SocketClient, renderer và gameplay engine không thay trong task dashboard. CSS riêng được scope dưới `.projector-dashboard`.
+
+- Shared `projectorDashboard.ts`: DTO DashboardRoom + selector snapshot→summary qua ProvinceView, không mutation/host token/player positions.
+- Server `RoomManager.getDashboardOverview`: bảy default rooms, thay một dòng nếu xem custom room cùng tỉnh; GET `/api/dashboard?room=...` đọc summary, không tạo phòng.
+- Client `dashboard/viewModel.ts`: merge snapshot socket của phòng đang xem lên overview, sort điểm và xử lý đồng hạng; aggregate counters/events. Bốn panel scoreboard/feed/featured/controls tách khỏi coordinator/layout. Giữ node/DOM thay vì rebuild mỗi snapshot.
+- Phòng đang xem theo Socket.IO10Hz; overview7 tỉnh poll1s, lỗi có trạng thái chưa cập nhật. Không có tournament state ở UI hoặc server.
+- GET `/api/qr` sinh QR tới sảnh chọn7 tỉnh. GET `/api/qr/:roomCode` giữ link trực tiếp phòng cho lobby/đồng đội.
+- Host controls chỉ gửi command cũ của phòng hiện tại, giữ pending đến ACK, không giả phase/score/pause. Field gia hạn gửi ADD_60S theo số phút, default duration không đổi.
+
+Bằng chứng current/build/giới hạn ở PROJECT_STATUS/TESTING; các mô tả view cũ phía dưới là lịch sử khi khác source hiện hành.
+
+---
+
 # Kiến trúc hiện hành — Province modules (04/10/2026)
 
-Bảy tỉnh đã migrate; chi tiết Git và lần kiểm thật ở [PROJECT_STATUS](PROJECT_STATUS.md). Core điều phối, capability thực hiện cơ chế chung, province/preset sở hữu luật và dữ liệu trình bày. Một room có một runtime gameplay, state không chia sẻ giữa các phòng.
+Bảy tỉnh đã hoàn thiện đầy đủ 21 nhiệm vụ (100đ/tỉnh); chi tiết kiểm thử ở [PROJECT_STATUS](PROJECT_STATUS.md). Core điều phối, capability thực hiện cơ chế chung, province module sở hữu luật, state và dữ liệu trình bày đặc thù. Một room có một runtime gameplay độc lập, state không chia sẻ giữa các phòng.
 
 ```text
 shared/src/gameplay/
-  core/                      contracts, commands, catalogue/guide và timed objective composition
-  presets/public-service/    composition, interactions, guide, view và voting options dùng chung sáu tỉnh
+  core/                      contracts, commands, catalogue/guide, timed objective composition
+  presets/public-service/    preset luật dịch vụ công (dùng cho Hà Nội)
   provinces/
-    hanoi/ ninh-binh/ quang-ninh/ hai-phong/ thanh-hoa/ nghe-an/  definitions/bindings local
-    ha-tinh/                 definition, commands, state/selectors, interactions, guide, view
-  registry.ts                static module/definition registry
+    hanoi/                   definition, presentation native
+    ha-tinh/                 definition, commands, state, interactions, guide, view (rescue)
+    ninh-binh/               definition, commands, state, interactions, guide, view (di sản & bảo vệ rừng)
+    quang-ninh/              definition, commands, state, interactions, guide, view (công nghiệp & vịnh)
+    hai-phong/               definition, commands, state, interactions, guide, view (cảng biển & foodtour)
+    thanh-hoa/               definition, commands, state, interactions, guide, view (nem chua & an ninh)
+    nghe-an/                 definition, commands, state, interactions, guide, view (cháo lươn & trật tự)
+  registry.ts                static registry cho cả 7 module, definitions & getProvincePoiCoordinates
 
 server/src/gameplay/
   core/                      ports, task, item, resource, vote, timed objective capability
-  presets/public-service/    semantic state và ONE implementation luật dịch vụ công
-  provinces/ha-tinh/         canonical rescue state + custom runtime
-  registry.ts                factory đủ bảy MapIds; runtime mới cho mỗi phòng
+  presets/public-service/    PublicServiceRuntime cho preset dịch vụ công
+  provinces/
+    ha-tinh/                 HatinhRuntime
+    ninh-binh/               NinhBinhRuntime
+    quang-ninh/              QuangNinhRuntime
+    hai-phong/               HaiPhongRuntime
+    thanh-hoa/               ThanhHoaRuntime
+    nghe-an/                 NgheAnRuntime
+  registry.ts                createProvinceRuntime factory đủ 7 MapIds
 
 client/src/gameplay/
-  core/regionalRenderer.ts   renderer nhận metadata/ProvinceView
+  core/regionalRenderer.ts   renderer nhận metadata/ProvinceView và visual state
   provinces/hanoi/           native presentation giữ crops/layers/depth
   registry.ts                chọn presentation; một MainScene bên ngoài thư mục này
 ```
 
-Các tỉnh đơn giản chỉ cần definition và compose preset; không tạo sáu runtime/scene trống cho đối xứng. Hà Tĩnh dùng regional renderer qua metadata và visual state của module, không copy scene/movement/network.
+Mỗi tỉnh quản lý POI đặc thù qua `state.ts` của tỉnh và đăng ký tra cứu linh hoạt qua `getProvincePoiCoordinates(mapId, poiId)`. Không làm vỡ `map.points` cơ bản của thế giới. Toàn bộ 7 tỉnh dùng chung swept movement/sliding, chân 14px, network prediction/reconcile và server authoritative validation.
 
 ```mermaid
 flowchart LR

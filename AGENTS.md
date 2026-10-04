@@ -12,7 +12,7 @@ Trạng thái/test/runtime cập nhật ở PROJECT_STATUS; phạm vi tiếp the
 - Giữ chân14px, swept movement/sliding, sprint/audio, corner assist tắt, prediction/reconcile/rejoin và người chơi đi xuyên nhau. Collision client/server/navigation dùng cùng deployment/bridge flags; server kiểm toàn đoạn MOVE, không nới thành endpoint-only.
 - Server quyết định ngân sách, vật tư, điểm, điều kiện nhiệm vụ và quyền host. Client gửi intent và đọc snapshot; không dựng tiến độ giả bằng UI.
 - Giữ một InputController cho PC/mobile và catalogue tương tác chung. E theo context; G ưu tiên hủy job → đặt kiện → ping. Action qua MainScene.executeAction, pending đến ACK; START_JOB helper qua GameEngine.handleIntent. Menu khóa input cá nhân, không pause phòng; M không tự đóng khi đi.
-- Bảy vùng là bảy lựa chọn bản đồ/phòng; hiện chưa có giải đấu/xếp hạng liên đội. Không tự mở rộng phạm vi này.
+- Bảy vùng là bảy lựa chọn bản đồ/phòng. Host + Projector dùng chung dashboard so điểm của bảy phòng mặc định, thay dòng tỉnh bằng phòng riêng đang xem; đây là projection đọc state, chưa có giải đấu/bộ điều phối trận liên đội. Không tự mở rộng luật hoặc điều khiển thành toàn bộ bảy phòng.
 - Hình ảnh bám concept đã lưu, dùng cảnh nền chi tiết + lớp che + đối tượng động. Không thay bằng bản đồ ô vuông/SVG đơn giản hoặc coi đây là tileset ghép tự do.
 - Bảo toàn working tree chưa commit và asset/báo cáo lịch sử. Không tự reset/stash/commit, xóa asset hoặc tắt server đang dùng để “dọn” bàn giao. Không lưu token, `.env` riêng hoặc ID tiến trình như dữ kiện bền vững trong tài liệu.
 - Khi đổi học thuật, đối chiếu giáo trình/nguồn và ghi giới hạn mô phỏng; `GAME_RULE_*` là mã mô phỏng, không phải số điều luật.

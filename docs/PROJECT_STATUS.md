@@ -1,3 +1,76 @@
+# Xác minh trước push GitHub — 04/10/2026
+
+Người dùng yêu cầu commit/push phiên bản hiện tại tới `https://github.com/52ducbanh/GAME-CNXH.git`. Remote `origin` đã cấu hình; repository đích chưa có nhánh tại lúc kiểm tra, nhánh đích là `main`. Nhánh local vẫn là `refactor/province-modules`.
+
+Kiểm tra thực chạy trong lượt này: `npm run build --workspace=shared`, `npm run typecheck`, `npm run build --workspace=server`, `npm run build --workspace=client -- --outDir <thư mục QA riêng trong TEMP>` đều PASS; `npm test` PASS **141/141 tests, 18/18 suites**. Client build có cảnh báo bundle trên 500 kB, không lỗi. Không ghi đè client/dist hoặc restart server; không chạy lại browser/visual/network QA trong lượt push.
+
+Commit gồm source, test, script và tài liệu thay đổi. Asset runtime đã versioned được gửi theo lịch sử Git; ZIP, art/audio-source, ảnh báo cáo và hai PNG Hà Nội không dùng trong v3 vẫn giữ tại máy, không stage. Không đưa node_modules, dist hoặc .env riêng lên GitHub. Mục này ghi kiểm tra trước push, không tự chứng nhận push thành công hoặc runtime đang phục vụ bản mới.
+
+---
+
+# Hiện hành — Hoàn thành triển khai toàn diện 5 tỉnh (Ninh Bình, Quảng Ninh, Hải Phòng, Thanh Hóa, Nghệ An) 04/10/2026
+
+**DONE — ĐÃ TRIỂN KHAI VÀ KIỂM THỬ THÀNH CÔNG.**
+Đã triển khai hoàn chỉnh 5 gói nhiệm vụ đã duyệt (`source/7-tinh-agent-packages-repaired`), nâng cấp toàn bộ hệ thống lên đủ 7 tỉnh (21 nhiệm vụ, 100 điểm/tỉnh). Bảo toàn 100% gameplay Hà Nội và Hà Tĩnh (zero regression).
+
+### Kết quả kiểm thử & Build thực tế:
+- `npm test`: **PASS 141/141 tests (18/18 test suites)**
+  - Cả 5 test suites mới: `ninhBinhGameplay`, `quangNinhGameplay`, `haiPhongGameplay`, `thanhHoaGameplay`, `ngheAnGameplay` PASS 20/20 tests.
+  - Regression Hà Nội: `hanoiSolo.test.ts`, `hanoiMap.test.ts` PASS.
+  - Regression Hà Tĩnh: `hatinhGameplay.test.ts` PASS.
+  - Regression va chạm: `collisionLayout.test.ts` (27 tests) PASS.
+  - Regression di chuyển & bản đồ vùng: `regionalMaps.test.ts` (10 tests), `movement.test.ts` (10 tests) PASS.
+  - Projector dashboard & overview: `projectorDashboard.test.ts` (9 tests) PASS.
+- `npm run typecheck`: **PASS 100% (shared, server, client)**
+- `npm run build`: **PASS 100% (shared tsc, server tsc, client vite build)**
+
+---
+
+# Lịch sử — Host + Projector dashboard hoàn tất 04/10/2026
+
+**Đã implement và kiểm tra; source chưa commit.** Người dùng yêu cầu dashboard theo reference, giữ Player Screen và một Host + Projector Screen. Xác nhận phạm vi: theo dõi bảy phòng mặc định; nếu đang xem phòng riêng, thay dòng tỉnh tương ứng bằng phòng đó. Các phần phía dưới là lịch sử, không chứng nhận bundle đang mở.
+
+## Implementation và giới hạn
+
+- `/host/:room` và `/projector/:room` dùng cùng `client/src/ui/dashboard/projectorDashboard.ts`; projector chỉ đọc, host gửi lệnh qua SocketClient/ACK hiện có. Đã bỏ hai view cũ khỏi production. Không có panel bản đồ chữ S trong dashboard; không tạo thêm bản đồ hoặc widget thay thế.
+- Scoreboard toàn chiều ngang, timer/logo/online/QR ở header; hàng dưới là events, featured mission, controls. CSS chỉ scope dashboard. Font tiếng Việt, node/focus/input giữ qua snapshots; tên tỉnh/điểm/timer nổi bật. Layout desktop1440×900, Full HD1920×1080 và720p1280×720 vừa một khung, không overflow chính hoặc chữ hàng vượt bounds; mobile dashboard cuộn, player giữ giao diện riêng.
+- `shared/src/projectorDashboard.ts` derive DTO từ snapshot/ProvinceView, không sửa room hoặc dựng tiến độ. `RoomManager.getDashboardOverview` + GET `/api/dashboard?room=...` chỉ đọc bảy summaries, không trả players/token. Phòng đang xem dùng snapshot100ms; phòng khác poll1s. Điểm/tổng, online/đã tham gia, audit feed và thumbnail/nhiệm vụ lấy từ state thật; đồng điểm đồng hạng. Phần trăm là tiến độ **theo điểm**, không ước lượng thao tác hoàn thành.
+- GET `/api/qr` mời vào sảnh để tự chọn7 tỉnh; QR `/api/qr/:roomCode` vẫn dành cho liên kết phòng cụ thể. Nút vào phòng đang xem tách khỏi lời mời chung.
+- Start/Pause/Resume/Skip/End/Reset và gia hạn1–10 phút chỉ tác động **phòng đang xem**. Gia hạn dùng ADD_60S với ACK từng lần, không thêm đồng hồ giải đấu hay đổi thời lượng giai đoạn60/60/600s. Chưa có điều phối trận liên đội hoặc start cả7 phòng.
+- Không đổi gameEngine/province rules, points/content, movement/collision/input/renderer/network protocol hoặc player flow trong lượt dashboard. Các sửa modal/encoding còn trong working tree thuộc lượt UI stability trước, được giữ nguyên. Asset/report lịch sử và các phiên server cũ được bảo toàn.
+
+## Kiểm tra thực chạy
+
+**PASS:** shared/server build, typecheck ba workspace, client build riêng `dist-projector-dashboard`; `npm test` **141/141,13 suites** (132 cũ +9 projection/overview tests mới). Sau chỉnh CSS cuối và type annotation, typecheck/server/client build cùng dashboard Chrome harness đã kiểm lại PASS.
+
+`scripts/verify-projector-dashboard.mjs`: production app/Chrome +7 sockets thật, MOVE hợp lệ và action khảo sát Hà Nội/tiếp nhận Hà Tĩnh tạo điểm2/3 thật. Kiểm scoreboard/rank/ties, timer/pause/extension, online count từ API, audit feed, featured progress2/30, rootQR + roomQR, thay dòng phòng riêng, projector chỉ đọc, node/focus/input, Start/Skip/End/Reset. VM fixtures kiểm stale-overview merge/ties/source không bị mutate; deferred ACK mock kiểm pending/reject/offline. Layout desktop/Full HD/720p/mobile; sảnh7 tỉnh → player Hà Tĩnh và player Nghệ An390px có canvas/HUD/joystick/E, không dashboard overlay; zero pageerror. Đã nhìn ảnh desktop/Full HD/720p và player mobile.
+
+`scripts/verify-ui-stability.mjs`:5 player modal/ledger mỗi40 snapshots giữ node/focus/scroll, không nhân listener; voting đổi option đúng. App thật kiểm host commands và briefing/results opacity1, zero pageerror. InputController8 nhóm mocks, actual MainScene.executeAction với ACK350ms mock và actual SocketClient với transport mock đều PASS. Không gọi delay/mock là đo Wi-Fi hoặc điện thoại thật.
+
+**FAIL còn mở của lượt dashboard:** không có. Harness lúc đầu giả định cố định7/7 sau rerun, thiếu thư mục xuất evidence, và fixture server import client vượt rootDir; đã sửa harness/fixture rồi PASS, không phải bug gameplay. Layout ban đầu cắt hàng dưới và text hàng ở720p đã sửa, assertions/ảnh cuối PASS.
+
+**NOT TESTED:** máy chiếu/phòng học thật và đọc từ khoảng cách thực tế; điện thoại vật lý; quét QR qua Wi-Fi thực; load60 người/mất mạng; full accessibility; chơi thủ công trọn trận cả7 tỉnh. Parity/full Hà Tĩnh100 phía dưới thuộc lượt refactor trước, không chạy lại ở task UI này. Known gameplay/auth/C11 ngoài phạm vi vẫn còn.
+
+## Runtime và evidence
+
+Preview riêng của lượt này: `http://127.0.0.1:3126/host/HANOI_01`, phục vụ `client/dist-projector-dashboard`; cổng chỉ là ví dụ QA đã xác minh, không cấu hình bền vững. Không ghi đè `client/dist`, `dist-ui-stability` hoặc `dist-province-refactor`, không restart server cũ. Bản tab3125 vẫn là UI stability trước.
+
+Evidence ignored ở `client/dist-projector-dashboard/qa/`: projector-dashboard.json, dashboard-desktop/projector/720p/mobile.png, player-hatinh-unchanged/player-mobile-unchanged.png; player-ui/ui-stability.json và ảnh host/briefing/results; input-controls/input-ack/input-network.json. Build sẽ xóa outDir, đã giữ evidence trước final rebuild và tái tạo ảnh dashboard từ build cuối. Source và lệnh tái hiện ở [TESTING](TESTING.md); scope tiếp theo ở [TASK_CURRENT](../TASK_CURRENT.md). Không tự commit/merge hoặc triển khai known issues.
+
+---
+
+# Lịch sử — Sửa UI nhấp nháy và chữ tiếng Việt — 04/10/2026
+
+**Đã sửa và kiểm tra trên source hiện tại; chưa commit.** Người dùng yêu cầu sửa trực tiếp màn hình host bị giật và chữ lỗi. Nguyên nhân: server broadcast 100ms, các view thay toàn bộ innerHTML khiến fadeIn150ms liên tục khởi tạo lại, mất node/focus/scroll; HostView/VotingModal và votingOptions có literal UTF-8 bị giải mã sai từ trước.
+
+`client/src/ui/patchMarkup.ts` đối chiếu markup, bỏ qua nội dung giống nhau, giữ node hiện có và chỉ cập nhật text/attribute/nhánh thay đổi. Áp dụng cho host, voting, briefing, practice, results, ledger, projector; onclick thay thế handler, tránh tích lũy listener khi giữ node. Host QR tải xong cập nhật ngay; copy feedback giữ qua snapshots và xử lý clipboard failure. Khôi phục literal tiếng Việt/emoji ở host và biểu quyết. Không đổi gameplay/điểm/academic meaning, cadence/protocol, movement, renderer hoặc assets.
+
+**PASS thực chạy:** shared build; typecheck ba workspace; client build riêng `dist-ui-stability`; npm test132/132 (12 suites); `scripts/verify-ui-stability.mjs` với Chrome headless. Host25 snapshots cách100ms, đúng1 animation, node/focus giữ nguyên; sáu view còn lại mỗi view40 snapshots, giữ node/focus/scroll theo phần tử có tương ứng, không nhân đôi lệnh. Voting đổi phiếu/M1→M2 đúng option/intent. QR async và copy feedback đạt. Production app + Socket.IO thật: START, PAUSE/RESUME (clock đứng khi pause), ADD_60S, SKIP_BRIEFING/PRACTICE, END/RESET; game thật hiện briefing/results opacity1; không pageerror. Ảnh host1440×900/390×844 và briefing/results đã kiểm tra. Harness đọc UI commit831c6ef tái hiện FAIL `Host replaced a live node`; source mới PASS. Một assertion opacity theo mốc thời gian cố định ở lượt đầu chưa đạt khi chạy song song full movement tests; harness đã đợi animation đầu hoàn tất trước khi đo các snapshot, rồi kiểm lại PASS.
+
+Evidence mới (ignored): `client/dist-ui-stability/qa/ui-stability.json`, host-desktop/mobile.png, briefing/results-desktop.png. QA dùng bundle/server riêng; không overwrite client/dist hoặc bundle refactor, không restart server cũ. Preview lượt này ở cổng3125, không coi cổng/phòng là cấu hình bền vững. **NOT TESTED:** mobile vật lý, Wi-Fi loss/load nhiều người, accessibility đầy đủ; các known issues ngoài UI vẫn mở. Các FAIL visual/encoding ở báo cáo refactor phía dưới đã được xử lý ở mốc này; các kết quả parity/socket chuyên sâu phía dưới thuộc lượt refactor, chưa chạy lại trong lượt UI.
+
+---
+
 # Hiện hành — Province modular refactor hoàn tất 04/10/2026
 
 **READY về kiến trúc refactor; 7/7 tỉnh đã migrate.** Repository là nguồn implementation; đọc AGENTS → phần này → TASK_CURRENT. Các mốc phía dưới là lịch sử.

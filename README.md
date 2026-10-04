@@ -10,7 +10,16 @@ Agent tiếp quản bắt đầu ở [AGENTS.md](AGENTS.md) và [docs/PROJECT_ST
 
 Đồ họa Hà Nội v3 theo ảnh concept: xem [bàn giao, ảnh trong game và kết quả kiểm tra](docs/HANOI_V3_HANDOVER.md), [nguồn asset và ghi công](docs/ART_SOURCES.md), [prompt tạo/chỉnh ảnh](docs/hanoi-v3-generation.json). [Bàn giao v2](docs/HANOI_REDESIGN.md) được giữ để đối chiếu.
 
-Đã thêm **Hải Phòng, Quảng Ninh, Ninh Bình, Thanh Hóa, Nghệ An và Hà Tĩnh** theo sáu concept người dùng cung cấp. Chọn vùng ngay tại sảnh, bấm **Chơi một mình** để bắt đầu hoặc **Tạo phòng cho đội** để điều khiển trận. Xem [bàn giao sáu vùng và ảnh game thực tế](docs/REGIONAL_MAPS_HANDOVER.md), [kết quả chạy đủ nhiệm vụ qua Socket.IO](docs/regions-runtime-qa.json) và [prompt đồ họa](docs/regions-generation.json).
+Đã hoàn thiện toàn diện **7 tỉnh** với **21 nhiệm vụ** đặc thù (mỗi tỉnh 3 nhiệm vụ độc lập, thang điểm chuẩn 100 điểm/tỉnh):
+- **Hà Nội:** Mở trạm y tế, Ứng phó sự cố cầu, Bảo vệ quyền tiếp cận công dân.
+- **Hà Tĩnh:** Tuyến Vũng Áng (giám sát tải trọng cảng biển), Cứu hộ Đèo Ngang (chuyển cảnh sương mù/chập tối), Di tích Ngã ba Đồng Lộc (quản lý văn minh dâng hương).
+- **Ninh Bình:** Bái Đính (quản lý hòm công đức & văn minh tín ngưỡng), Rừng Cúc Phương (tuần tra đêm, gỡ bẫy thú, chống lâm tặc), Bến đò Tam Cốc (niêm yết giá vé, trang bị áo phao, điều phối xuất bến).
+- **Quảng Ninh:** Tổ dân phố (dẹp tờ rơi độc hại & tuyên truyền), Công trường Bãi Cháy (bảo vệ môi trường vịnh & quây phao chắn dầu), Kho than & Tuyến cầu (kiểm soát hai đầu cầu, bắt than lậu).
+- **Hải Phòng:** Foodtour bánh đa cua (phân luồng vỉa hè & bãi đỗ xe), Lò đúc Chè Lò (xử lý khói bụi & công nghệ lọc khí), Đồ Sơn (minh bạch đền bù quy hoạch & an toàn thi công).
+- **Thanh Hóa:** Cơ sở nem chua Thành Nhà Hồ (phân giải tranh chấp, kiểm định ATTP & dán tem QR), Hành lang đường sắt (tuần tra chống tháo trộm bu lông), Vali mười tỏi (kiên quyết từ chối hối lộ, đấu trí nghiệp vụ, niêm phong tang vật).
+- **Nghệ An:** Phố cháo lươn (hòa giải tranh chấp hè phố, kẻ vạch 1.5m), Vây bắt lừa đảo đất đai (truy tìm ngõ chợ, chặn đường tắt ngõ cụt), Phá án Quỹ khuyến học (khám nghiệm hiện trường, suy đoán vô tội, thu hồi nguyên vẹn 10 triệu đồng).
+
+Chọn vùng ngay tại sảnh, bấm **Chơi một mình** để bắt đầu hoặc **Tạo phòng cho đội** để điều khiển trận. Projector và Host dashboard hỗ trợ theo dõi đồng thời cả 7 tỉnh.
 
 ---
 

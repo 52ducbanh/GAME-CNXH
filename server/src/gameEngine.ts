@@ -37,6 +37,11 @@ export class GameEngine {
   public get m3(){return this.province.projection().m3;}
   public get citizens(){return this.province.projection().citizens;}
   public get hatinhState(){return this.province.projection().hatinhState;}
+  public get ninhBinhState(){return this.province.projection().ninhBinhState;}
+  public get quangNinhState(){return this.province.projection().quangNinhState;}
+  public get haiPhongState(){return this.province.projection().haiPhongState;}
+  public get thanhHoaState(){return this.province.projection().thanhHoaState;}
+  public get ngheAnState(){return this.province.projection().ngheAnState;}
   public get voting(){return this.votingCapability.state;}
   public get totalScore(){return this.province.totalScore();}
 
@@ -576,7 +581,12 @@ export class GameEngine {
       practiceCompleted: this.practiceCompleted,
       practiceCrateDelivered: this.practiceCrateDelivered,
       ruleVersion: this.ruleVersion,
-      hatinhState: projection.hatinhState
+      hatinhState: projection.hatinhState,
+      ninhBinhState: projection.ninhBinhState,
+      quangNinhState: projection.quangNinhState,
+      haiPhongState: projection.haiPhongState,
+      thanhHoaState: projection.thanhHoaState,
+      ngheAnState: projection.ngheAnState
     };
   }
 }
