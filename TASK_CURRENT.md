@@ -8,7 +8,9 @@ Mục tiêu: core coordination + reusable capabilities/public-service preset + b
 
 Đã extract Phase 2: task/item/vote/resource capabilities và public-service preset qua narrow ports; 14 tests/typecheck/build PASS, chưa đổi production routing.
 
-Đang làm: typed boundary/semantic cleanup và locality proof sau 7/7; client/socket/browser QA và final docs. Core handlers/fallback đã xóa; không coi extraction PASS là toàn bộ task READY.
+Cleanup hoàn tất: typed boundary, semantic internal state, UI/presentation đọc ProvinceView, xóa facade renderer không còn dùng; 129 tests/parity/typecheck/build/client controls/ACK/transport mocks PASS.
+
+Đang làm: locality proof, client/socket/browser QA và final docs. Core handlers/fallback đã xóa; không coi extraction PASS là toàn bộ task READY.
 
 Giữ geometry foot14/sweep/sliding/prediction, input E/G/M, receipt/ACK/rejoin, score/content/role gợi ý, phase order và range72/107 Hà Tĩnh. Không thay phiên server người dùng. Build client với `--outDir dist-province-refactor`.
 

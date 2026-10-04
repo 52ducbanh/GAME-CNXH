@@ -1,7 +1,8 @@
+import { readPayload, readString } from 'shared';
 import { TimedObjectives } from '../../core/objectives.js';
 import { ProvinceDefinition, ProvinceModule, getProvinceDefinition, publicServiceModule, buildInteractionCatalogue } from 'shared';
 import { getInteractionActions, INTERACTION_RADIUS, JOB_DURATION, PLAN_COSTS, SCORES } from 'shared';
-import type { ActiveJob, Player, JobType, ServerAck, M1Plan, M2Plan, ClientIntent, CollisionState } from 'shared';
+import type { ActiveJob, Player, JobType, ServerAck, M1Plan, M2Plan, UntrustedIntent, CollisionState } from 'shared';
 import type { ProvinceRuntime, GameplayProjection } from '../../core/contracts.js';
 import type { GameplayPorts } from '../../core/ports.js';
 import { createPublicServiceState } from './state.js';
@@ -19,14 +20,15 @@ export class PublicServiceRuntime implements ProvinceRuntime {
   projection():GameplayProjection{return structuredClone({objectiveProgress:this.objectives.snapshot(),citizens:this.state.citizens,m1:this.state.medicalService,m2:this.state.bridgeResponse,m3:this.state.citizenRights});}
   totalScore(){return this.state.medicalService.score+this.state.bridgeResponse.score+this.state.citizenRights.score+this.objectives.score();}
   worldState():CollisionState{return {bridgeBlocked:this.state.bridgeResponse.bridgeBroken&&!this.state.bridgeResponse.bridgeRepaired,fixedDeployed:this.state.medicalService.fixedDeployed,mobileBDeployed:this.state.medicalService.mobileBDeployed,mobileCDeployed:this.state.medicalService.mobileCDeployed};}
-  dispatch(player:Player,intent:ClientIntent):ServerAck {
-    const {actionId,payload}=intent;
+  dispatch(player:Player,intent:UntrustedIntent):ServerAck {
+    const {actionId}=intent;
+    const payload=readPayload(intent.payload);
     switch(intent.type){
-      case 'START_JOB':return this.handleStartJob(player,payload,actionId);
-      case 'DELIVER_CRATE':return this.handleDeliverCrate(player,payload?.targetId,actionId);
-      case 'PROPOSE_PLAN':return this.handleProposePlan(player,payload?.missionId,payload?.plan,actionId);
-      case 'PUBLISH_NOTICE':return this.handlePublishNotice(player,payload?.missionId,actionId);
-      case 'CONFIRM_M3_PLAN':return this.handleConfirmM3Plan(player,actionId);
+      case 'START_JOB':return this.handleStartJob(player,payload&&typeof payload.type==='string'&&typeof payload.targetId==='string'?{type:payload.type,targetId:payload.targetId}:undefined,actionId);
+      case 'DELIVER_CRATE':return this.handleDeliverCrate(player,readString(payload?.targetId),actionId);
+      case 'PROPOSE_PLAN':return this.handleProposePlan(player,readString(payload?.missionId),readString(payload?.plan),actionId);
+      case 'PUBLISH_NOTICE':return this.handlePublishNotice(player,readString(payload?.missionId),actionId);
+      case 'CONFIRM_M3_PLAN':return this.confirmCitizenSupportPlan(player,actionId);
       case 'HATINH_ACTION':return {actionId,success:false,reason:'Bản đồ hiện tại không phải Hà Tĩnh.'};
       default:return {actionId,success:false,reason:'Lệnh không xác định.'};
     }
@@ -59,7 +61,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
 
   }
 
-  public handleStartJob(player: Player, payload: { type: JobType; targetId: string }, actionId: string): ServerAck {
+  public handleStartJob(player: Player, payload: { type: string; targetId: string } | undefined, actionId: string): ServerAck {
     if (this.ports.read.paused()) {
       return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     }
@@ -75,12 +77,13 @@ export class PublicServiceRuntime implements ProvinceRuntime {
       a.intent.type === 'START_JOB' && a.intent.payload.type === payload.type && a.intent.payload.targetId === payload.targetId);
     if (!eligible) return { actionId, success: false, reason: 'Hành động chưa hợp lệ, đã hoàn thành hoặc đang có đồng đội thực hiện.' };
     const helperType = payload.type as string;
-    if (helperType === 'SURVEY_BRIDGE') return { ...this.surveyBridgeM2(player), actionId };
-    if (helperType === 'RECEIVE_FEEDBACK_C') return { ...this.receiveFeedbackM3(player), actionId };
-    if (helperType === 'CROSS_CHECK_CLINIC') return { ...this.crossCheckClinicM3(player, payload.targetId), actionId };
+    if (helperType === 'SURVEY_BRIDGE') return { ...this.surveyBridge(player), actionId };
+    if (helperType === 'RECEIVE_FEEDBACK_C') return { ...this.receiveCitizenFeedback(player), actionId };
+    if (helperType === 'CROSS_CHECK_CLINIC') return { ...this.crossCheckClinic(player, payload.targetId), actionId };
 
-    const { type, targetId } = payload;
-    const poi = this.ports.read.map.points[targetId];
+    const { targetId } = payload;
+    const type = payload.type as JobType;
+    const poi = this.ports.read.map.points[targetId??''];
     if (!poi) {
       return { actionId, success: false, reason: 'Địa điểm không hợp lệ.' };
     }
@@ -246,7 +249,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
           this.state.medicalService.verifiedB = true;
 
           this.state.medicalService.score += SCORES.M1.VERIFY_TOTAL;
-          this.serveCitizensM1Fixed();
+          this.serveFixedClinicCitizens();
         } else if (this.state.medicalService.planCommitted === 'MOBILE') {
           if (job.targetId === 'CLINIC_MOBILE_B' && !this.state.medicalService.verifiedB) {
             this.state.medicalService.verifiedB = true;
@@ -258,7 +261,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
             this.state.medicalService.score += 4;
           }
           if (this.state.medicalService.verifiedB && this.state.medicalService.verifiedC) {
-            this.serveCitizensM1Mobile();
+            this.serveMobileClinicCitizens();
           }
         }
       } else if (this.questStatus('bridgeResponse') === 'ACTIVE') {
@@ -280,7 +283,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     }
   }
 
-  private serveCitizensM1Fixed() {
+  private serveFixedClinicCitizens() {
     // A12, B10, C0
     for (const c of this.state.citizens) {
       if (c.zone === 'A' || c.zone === 'B') {
@@ -291,7 +294,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     this.ports.team.audit('SERVICE', 'Trạm cố định đã phục vụ 22 công dân (12 dân Khu A và 10 dân Khu B). Khu C chưa tiếp cận được.');
   }
 
-  private serveCitizensM1Mobile() {
+  private serveMobileClinicCitizens() {
     // A10, B8, C6 (excluding C1 & C2)
     let aCount = 0;
     let bCount = 0;
@@ -314,11 +317,11 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     this.ports.team.audit('SERVICE', 'Điểm lưu động đã phục vụ 24 công dân (10 dân A, 8 dân B, 6 dân C). Hai công dân đặc biệt C1, C2 cần hỗ trợ riêng.');
   }
 
-  public handleDeliverCrate(player: Player, targetId: string, actionId: string): ServerAck {
+  public handleDeliverCrate(player: Player, targetId: string | undefined, actionId: string): ServerAck {
     if (this.ports.read.paused()) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     if (!player.carriedCrateId) return { actionId, success: false, reason: 'Bạn không mang kiện vật tư nào để giao.' };
 
-    const poi = this.ports.read.map.points[targetId];
+    const poi = this.ports.read.map.points[targetId??''];
     if (!poi) return { actionId, success: false, reason: 'Điểm giao không hợp lệ.' };
     if (distance(player.x, player.y, poi.x, poi.y) > INTERACTION_RADIUS) {
       return { actionId, success: false, reason: `Bạn cần đến gần ${poi.name} để giao kiện.` };
@@ -331,9 +334,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
 
     // Practice deliver
     if (this.ports.read.phase() === 'PRACTICE' && targetId === 'PRACTICE_TARGET') {
-      crate.state = 'DELIVERED';
-      crate.carriedByPlayerId = null;
-      player.carriedCrateId = null;
+      this.ports.items.deliver(player,crate.id);
       this.ports.practice.deliver(player);
       this.ports.team.audit('MISSION', `${player.name} đã giao thành công kiện mẫu trong thực hành.`, player.id);
       return { actionId, success: true };
@@ -344,9 +345,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
       if (this.state.medicalService.planCommitted === 'FIXED' && targetId === 'CLINIC_FIXED') {
         if (this.state.medicalService.deliveredCratesFixed >= 2) return { actionId, success: false, reason: 'Trạm cố định đã nhận đủ 2 kiện vật tư.' };
         this.state.medicalService.deliveredCratesFixed++;
-        crate.state = 'DELIVERED';
-        crate.carriedByPlayerId = null;
-        player.carriedCrateId = null;
+        this.ports.items.deliver(player,crate.id);
         if (contrib) contrib.deliveries++;
         this.ports.team.audit('RESOURCE', `${player.name} đã giao kiện cho Trạm cố định (${this.state.medicalService.deliveredCratesFixed}/2 kiện).`, player.id);
         return { actionId, success: true };
@@ -354,18 +353,14 @@ export class PublicServiceRuntime implements ProvinceRuntime {
         if (targetId === 'CLINIC_MOBILE_B') {
           if (this.state.medicalService.deliveredCratesMobileB >= 2) return { actionId, success: false, reason: 'Điểm B đã nhận đủ 2 kiện.' };
           this.state.medicalService.deliveredCratesMobileB++;
-          crate.state = 'DELIVERED';
-          crate.carriedByPlayerId = null;
-          player.carriedCrateId = null;
+          this.ports.items.deliver(player,crate.id);
           if (contrib) contrib.deliveries++;
           this.ports.team.audit('RESOURCE', `${player.name} đã giao kiện cho Điểm B (${this.state.medicalService.deliveredCratesMobileB}/2 kiện).`, player.id);
           return { actionId, success: true };
         } else if (targetId === 'CLINIC_MOBILE_C') {
           if (this.state.medicalService.deliveredCratesMobileC >= 2) return { actionId, success: false, reason: 'Điểm C đã nhận đủ 2 kiện.' };
           this.state.medicalService.deliveredCratesMobileC++;
-          crate.state = 'DELIVERED';
-          crate.carriedByPlayerId = null;
-          player.carriedCrateId = null;
+          this.ports.items.deliver(player,crate.id);
           if (contrib) contrib.deliveries++;
           this.ports.team.audit('RESOURCE', `${player.name} đã giao kiện cho Điểm C (${this.state.medicalService.deliveredCratesMobileC}/2 kiện).`, player.id);
           return { actionId, success: true };
@@ -378,9 +373,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
       if (this.state.bridgeResponse.planCommitted === 'REPAIR' && targetId === 'BRIDGE') {
         if (this.state.bridgeResponse.bridgeCratesDelivered >= 2) return { actionId, success: false, reason: 'Cầu đã nhận đủ 2 kiện vật tư sửa chữa.' };
         this.state.bridgeResponse.bridgeCratesDelivered++;
-        crate.state = 'DELIVERED';
-        crate.carriedByPlayerId = null;
-        player.carriedCrateId = null;
+        this.ports.items.deliver(player,crate.id);
         if (contrib) contrib.deliveries++;
         this.ports.team.audit('RESOURCE', `${player.name} đã giao kiện sửa cầu (${this.state.bridgeResponse.bridgeCratesDelivered}/2 kiện).`, player.id);
         return { actionId, success: true };
@@ -389,9 +382,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
         this.state.bridgeResponse.reliefCratesDeliveredB++;
 
         this.state.bridgeResponse.score += SCORES.M2.DELIVER_RELIEF_PER_CRATE;
-        crate.state = 'DELIVERED';
-        crate.carriedByPlayerId = null;
-        player.carriedCrateId = null;
+        this.ports.items.deliver(player,crate.id);
         if (contrib) contrib.deliveries++;
         this.ports.team.audit('RESOURCE', `${player.name} đã giao kiện cứu trợ khẩn cấp đến Khu B (${this.state.bridgeResponse.reliefCratesDeliveredB}/2 kiện). +8 điểm.`, player.id);
         return { actionId, success: true };
@@ -403,18 +394,14 @@ export class PublicServiceRuntime implements ProvinceRuntime {
       if (targetId === 'CITIZEN_C1') {
         if (this.state.citizenRights.deliveredC1) return { actionId, success: false, reason: 'Cụ C1 đã nhận được kiện vật tư y tế.' };
         this.state.citizenRights.deliveredC1 = true;
-        crate.state = 'DELIVERED';
-        crate.carriedByPlayerId = null;
-        player.carriedCrateId = null;
+        this.ports.items.deliver(player,crate.id);
         if (contrib) contrib.deliveries++;
         this.ports.team.audit('SERVICE', `${player.name} đã giao tận tay kiện vật tư y tế đến Cụ C1.`, player.id);
         return { actionId, success: true };
       } else if (targetId === 'CITIZEN_C2') {
         if (this.state.citizenRights.deliveredC2) return { actionId, success: false, reason: 'Cụ C2 đã nhận được kiện vật tư y tế.' };
         this.state.citizenRights.deliveredC2 = true;
-        crate.state = 'DELIVERED';
-        crate.carriedByPlayerId = null;
-        player.carriedCrateId = null;
+        this.ports.items.deliver(player,crate.id);
         if (contrib) contrib.deliveries++;
         this.ports.team.audit('SERVICE', `${player.name} đã giao tận tay kiện vật tư y tế đến Cụ C2.`, player.id);
         return { actionId, success: true };
@@ -424,7 +411,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     return { actionId, success: false, reason: 'Điểm giao hiện tại không yêu cầu vật tư hoặc điều kiện chưa thỏa.' };
   }
 
-  public handleProposePlan(player: Player, missionId: 'M1' | 'M2', plan: string, actionId: string): ServerAck {
+  public handleProposePlan(player: Player, missionId: string | undefined, plan: string | undefined, actionId: string): ServerAck {
     if (this.ports.read.paused()) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     const hq = this.ports.read.map.points.HEADQUARTERS;
     if (distance(player.x, player.y, hq.x, hq.y) > INTERACTION_RADIUS) {
@@ -449,6 +436,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
         return { actionId, success: false, reason: `Không đủ ngân sách (cần ${cost} đơn vị).` };
       }
 
+      if(plan===undefined)return {actionId,success:false,reason:'Hành động hoặc payload không hợp lệ.'};
       this.ports.votes.start('M1', plan, player);
       return { actionId, success: true };
     } else if (missionId === 'M2') {
@@ -463,6 +451,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
         return { actionId, success: false, reason: `Không đủ ngân sách (cần ${cost} đơn vị).` };
       }
 
+      if(plan===undefined)return {actionId,success:false,reason:'Hành động hoặc payload không hợp lệ.'};
       this.ports.votes.start('M2', plan, player);
       return { actionId, success: true };
     }
@@ -470,7 +459,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     return { actionId, success: false, reason: 'Nhiệm vụ không hợp lệ.' };
   }
 
-  public handleConfirmM3Plan(player: Player, actionId: string): ServerAck {
+  public confirmCitizenSupportPlan(player: Player, actionId: string): ServerAck {
     if (this.ports.read.paused()) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     const hq = this.ports.read.map.points.HEADQUARTERS;
     if (distance(player.x, player.y, hq.x, hq.y) > INTERACTION_RADIUS) {
@@ -494,7 +483,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     return { actionId, success: true };
   }
 
-  public handlePublishNotice(player: Player, missionId: 'M1' | 'M2' | 'M3', actionId: string): ServerAck {
+  public handlePublishNotice(player: Player, missionId: string | undefined, actionId: string): ServerAck {
     if (this.ports.read.paused()) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     const board = this.ports.read.map.points.NOTICE_BOARD;
     if (distance(player.x, player.y, board.x, board.y) > INTERACTION_RADIUS) {
@@ -519,7 +508,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
       this.ports.team.audit('AUDIT', `${player.name} đã niêm yết công khai ngân sách & kết quả M1 lên Bảng công khai. +6 điểm.`, player.id);
 
       // RESOLVE M1, Trigger M2!
-      this.resolveM1();
+      this.resolveMedicalService();
       return { actionId, success: true };
     } else if (missionId === 'M2') {
       if (this.questStatus('bridgeResponse') !== 'ACTIVE') return { actionId, success: false, reason: 'M2 chưa kích hoạt.' };
@@ -536,7 +525,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
       this.ports.team.audit('AUDIT', `${player.name} đã niêm yết công khai kết quả ứng phó và tuyến đường M2. +5 điểm.`, player.id);
 
       // RESOLVE M2, Trigger M3!
-      this.resolveM2();
+      this.resolveBridgeResponse();
       return { actionId, success: true };
     } else if (missionId === 'M3') {
       if (this.questStatus('citizenRights') !== 'ACTIVE') return { actionId, success: false, reason: 'M3 chưa kích hoạt.' };
@@ -552,14 +541,14 @@ export class PublicServiceRuntime implements ProvinceRuntime {
       this.ports.team.audit('AUDIT', `${player.name} đã niêm yết bản tổng hợp khắc phục M3 (bảo mật thông tin riêng). +6 điểm.`, player.id);
 
       // RESOLVE M3, Finish Match!
-      this.resolveM3();
+      this.resolveCitizenRights();
       return { actionId, success: true };
     }
 
     return { actionId, success: false, reason: 'Nhiệm vụ không hợp lệ.' };
   }
 
-  private resolveM1() {
+  private resolveMedicalService() {
     this.state.medicalService.status = 'RESOLVED';
     this.ports.team.audit('MISSION', `HOÀN THÀNH NHIỆM VỤ 1! Điểm M1: ${this.state.medicalService.score}/30.`);
 
@@ -572,7 +561,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     this.ports.team.audit('MISSION', 'SỰ KIỆN KHẨN CẤP: Cầu qua kênh sang Khu B bị sự cố sụt lún! Tuyến ngắn bị chặn. Bắt đầu Nhiệm vụ 2.');
   }
 
-  private resolveM2() {
+  private resolveBridgeResponse() {
     this.state.bridgeResponse.status = 'RESOLVED';
     this.ports.team.audit('MISSION', `HOÀN THÀNH NHIỆM VỤ 2! Điểm M2: ${this.state.bridgeResponse.score}/35.`);
 
@@ -581,7 +570,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     this.ports.team.audit('MISSION', 'BẮT ĐẦU NHIỆM VỤ 3: Tiếp nhận phản ánh từ Khu C (Cụ C1, C2 khó khăn tiếp cận) và xác minh thông tin sổ sách kho.');
   }
 
-  private resolveM3() {
+  private resolveCitizenRights() {
     this.state.citizenRights.status = 'RESOLVED';
     this.ports.team.audit('MISSION', `HOÀN THÀNH NHIỆM VỤ 3! Điểm M3: ${this.state.citizenRights.score}/35.`);
     this.ports.lifecycle.end('TẤT CẢ 3 NHIỆM VỤ ĐÃ HOÀN THÀNH XUẤT SẮC!');
@@ -589,7 +578,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
 
   // Quick helper for M2 and M3 field inquiries
 
-  public surveyBridgeM2(player: Player): ServerAck {
+  public surveyBridge(player: Player): ServerAck {
     if (this.questStatus('bridgeResponse') !== 'ACTIVE') return { actionId: 'bridge_survey', success: false, reason: 'M2 chưa kích hoạt.' };
     const bridgePoi = this.ports.read.map.points.BRIDGE;
     if (distance(player.x, player.y, bridgePoi.x, bridgePoi.y) > INTERACTION_RADIUS) {
@@ -607,7 +596,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     return { actionId: 'bridge_survey', success: true };
   }
 
-  public receiveFeedbackM3(player: Player): ServerAck {
+  public receiveCitizenFeedback(player: Player): ServerAck {
     if (this.questStatus('citizenRights') !== 'ACTIVE') return { actionId: 'm3_feedback', success: false, reason: 'M3 chưa kích hoạt.' };
     const zoneC = this.ports.read.map.points.ZONE_C;
     if (distance(player.x, player.y, zoneC.x, zoneC.y) > INTERACTION_RADIUS) {
@@ -625,9 +614,9 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     return { actionId: 'm3_feedback', success: true };
   }
 
-  public crossCheckClinicM3(player: Player, targetId: string): ServerAck {
+  public crossCheckClinic(player: Player, targetId: string): ServerAck {
     if (this.questStatus('citizenRights') !== 'ACTIVE') return { actionId: 'm3_cross_check', success: false, reason: 'M3 chưa kích hoạt.' };
-    const poi = this.ports.read.map.points[targetId];
+    const poi = this.ports.read.map.points[targetId??''];
     if (!poi) return { actionId: 'm3_cross_check', success: false, reason: 'Địa điểm không hợp lệ.' };
     if (distance(player.x, player.y, poi.x, poi.y) > INTERACTION_RADIUS) {
       return { actionId: 'm3_cross_check', success: false, reason: `Cần đến ${poi.name} để đối chiếu danh sách.` };

@@ -19,4 +19,4 @@ qaSocket.connected=true;callbacks.get('connect')();assert.equal(client.getStatus
 assert.equal((await client.sendIntent({actionId:'before-rejoin',type:'MOVE',payload:{x:1,y:1}})).success,false);
 callbacks.get('joined_room')({success:true,playerId:'qa-player',playerToken:'fixture-only'});assert.equal(client.getStatus(),'CONNECTED');assert.equal(client.getPlayerId(),'qa-player');
 const report={method:'Actual SocketClient bundle with mocked Socket.IO transport events; real two-socket checks are separate',lockUntilJoined:true,noOfflineReplay:true,lockUntilRejoined:true,ackAfterJoined:true,pass:true};
-await writeFile('docs/input-network-unit-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+await writeFile(process.env.QA_REPORT_PATH || 'docs/input-network-unit-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

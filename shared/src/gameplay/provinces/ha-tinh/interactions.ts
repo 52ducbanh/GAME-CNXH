@@ -1,9 +1,10 @@
+import type { StartTaskType } from '../../core/commands.js';
 import type { CatalogueContext } from '../../core/interactions.js';
 export function appendHatinhActions(context:CatalogueContext){
   const {s,add,job,deliver}=context;
   addHatinhActions(context);
     if (s.m1.planCommitted !== 'NONE') {
-      const clinics: [string, number, boolean, boolean, string][] = s.m1.planCommitted === 'FIXED'
+      const clinics: [string, number, boolean, boolean, StartTaskType][] = s.m1.planCommitted === 'FIXED'
         ? [['CLINIC_FIXED', s.m1.deliveredCratesFixed, s.m1.fixedDeployed, s.m1.verifiedA, 'DEPLOY_FIXED_CLINIC']]
         : s.m1.planCommitted === 'MOBILE' ? [['CLINIC_MOBILE_B', s.m1.deliveredCratesMobileB, s.m1.mobileBDeployed, s.m1.verifiedB, 'DEPLOY_MOBILE_CLINIC'], ['CLINIC_MOBILE_C', s.m1.deliveredCratesMobileC, s.m1.mobileCDeployed, s.m1.verifiedC, 'DEPLOY_MOBILE_CLINIC']] : [];
       for (const [id, count, deployed, verified, type] of clinics) {

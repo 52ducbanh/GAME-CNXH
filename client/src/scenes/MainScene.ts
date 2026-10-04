@@ -1,15 +1,14 @@
 import { getProvincePresentation } from '../gameplay/registry.js';
-import { getProvinceView } from 'shared';
+import { getProvinceWorldState } from 'shared';
 import { InputController, InputAction } from '../game/inputController.js';
 import { InteractionAction, InteractionContext, resolveInteraction, getInteractionActions } from 'shared';
 import Phaser from 'phaser';
 import { GameSnapshot, Player, PointOfInterest, WORLD_WIDTH, WORLD_HEIGHT, PLAYER_SPEED, INTERACTION_RADIUS, MapId, getGameMap, isWalkableForMap } from 'shared';
 import { SocketClient, newActionId } from '../network/socketClient.js';
-import { preloadHanoi, createCharacterAnimations, drawHanoi } from '../game/hanoiMap.js';
+import { createCharacterAnimations } from '../game/hanoiAssets.js';
 import { getMissionGuide } from 'shared';
 import { findWalkingRoute } from 'shared';
 import { CHARACTER_ROWS, PROP } from '../game/hanoiAssets.js';
-import { preloadRegion, drawRegion } from '../game/regionalScene.js';
 import { soundManager } from '../game/soundManager.js';
 import { MOVEMENT_CONFIG, MapPoint, inputDisplacement, resolveMovement, collisionContact, surfaceAt } from 'shared';
 import { MovementDebug } from '../game/movementDebug.js';
@@ -21,7 +20,7 @@ export class MainScene extends Phaser.Scene {
   private localPlayerSprite: Phaser.GameObjects.Container | null = null;
   private otherPlayerSprites = new Map<string, Phaser.GameObjects.Container>();
   private crateSprites = new Map<string, Phaser.GameObjects.Container>();
-  private landmarks!: Pick<ReturnType<typeof drawHanoi>,'practiceLabel'|'updateState'|'updateOcclusion'>;
+  private landmarks!: ReturnType<ReturnType<typeof getProvincePresentation>['draw']>;
   private map = getGameMap();
   public controls!: InputController;
   private interaction: InteractionContext = {primary:null,secondary:null,choices:[]};
@@ -122,7 +121,7 @@ export class MainScene extends Phaser.Scene {
     if(this.overview)this.toggleOverview();
   }
   private isTyping(){return this.controls?.isTyping()??false;}
-  private collisionContext(){return this.currentSnapshot?getProvinceView(this.currentSnapshot,this.localPlayerId).visual.world:{};}
+  private collisionContext(){return this.currentSnapshot?getProvinceWorldState(this.currentSnapshot):{};}
   private blockedBridge(){return !!this.collisionContext().bridgeBlocked;}
 
   private handleControlAction(action:InputAction){

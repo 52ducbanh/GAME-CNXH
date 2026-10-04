@@ -24,6 +24,7 @@ export const PROVINCE_MODULES = {
   'ha-tinh':hatinhModule,
 };
 export function getProvinceModule(id:MapId){return PROVINCE_MODULES[id];}
+export function getProvinceWorldState(s:GameSnapshot){return getProvinceModule(s.mapId).worldState(s);}
 export function getProvinceView(s:GameSnapshot,playerId=''){
   const module=getProvinceModule(s.mapId);
   return module.view(s,buildMissionGuide(s,playerId,module.guide));

@@ -1,3 +1,4 @@
+import type { ActionIntent, StartTaskType } from './commands.js';
 import type { ClientIntent, GameSnapshot } from '../../types.js';
 import { INTERACTION_RADIUS } from '../../constants.js';
 import { getGameMap } from '../../worldMaps.js';
@@ -14,7 +15,7 @@ export interface InteractionAction {
   priority: number;
   available: boolean;
   serverValidation: true;
-  intent: Omit<ClientIntent, 'actionId'>;
+  intent: ActionIntent;
 }
 export interface InteractionContext { primary: InteractionAction | null; secondary: InteractionAction | null; choices: InteractionAction[] }
 
@@ -23,7 +24,7 @@ export interface InteractionContext { primary: InteractionAction | null; seconda
 export interface CatalogueContext {
   s: GameSnapshot; playerId: string; actions: InteractionAction[];
   add(targetId: string, label: string, intent: InteractionAction['intent'], priority?: number, type?: InteractionType, point?: {x:number;y:number;name?:string}): void;
-  job(targetId:string,type:string,label:string,manpower?:boolean):void;
+  job(targetId:string,type:StartTaskType,label:string,manpower?:boolean):void;
   deliver(targetId:string):void;
 }
 export function buildInteractionCatalogue(s: GameSnapshot, playerId: string, append: (context: CatalogueContext) => void, describe: (intent: InteractionAction['intent']) => string | undefined): InteractionAction[] {
@@ -35,7 +36,7 @@ export function buildInteractionCatalogue(s: GameSnapshot, playerId: string, app
       description: describe(intent),
       x: point.x, y: point.y, range: INTERACTION_RADIUS, available: true, serverValidation: true });
   };
-  const job = (target: string, type: string, label: string, manpower = false) => {
+  const job = (target: string, type: StartTaskType, label: string, manpower = false) => {
     if (manpower && s.manpower.busy >= s.manpower.total) return;
     if (Object.values(s.players).some(peer => peer.activeJob?.type === type && peer.activeJob.targetId === target)) return;
     add(target, label, { type: 'START_JOB', payload: { type, targetId: target } });

@@ -9,6 +9,13 @@ interface ItemPorts {
 const distance=(x1:number,y1:number,x2:number,y2:number)=>Math.hypot(x2-x1,y2-y1);
 export class ItemCapability {
   constructor(private readonly ports:ItemPorts){}
+  public deliver(player: Player, crateId: string) {
+    const crate = this.ports.crates.get(crateId);
+    if (!crate) return;
+    crate.state = 'DELIVERED';
+    crate.carriedByPlayerId = null;
+    player.carriedCrateId = null;
+  }
   public reset() {
     this.ports.crates.clear();
     for (let i = 1; i <= INITIAL_CRATES; i++) {

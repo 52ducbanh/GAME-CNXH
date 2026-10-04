@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import QRCode from 'qrcode';
 import dotenv from 'dotenv';
 import { RoomManager } from './roomManager.js';
-import { ClientIntent, GAME_MAPS, isMapId } from 'shared';
+import { ServerAck, readIntentEnvelope, GAME_MAPS, isMapId } from 'shared';
 
 dotenv.config();
 
@@ -208,16 +208,16 @@ io.on('connection', (socket: Socket) => {
     io.to(roomCode).emit('room_snapshot', engine.getSnapshot());
   });
 
-  socket.on('client_intent', (intent: ClientIntent, ackCallback?: (ack: any) => void) => {
+  socket.on('client_intent', (intent: unknown, ackCallback?: (ack: ServerAck) => void) => {
     const meta = socketMap.get(socket.id);
     if (!meta || !meta.roomCode || !meta.playerId) {
-      if (ackCallback) ackCallback({ actionId: intent.actionId, success: false, reason: 'Chưa tham gia phòng.' });
+      if (ackCallback) ackCallback({ actionId: readIntentEnvelope(intent)?.actionId ?? '', success: false, reason: 'Chưa tham gia phòng.' });
       return;
     }
 
     const engine = roomManager.getRoom(meta.roomCode);
     if (!engine) {
-      if (ackCallback) ackCallback({ actionId: intent.actionId, success: false, reason: 'Phòng không tồn tại.' });
+      if (ackCallback) ackCallback({ actionId: readIntentEnvelope(intent)?.actionId ?? '', success: false, reason: 'Phòng không tồn tại.' });
       return;
     }
 

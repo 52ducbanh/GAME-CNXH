@@ -1,9 +1,9 @@
-import type { Citizen, Mission1State, Mission2State, Mission3State } from "shared";
+import type { Citizen, MedicalServiceState, BridgeResponseState, CitizenRightsState } from "shared";
 import { INITIAL_CITIZENS } from "shared";
 
-export interface PublicServiceState { medicalService: Mission1State; bridgeResponse: Mission2State; citizenRights: Mission3State; citizens: Citizen[]; }
+export interface PublicServiceState { medicalService: MedicalServiceState; bridgeResponse: BridgeResponseState; citizenRights: CitizenRightsState; citizens: Citizen[]; }
 
-export function createMedicalService(): Mission1State {
+export function createMedicalService(): MedicalServiceState {
     return {
       status: 'LOCKED',
       surveys: { A: false, B: false, C: false },
@@ -26,7 +26,7 @@ export function createMedicalService(): Mission1State {
     };
   }
 
-export function createBridgeResponse(): Mission2State {
+export function createBridgeResponse(): BridgeResponseState {
     return {
       status: 'LOCKED',
       bridgeBroken: false,
@@ -45,7 +45,7 @@ export function createBridgeResponse(): Mission2State {
     };
   }
 
-export function createCitizenRights(): Mission3State {
+export function createCitizenRights(): CitizenRightsState {
     return {
       status: 'LOCKED',
       receivedFeedbackC: false,

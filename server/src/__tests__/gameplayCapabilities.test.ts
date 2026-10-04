@@ -61,7 +61,7 @@ describe('Extracted gameplay capabilities', () => {
       read: { map: engine.map, phase: () => engine.phase, paused: () => engine.isPaused, snapshot: () => engine.getSnapshot() },
       team: { contribution: id => engine.personalContributions.get(id), onlineCount: () => engine.getOnlinePlayerCount(), audit: engine.addAuditEvent.bind(engine) },
       tasks: { manpower: engine.manpower, start: (p, spec, id) => startTask(p, spec, engine.manpower, id) },
-      items: { get: id => engine.crates.get(id) },
+      items: { get: id => engine.crates.get(id), deliver: () => {} },
       resources: { ledger: engine.resources, deduct: (id, text, amount) => deductResource(engine.resources, id, text, amount, engine.addAuditEvent.bind(engine)) },
       votes: { active: () => false, start: () => {} },
       lifecycle: { end: engine.endMatch.bind(engine), recoverWorld: () => {} },

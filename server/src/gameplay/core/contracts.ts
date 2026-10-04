@@ -1,4 +1,4 @@
-import type { ActiveJob, Citizen, ClientIntent, GameSnapshot, HatinhState, Mission1State, Mission2State, Mission3State, Player, ServerAck, CollisionState } from 'shared';
+import type { ActiveJob, Citizen, UntrustedIntent, GameSnapshot, HatinhState, Mission1State, Mission2State, Mission3State, Player, ServerAck, CollisionState } from 'shared';
 
 /** The wire projections are retained until all separately deployed clients migrate. */
 export interface GameplayProjection {
@@ -14,7 +14,7 @@ export interface ProvinceRuntime {
   start(): void;
   reset(): void;
   tick(dtMs: number): void;
-  dispatch(player: Player, intent: ClientIntent): ServerAck;
+  dispatch(player: Player, intent: UntrustedIntent): ServerAck;
   completeTask(player: Player, task: ActiveJob): void;
   commitVote(missionId: 'M1' | 'M2' | null, plan: string): void;
   projection(): GameplayProjection;

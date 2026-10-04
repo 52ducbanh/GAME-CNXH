@@ -60,4 +60,4 @@ check('blur / hidden tab / lost capture resets without stuck movement',()=>{
 });
 input.destroy();const count=actions.length;key('KeyE');assert.equal(actions.length,count);
 const report={method:'Bundled production InputController/TouchControls with EventTarget and mock DOM; no real device or human held-key test',checks,pass:true};
-await writeFile('docs/input-controls-unit-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+await writeFile(process.env.QA_REPORT_PATH || 'docs/input-controls-unit-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

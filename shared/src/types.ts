@@ -95,7 +95,7 @@ export interface ManpowerPool {
 export type M1Plan = 'NONE' | 'FIXED' | 'MOBILE';
 export type M2Plan = 'NONE' | 'REPAIR' | 'DETOUR';
 
-export interface Mission1State {
+export interface MedicalServiceState {
   status: 'LOCKED' | 'ACTIVE' | 'RESOLVED';
   surveys: {
     A: boolean;
@@ -124,7 +124,7 @@ export interface Mission1State {
   score: number; // max 30
 }
 
-export interface Mission2State {
+export interface BridgeResponseState {
   status: 'LOCKED' | 'ACTIVE' | 'RESOLVED';
   bridgeBroken: boolean;
   bridgeRepaired: boolean;
@@ -141,7 +141,7 @@ export interface Mission2State {
   score: number; // max 35
 }
 
-export interface Mission3State {
+export interface CitizenRightsState {
   status: 'LOCKED' | 'ACTIVE' | 'RESOLVED';
   receivedFeedbackC: boolean;
   crossCheckedList: boolean;
@@ -155,6 +155,10 @@ export interface Mission3State {
   noticePublished: boolean;
   score: number; // max 35
 }
+
+export type Mission1State = MedicalServiceState;
+export type Mission2State = BridgeResponseState;
+export type Mission3State = CitizenRightsState;
 
 export interface VoteState {
   active: boolean;
@@ -218,26 +222,7 @@ export interface GameSnapshot {
   hatinhState?: HatinhState;
 }
 
-export interface ClientIntent {
-  actionId: string;
-  type: 
-    | 'MOVE'
-    | 'SET_ROLE'
-    | 'START_JOB'
-    | 'CANCEL_JOB'
-    | 'PICK_CRATE'
-    | 'DROP_CRATE'
-    | 'DELIVER_CRATE'
-    | 'RETURN_CRATE'
-    | 'PROPOSE_PLAN'
-    | 'CAST_VOTE'
-    | 'PUBLISH_NOTICE'
-    | 'CONFIRM_M3_PLAN'
-    | 'HOST_COMMAND'
-    | 'PING_LOCATION'
-    | 'HATINH_ACTION';
-  payload?: any;
-}
+export type ClientIntent = import('./gameplay/core/commands.js').GameplayCommand | {actionId:string;type:'HOST_COMMAND';payload?:unknown};
 
 export interface ServerAck {
   actionId: string;

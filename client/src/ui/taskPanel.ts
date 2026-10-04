@@ -1,4 +1,4 @@
-import { GameSnapshot, getMissionGuide } from 'shared';
+import { GameSnapshot, getProvinceView } from 'shared';
 
 export class TaskPanel {
   private container: HTMLElement;
@@ -25,12 +25,12 @@ export class TaskPanel {
   }
 
   public update(snapshot: GameSnapshot) {
-    const guide = getMissionGuide(snapshot, this.playerId);
+    const view = getProvinceView(snapshot, this.playerId), guide = view.guide;
     const nextStepText = guide.step;
     const targetPoi = guide.target;
 
     const phaseTitle = snapshot.phase === 'RUNNING'
-      ? `NHIỆM VỤ ${snapshot.m1.status === 'ACTIVE' ? 1 : snapshot.m2.status === 'ACTIVE' ? 2 : 3} / 3: ${guide.title}`
+      ? `NHIỆM VỤ ${view.activeQuestNumber} / ${view.quests.length}: ${guide.title}`
       : guide.title;
 
     const taskItemsHtml = guide.checks.map((item, index) => `

@@ -52,6 +52,7 @@ export interface ProvinceView {
   totalScore: number;
   guide: MissionGuide;
   minimapUrl: string;
+  votingOptions: { id: string; plan: 'FIXED' | 'MOBILE' | 'REPAIR' | 'DETOUR'; color: 'amber' | 'sky' | 'emerald'; title: string; description: string }[];
   markers: { pointId: string; done: boolean; color?: string; size?: number }[];
   visual: {
     world: CollisionState;
@@ -65,6 +66,7 @@ export interface ProvinceView {
     bridgeLabel: string;
     bridgePlan: string;
     bridgeRepaired: boolean;
+    simulationSummary: string;
   };
 }
 
@@ -74,4 +76,5 @@ export interface ProvinceModule {
   describeAction(intent: InteractionAction['intent']): string | undefined;
   guide(context: GuideContext): MissionGuide;
   view(snapshot: GameSnapshot, guide: MissionGuide): ProvinceView;
+  worldState(snapshot: GameSnapshot): CollisionState;
 }

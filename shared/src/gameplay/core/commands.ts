@@ -1,5 +1,6 @@
 import type { JobType, M1Plan, M2Plan, PlayerRole } from '../../types.js';
 import type { HatinhAction } from '../provinces/ha-tinh/commands.js';
+import type { MapId } from '../../worldMaps.js';
 
 type Command<T extends string, P> = { actionId: string; type: T; payload: P };
 type EmptyCommand<T extends string> = { actionId: string; type: T; payload?: never };
@@ -22,7 +23,14 @@ export type GameplayCommand =
 export type ActionIntent = GameplayCommand extends infer C
   ? C extends GameplayCommand ? Omit<C, 'actionId'> : never : never;
 
+export type ProvinceCommand<P extends MapId> = P extends 'ha-tinh' ? GameplayCommand
+  : Exclude<GameplayCommand, { type: 'HATINH_ACTION' }>;
+
 export interface UntrustedIntent { actionId: string; type: string; payload?: unknown }
+export function readPayload(value: unknown): Record<string, unknown> | undefined {
+  return typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined;
+}
+export function readString(value: unknown): string | undefined { return typeof value === 'string' ? value : undefined; }
 export function readIntentEnvelope(value: unknown): UntrustedIntent | null {
   if (typeof value !== 'object' || value === null) return null;
   const v = value as Record<string, unknown>;

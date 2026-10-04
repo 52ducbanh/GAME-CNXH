@@ -1,7 +1,7 @@
 import type { ProvinceDefinition, ProvinceModule } from '../../core/contracts.js';
 import { appendPublicServiceActions, describePublicServiceAction } from './interactions.js';
 import { publicServiceGuide } from './guide.js';
-import { publicServiceView } from './view.js';
+import { publicServiceView, publicServiceWorldState } from './view.js';
 import { appendTimedObjectives, timedObjectiveGuide, withTimedObjectiveView } from '../../core/objectives.js';
 
 export function publicServiceModule(definition: ProvinceDefinition): ProvinceModule {
@@ -11,5 +11,6 @@ export function publicServiceModule(definition: ProvinceDefinition): ProvinceMod
     describeAction: describePublicServiceAction,
     guide: context => timedObjectiveGuide(context, definition, publicServiceGuide(context)),
     view: (s, guide) => withTimedObjectiveView(publicServiceView(s, definition, guide), s, definition),
+    worldState: publicServiceWorldState,
   };
 }

@@ -8,13 +8,15 @@ globalThis.document={hidden:false,hasFocus:()=>true,activeElement:null,querySele
 const mocks={
  'phaser':"export default {Scene:class{}};",
  'hanoiMap':"export const preloadHanoi=()=>{},createCharacterAnimations=()=>{},drawHanoi=()=>{};",
- 'hanoiAssets':"export const CHARACTER_ROWS={},PROP={};",
+ 'hanoiAssets':"export const CHARACTER_ROWS={},PROP={},createCharacterAnimations=()=>{};",
+ 'provincePresentation':"export const getProvincePresentation=()=>({preload(){},draw(){}});",
  'regionalScene':"export const preloadRegion=()=>{},drawRegion=()=>{};",
  'soundManager':"export const soundManager={resetMovement(){}};",
  'movementDebug':"export class MovementDebug{}",
  'socketClient':"export class SocketClient{};let serial=0;export const newActionId=()=> 'ack-test-'+(++serial);"
 };
 const bundle=await build({entryPoints:['client/src/scenes/MainScene.ts'],bundle:true,platform:'node',format:'esm',write:false,plugins:[{name:'headless-render-mocks',setup(b){
+ b.onResolve({filter:/^\.\.\/gameplay\/registry\.js$/},()=>({path:'provincePresentation',namespace:'qa-mock'}));
  b.onResolve({filter:/^(phaser)$|\/(hanoiMap|hanoiAssets|regionalScene|soundManager|movementDebug|socketClient)\.js$/},args=>{
    const key=args.path==='phaser'?'phaser':args.path.split('/').at(-1).replace('.js','');
    return {path:key,namespace:'qa-mock'};
@@ -37,4 +39,4 @@ assert.equal(scene.currentSnapshot.players[p.id].carriedCrateId,null);
 scene.actionCooldown=0;const second=scene.executeAction(action);reply({actionId:'ack-test-2',success:true});await second;
 assert.equal(feedback.at(-1).success,true);assert.equal(scene.currentSnapshot.players[p.id].carriedCrateId,null);
 const report={method:'Actual bundled MainScene.executeAction with mocked renderer/socket and 350ms delayed ACK; no browser-network interception',pendingUntilAck:true,spamSuppressed:true,rejectReasonWithoutSuccess:true,noClientCargoMutation:true,successOnlyAfterAck:true,pass:true};
-await writeFile('docs/input-ack-unit-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+await writeFile(process.env.QA_REPORT_PATH || 'docs/input-ack-unit-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

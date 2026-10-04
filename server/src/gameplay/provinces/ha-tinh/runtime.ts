@@ -1,5 +1,6 @@
+import { readPayload, readString } from 'shared';
 import { INTERACTION_RADIUS, getProvinceDefinition, getProvinceModule, selectHatinhScore, selectHatinhStatuses } from 'shared';
-import type { Player, ServerAck, ClientIntent, ActiveJob, CollisionState } from 'shared';
+import type { Player, ServerAck, UntrustedIntent, ActiveJob, CollisionState } from 'shared';
 import type { ProvinceRuntime, GameplayProjection } from '../../core/contracts.js';
 import type { GameplayPorts } from '../../core/ports.js';
 import { PublicServiceRuntime } from '../../presets/public-service/runtime.js';
@@ -13,8 +14,8 @@ export class HatinhRuntime implements ProvinceRuntime {
   }
   start(){this.state=createHatinhState();this.normalizeScores();this.ports.team.audit('MISSION','TRẬN ĐẤU BẮT ĐẦU! Nhiệm vụ 1: Lửa đỏ tuyến Vũng Áng - Kiểm soát trật tự cảng biển và tải trọng.');}
   reset(){this.state=createHatinhState();this.service.reset();}
-  dispatch(player:Player,intent:ClientIntent):ServerAck{
-    return intent.type==='HATINH_ACTION'?this.handleAction(player,intent.payload,intent.actionId):this.service.dispatch(player,intent);
+  dispatch(player:Player,intent:UntrustedIntent):ServerAck{
+    return intent.type==='HATINH_ACTION'?this.handleAction(player,{action:readString(readPayload(intent.payload)?.action)},intent.actionId):this.service.dispatch(player,intent);
   }
   completeTask(player:Player,task:ActiveJob){this.service.completeTask(player,task);}
   commitVote(missionId:'M1'|'M2'|null,plan:string){this.service.commitVote(missionId,plan);}

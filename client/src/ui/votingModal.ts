@@ -1,5 +1,5 @@
 ﻿import { escapeHtml } from './utils.js';
-import { VoteState, GameSnapshot } from 'shared';
+import { GameSnapshot, getProvinceView } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
 export class VotingModal {
@@ -30,48 +30,20 @@ export class VotingModal {
     const remainingSecs = Math.max(0, Math.ceil(voting.remainingMs / 1000));
     const progressPercent = Math.min(100, Math.max(0, (voting.remainingMs / 15000) * 100));
 
-    let optionsHtml = '';
-    if (voting.missionId === 'M1') {
-      optionsHtml = `
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-          <button id="vote-opt-fixed" class="p-4 rounded-xl border text-left transition ${myVote === 'FIXED' ? 'bg-amber-600/30 border-amber-400 ring-2 ring-amber-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-amber-400 text-sm">Tráº¡m Cá»‘ Ä‘á»‹nh (Gáº§n A)</span>
-              ${myVote === 'FIXED' ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
-            </div>
-            <p class="text-xs text-slate-300">40 ngÃ¢n sÃ¡ch, 2 kiá»‡n váº­t tÆ°. Phá»¥c vá»¥ 22 dÃ¢n (A12, B10). Ãt chuyáº¿n Ä‘i nhÆ°ng Khu C chÆ°a tiáº¿p cáº­n.</p>
-          </button>
-
-          <button id="vote-opt-mobile" class="p-4 rounded-xl border text-left transition ${myVote === 'MOBILE' ? 'bg-sky-600/30 border-sky-400 ring-2 ring-sky-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-sky-400 text-sm">Äiá»ƒm LÆ°u Ä‘á»™ng (B & C)</span>
-              ${myVote === 'MOBILE' ? '<span class="text-xs bg-sky-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
-            </div>
-            <p class="text-xs text-slate-300">30 ngÃ¢n sÃ¡ch, 4 kiá»‡n váº­t tÆ°. Phá»¥c vá»¥ 24 dÃ¢n (A10, B8, C6). NgÃ¢n sÃ¡ch tháº¥p hÆ¡n, bao phá»§ rá»™ng hÆ¡n.</p>
-          </button>
+    const styles = {
+      amber: { selected: 'bg-amber-600/30 border-amber-400 ring-2 ring-amber-400', text: 'text-amber-400' },
+      sky: { selected: 'bg-sky-600/30 border-sky-400 ring-2 ring-sky-400', text: 'text-sky-400' },
+      emerald: { selected: 'bg-emerald-600/30 border-emerald-400 ring-2 ring-emerald-400', text: 'text-emerald-400' },
+    };
+    const options = getProvinceView(snapshot).votingOptions;
+    const optionsHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">${options.map(option => `
+      <button id="${option.id}" class="p-4 rounded-xl border text-left transition ${myVote === option.plan ? styles[option.color].selected : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-bold ${styles[option.color].text} text-sm">${option.title}</span>
+          ${myVote === option.plan ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
         </div>
-      `;
-    } else if (voting.missionId === 'M2') {
-      optionsHtml = `
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-          <button id="vote-opt-repair" class="p-4 rounded-xl border text-left transition ${myVote === 'REPAIR' ? 'bg-emerald-600/30 border-emerald-400 ring-2 ring-emerald-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-emerald-400 text-sm">Sá»­a cáº§u (REPAIR)</span>
-              ${myVote === 'REPAIR' ? '<span class="text-xs bg-emerald-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
-            </div>
-            <p class="text-xs text-slate-300">25 ngÃ¢n sÃ¡ch, 4 kiá»‡n váº­t tÆ° (2 sá»­a + 2 cá»©u trá»£). KhÃ´i phá»¥c lÃ¢u dÃ i háº¡ táº§ng giao thÃ´ng sang Khu B.</p>
-          </button>
-
-          <button id="vote-opt-detour" class="p-4 rounded-xl border text-left transition ${myVote === 'DETOUR' ? 'bg-amber-600/30 border-amber-400 ring-2 ring-amber-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-amber-400 text-sm">Tuyáº¿n vÃ²ng (DETOUR)</span>
-              ${myVote === 'DETOUR' ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
-            </div>
-            <p class="text-xs text-slate-300">10 ngÃ¢n sÃ¡ch, 2 kiá»‡n cá»©u trá»£. Tiáº¿t kiá»‡m 15 ngÃ¢n sÃ¡ch nhÆ°ng cáº§u váº«n há»ng, Ä‘Æ°á»ng Ä‘i dÃ i hÆ¡n gáº¥p Ä‘Ã´i.</p>
-          </button>
-        </div>
-      `;
-    }
+        <p class="text-xs text-slate-300">${option.description}</p>
+      </button>`).join('')}</div>`;
 
     this.container.innerHTML = `
       <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-6 shadow-2xl text-white animate-fade-in mx-4">
@@ -105,7 +77,7 @@ export class VotingModal {
     `;
 
     // Bind voting buttons
-    const bindVote = (btnId: string, plan: string) => {
+    const bindVote = (btnId: string, plan: 'FIXED' | 'MOBILE' | 'REPAIR' | 'DETOUR') => {
       const btn = this.container.querySelector(`#${btnId}`);
       if (btn) {
         btn.addEventListener('click', () => {
@@ -118,9 +90,6 @@ export class VotingModal {
       }
     };
 
-    bindVote('vote-opt-fixed', 'FIXED');
-    bindVote('vote-opt-mobile', 'MOBILE');
-    bindVote('vote-opt-repair', 'REPAIR');
-    bindVote('vote-opt-detour', 'DETOUR');
+    options.forEach(option => bindVote(option.id, option.plan));
   }
 }

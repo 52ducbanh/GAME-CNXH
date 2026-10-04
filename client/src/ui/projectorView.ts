@@ -115,7 +115,7 @@ export class ProjectorView {
         <!-- Footer -->
         <div class="pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-500">
           <span>Hệ thống mô phỏng thực hành Nhà nước pháp quyền Xã hội Chủ nghĩa Việt Nam</span>
-          <span>${getGameMap(snapshot.mapId).name}: 30 người dân mô phỏng (A: 12, B: 10, C: 8)</span>
+          <span>${view.results.simulationSummary}</span>
         </div>
       </div>
     `;

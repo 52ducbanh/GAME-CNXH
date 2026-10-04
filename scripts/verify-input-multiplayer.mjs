@@ -3,7 +3,7 @@ import {io} from 'socket.io-client';
 import {findWalkingRoute,getGameMap} from '../shared/dist/index.js';
 import {writeFile} from 'node:fs/promises';
 const base=process.env.PREVIEW_URL;
-if(!base||!base.includes(':3112'))throw Error('Use the isolated input QA server at port 3112.');
+if(!base||(!base.includes(':3112')&&process.env.QA_ISOLATED!=='1'))throw Error('Use the isolated input QA server at port 3112.');
 const {roomCode,hostToken}=await(await fetch(base+'/api/rooms/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customCode:'INPUT_NET_'+Date.now().toString(36),mapId:'hanoi'})})).json();
 let serial=0;const sockets=[];
 async function join(name,token,host=false){
@@ -44,5 +44,5 @@ try{
  const start=Date.now(),ack=await emit(loser,delayedIntent);await new Promise(r=>setTimeout(r,350));assert.equal(ack.success,true);assert.deepEqual(await emit(loser,delayedIntent),ack);
  checks.push('350ms delayed ACK consumption + duplicate retry remains idempotent');
  const report={base,roomCode,method:'real Socket.IO two-player disposable room; artificial ACK-consumer delay, not physical LAN latency',checks,delayedAckMs:Date.now()-start,pass:true};
- await writeFile('docs/input-multiplayer-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+ await writeFile(process.env.QA_REPORT_PATH || 'docs/input-multiplayer-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }finally{sockets.forEach(s=>s.disconnect());}

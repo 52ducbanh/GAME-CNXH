@@ -1,3 +1,4 @@
+import { readIntentEnvelope, readPayload, readString } from 'shared';
 import { createProvinceRuntime } from './gameplay/registry.js';
 import type { ProvinceRuntime } from './gameplay/core/contracts.js';
 import type { GameplayPorts } from './gameplay/core/ports.js';
@@ -81,7 +82,7 @@ export class GameEngine {
       read:{map:this.map,phase:()=>this.phase,paused:()=>this.isPaused,snapshot:()=>this.getSnapshot()},
       team:{contribution:id=>this.personalContributions.get(id),onlineCount:()=>this.getOnlinePlayerCount(),audit:this.addAuditEvent.bind(this)},
       tasks:{manpower:this.manpower,start:(player,spec,id)=>startTask(player,spec,this.manpower,id)},
-      items:{get:id=>this.crates.get(id)},
+      items:{get:id=>this.crates.get(id),deliver:(player,id)=>this.itemsCapability.deliver(player,id)},
       resources:{ledger:this.resources,deduct:(id,text,amount)=>deductResource(this.resources,id,text,amount,this.addAuditEvent.bind(this))},
       votes:{active:()=>!!this.voting?.active,start:(id,plan,player)=>this.votingCapability.start(id,plan,player)},
       lifecycle:{end:this.endMatch.bind(this),recoverWorld:reason=>{
@@ -406,7 +407,10 @@ export class GameEngine {
     this.addAuditEvent('MISSION', 'Phòng chơi đã được thiết lập lại về Sảnh đón.');
   }
 
-  public handleIntent(playerId: string, intent: ClientIntent): ServerAck {
+  public handleIntent(playerId: string, value: unknown): ServerAck {
+    const intent=readIntentEnvelope(value);
+    if(!intent)return {actionId:'',success:false,reason:'Hành động hoặc payload không hợp lệ.'};
+    const payload=readPayload(intent.payload);
     const player = this.players.get(playerId);
     if (!player || !player.isOnline) return { actionId: intent.actionId, success: false, reason: 'Người chơi không tồn tại hoặc đã mất kết nối.' };
     const actionKey = `${playerId}:${intent.actionId}`;
@@ -425,19 +429,21 @@ export class GameEngine {
         break;
 
       case 'SET_ROLE':
-        result = this.handleSetRole(player, intent.payload?.role, intent.actionId);
+        result = this.handleSetRole(player, readString(payload?.role) as PlayerRole, intent.actionId);
         break;
 
       case 'CANCEL_JOB':
         result = this.handleCancelJob(player, intent.actionId); break;
       case 'PICK_CRATE':
-        result = this.itemsCapability.pick(player, intent.payload?.crateId, intent.actionId); break;
+        result = payload?.crateId !== undefined && typeof payload.crateId !== 'string'
+          ? {actionId:intent.actionId,success:false,reason:'Kiện này đã được nhặt hoặc không còn trong phạm vi.'}
+          : this.itemsCapability.pick(player, readString(payload?.crateId), intent.actionId); break;
       case 'DROP_CRATE':
         result = this.itemsCapability.drop(player, intent.actionId); break;
       case 'RETURN_CRATE':
         result = this.itemsCapability.returnToStock(player, intent.actionId); break;
       case 'CAST_VOTE':
-        result = this.votingCapability.cast(player, intent.payload?.plan, intent.actionId); break;
+        result = this.votingCapability.cast(player, readString(payload?.plan) ?? '', intent.actionId); break;
 
       case 'PING_LOCATION':
         result = this.handlePingLocation(player, intent.payload, intent.actionId);
@@ -457,12 +463,13 @@ export class GameEngine {
     return result;
   }
 
-  private handleMove(player: Player, payload: { x: number; y: number; path?:MapPoint[]; dir?: 'up' | 'down' | 'left' | 'right' }, actionId: string): ServerAck {
+  private handleMove(player: Player, value: unknown, actionId: string): ServerAck {
     if (this.isPaused) {
       return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     }
 
-    if(!payload||!Number.isFinite(payload.x)||!Number.isFinite(payload.y))return {actionId,success:false,reason:'MOVE: tọa độ không hợp lệ.'};
+    const payload=readPayload(value);
+    if(!payload||typeof payload.x!=='number'||typeof payload.y!=='number'||!Number.isFinite(payload.x)||!Number.isFinite(payload.y))return {actionId,success:false,reason:'MOVE: tọa độ không hợp lệ.'};
     const newX=payload.x,newY=payload.y;
 
     // Collision check
@@ -471,11 +478,12 @@ export class GameEngine {
       return { actionId, success:false, reason:'Vướng vật cản!' };
     }
     if(payload.path!==undefined&&(!Array.isArray(payload.path)||payload.path.length>MOVEMENT_CONFIG.maxPacketPoints))return {actionId,success:false,reason:'MOVE: đường đi không hợp lệ.'};
-    const path=[...(payload.path??[]),{x:newX,y:newY}];
+    const path:unknown[]=[...((payload.path??[]) as unknown[]),{x:newX,y:newY}];
     let from:MapPoint=player;
-    for(const point of path){
-      if(!point||!Number.isFinite(point.x)||!Number.isFinite(point.y)||!isMovementSegmentClear(this.map.id,from,point,isBridgeBlocked))return {actionId,success:false,reason:'MOVE: đoạn di chuyển đi qua vật cản.'};
-      from=point;
+    for(const rawPoint of path){
+      const point=readPayload(rawPoint);
+      if(!point||typeof point.x!=='number'||typeof point.y!=='number'||!Number.isFinite(point.x)||!Number.isFinite(point.y)||!isMovementSegmentClear(this.map.id,from,{x:point.x,y:point.y},isBridgeBlocked))return {actionId,success:false,reason:'MOVE: đoạn di chuyển đi qua vật cản.'};
+      from={x:point.x,y:point.y};
     }
 
     // Cancel in-place job if player moved significantly (> 10 units)
@@ -489,7 +497,7 @@ export class GameEngine {
 
     player.x = newX;
     player.y = newY;
-    if (payload.dir) player.direction = payload.dir;
+    if (payload.dir) player.direction = payload.dir as Player['direction'];
     player.isMoving = true;
 
     // Sync carried crate position
@@ -517,9 +525,10 @@ export class GameEngine {
     return { actionId, success: true };
   }
 
-  private handlePingLocation(player: Player, payload: { x: number; y: number }, actionId: string): ServerAck {
-    const x = Math.round(payload?.x ?? player.x);
-    const y = Math.round(payload?.y ?? player.y);
+  private handlePingLocation(player: Player, value: unknown, actionId: string): ServerAck {
+    const payload=readPayload(value);
+    const x = Math.round(Number(payload?.x ?? player.x));
+    const y = Math.round(Number(payload?.y ?? player.y));
     const poi = Object.values(this.map.points).find(p => distance(x, y, p.x, p.y) <= 100);
     const locationName = poi ? poi.name : `vị trí (${x}, ${y})`;
     this.addAuditEvent('PLAYER', `${player.name} 📍 đã phát tín hiệu tại ${locationName}!`, player.id);
