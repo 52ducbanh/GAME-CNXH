@@ -6,7 +6,9 @@ Mục tiêu: core coordination + reusable capabilities/public-service preset + b
 
 Đã làm: safety archive/checkpoint; baseline 103 tests; Phase 1 contracts, static shared registry và definitions 7 tỉnh, 9 contract tests PASS. Runtime migration **0/7**.
 
-Đang làm: Phase 2 extract public-service/capabilities rồi Ninh Bình → Hải Phòng → Quảng Ninh → Thanh Hóa → Nghệ An → Hà Nội → Hà Tĩnh; test/review/checkpoint từng province. Xóa legacy fallback sau 7/7, kiểm locality objective Nghệ An chỉ trong test, chạy regression/socket/browser và đồng bộ docs.
+Đã extract Phase 2: task/item/vote/resource capabilities và public-service preset qua narrow ports; 14 tests/typecheck/build PASS, chưa đổi production routing.
+
+Đang làm: migrate Ninh Bình → Hải Phòng → Quảng Ninh → Thanh Hóa → Nghệ An → Hà Nội → Hà Tĩnh; test/review/checkpoint từng province. Xóa legacy fallback sau 7/7, kiểm locality objective Nghệ An chỉ trong test, chạy regression/socket/browser và đồng bộ docs.
 
 Giữ geometry foot14/sweep/sliding/prediction, input E/G/M, receipt/ACK/rejoin, score/content/role gợi ý, phase order và range72/107 Hà Tĩnh. Không thay phiên server người dùng. Build client với `--outDir dist-province-refactor`.
 
