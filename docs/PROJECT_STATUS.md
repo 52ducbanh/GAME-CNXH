@@ -1,3 +1,19 @@
+# Refactor gameplay theo province — hiện hành 04/10/2026
+
+- Branch: `refactor/province-modules`.
+- REFRACTOR_BASELINE: `b76710245e8f19f2a871de67ff4b4d7d2e586546`; HEAD tại lúc kiểm Phase 1 là baseline này. Checkpoint mới được ghi trong Git, xem `git log`.
+- Tiến độ runtime: **0/7**. Phase 0 và contracts/registry của Phase 1 hoàn tất; các handlers cũ chưa chuyển.
+- Baseline hiện tại: **PASS** typecheck ba workspace, shared/server build, client build riêng `dist-province-refactor`, 103/103 tests (8 suites). Chưa dùng số tests lịch sử làm bằng chứng.
+- Phase 1: **PASS** typecheck/build; 9/9 contract tests. Đủ bảy definitions, semantic quest IDs, typed command/envelope boundary, ProvinceView và runtime contract.
+- **NOT TESTED** trong phase này: browser, socket hai client thực, host/projector trực quan. Unit tests đã kiểm authority, reset/rejoin, score, E/G catalogue, movement/collision.
+- Known behavior giữ nguyên: catalogue Hà Tĩnh range72/handler107; handler rescue không có phase guard chung; bridge MOVE chưa giới hạn tốc độ; Hà Tĩnh vẫn dùng recap public-service cũ; C11 floor/rail chưa được chứng nhận.
+- Tiếp theo: extract capabilities/preset rồi migrate từng province; không thay art/geometry/scoring/protocol.
+- Safety: source/config/runtime assets đã checkpoint; 594 file versioned/non-ignored được lưu zip có SHA256 ở thư mục backup Codex ngoài repo. 291 file art-source/screenshots/ZIP lớn được lưu archive, giữ nguyên tại chỗ và chưa stage.
+
+---
+
+## Lịch sử trước refactor (implementation/checks đúng ở mốc tương ứng)
+
 # Trạng thái hiện hành — 04/10/2026
 
 **CURRENT CODE = SOURCE OF TRUTH.** Luồng tiếp quản: **[AGENTS](../AGENTS.md) → phần hiện hành của file này → [TASK_CURRENT](../TASK_CURRENT.md)**. TASK_CURRENT bàn giao phạm vi/entry point/acceptance; file này giữ trạng thái và bằng chứng. ACCOUNT_TRANSFER dùng cho chuyển máy/tài khoản; HANDOFF/report có ngày là lịch sử, không cam kết runtime vẫn cùng bản.

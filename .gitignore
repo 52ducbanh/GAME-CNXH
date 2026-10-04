@@ -11,3 +11,6 @@ dist-collision/
 
 # Isolated shared input/interaction QA bundle.
 dist-input/
+
+# Dedicated gameplay refactor QA bundle.
+dist-province-refactor/

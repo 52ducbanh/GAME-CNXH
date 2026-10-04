@@ -11,3 +11,6 @@ export * from './movementFeedback.js';
 
 export * from './collisionGeometry.js';
 export * from './interactions.js';
+export * from './gameplay/core/contracts.js';
+export * from './gameplay/core/commands.js';
+export * from './gameplay/registry.js';
