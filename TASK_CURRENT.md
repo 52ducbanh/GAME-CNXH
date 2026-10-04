@@ -6,6 +6,8 @@ Người dùng yêu cầu chia việc sửa các lỗi hình ảnh/di chuyển c
 - `chuowng`: nhân vật, depth, animation và camera khi đi.
 - `datmup`: collision, đường đi và solver di chuyển.
 
+Đã chốt ownership theo file trong BUGFIX_ASSIGNMENTS: leeduc độc quyền pipeline ảnh/prepare-regions/regionalMapData; chuowng độc quyền MainScene/renderer/animation; datmup giữ collision JSON/solver/input/server MOVE. Bug đi qua file của người khác được chuyển bằng trace/đề xuất, không cùng commit sửa file đó. Mỗi nhánh có ba đầu việc cụ thể IMG-01..03, RENDER-01..03 hoặc MOVE-01..03.
+
 Không giao việc cho `ducbanh`. Trạng thái mới là **đã phân công, chờ tái hiện/sửa**; chưa chứng nhận lỗi nào đã được sửa trong lượt chia việc. Mỗi bạn ghi báo cáo riêng và mở PR vào main. Giữ scope sửa lỗi, không thêm tính năng.
 
 ---
