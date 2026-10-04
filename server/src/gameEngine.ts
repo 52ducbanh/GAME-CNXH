@@ -95,7 +95,7 @@ export class GameEngine {
 
   public readonly map:WorldMap;
 
-  constructor(roomCode: string, hostToken: string, mapId:MapId='hanoi') {
+  constructor(roomCode: string, hostToken: string, mapId:MapId='hanoi', runtimeFactory:typeof createProvinceRuntime=createProvinceRuntime) {
     this.map=getGameMap(mapId);
     this.roomCode = roomCode;
     this.hostToken = hostToken;
@@ -123,7 +123,7 @@ export class GameEngine {
     this.m2 = this.initM2();
     this.m3 = this.initM3();
     this.initCrates();
-    this.province = createProvinceRuntime(mapId, this.gameplayPorts());
+    this.province = runtimeFactory(mapId, this.gameplayPorts());
     if (this.province) this.adoptProvinceState();
     if (mapId === 'ha-tinh') {
       this.hatinhState = this.initHatinhState();
@@ -2288,6 +2288,7 @@ export class GameEngine {
     const servedCount = this.citizens.filter(c => c.served).length;
 
     return {
+      objectiveProgress:this.province?.projection().objectiveProgress,
       roomCode: this.roomCode,
       mapId: this.map.id,
       phase: this.phase,

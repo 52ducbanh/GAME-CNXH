@@ -13,4 +13,7 @@ export * from './collisionGeometry.js';
 export * from './interactions.js';
 export * from './gameplay/core/contracts.js';
 export * from './gameplay/core/commands.js';
+export { publicServiceModule } from './gameplay/presets/public-service/module.js';
+export { buildInteractionCatalogue } from './gameplay/core/interactions.js';
+export { buildMissionGuide } from './gameplay/core/guide.js';
 export * from './gameplay/registry.js';

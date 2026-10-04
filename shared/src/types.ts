@@ -256,6 +256,7 @@ export interface HatinhState {
 }
 
 export interface GameSnapshot {
+  objectiveProgress?: Record<string, boolean>;
   mapId: import('./worldMaps.js').MapId;
   roomCode: string;
   phase: RoomPhase;

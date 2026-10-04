@@ -2,6 +2,7 @@ import type { ActiveJob, Citizen, ClientIntent, GameSnapshot, HatinhState, Missi
 
 /** The wire projections are retained until all separately deployed clients migrate. */
 export interface GameplayProjection {
+  objectiveProgress?: Record<string, boolean>;
   citizens: Citizen[];
   m1: Mission1State;
   m2: Mission2State;

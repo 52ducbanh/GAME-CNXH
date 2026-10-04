@@ -1,3 +1,5 @@
+import { TimedObjectives } from '../../core/objectives.js';
+import { ProvinceDefinition, getProvinceDefinition, publicServiceModule, buildInteractionCatalogue } from 'shared';
 import { getInteractionActions, INTERACTION_RADIUS, JOB_DURATION, PLAN_COSTS, SCORES } from 'shared';
 import type { ActiveJob, Player, JobType, ServerAck, M1Plan, M2Plan, ClientIntent, CollisionState } from 'shared';
 import type { ProvinceRuntime, GameplayProjection } from '../../core/contracts.js';
@@ -7,12 +9,13 @@ const distance=(x1:number,y1:number,x2:number,y2:number)=>Math.hypot(x2-x1,y2-y1
 
 export class PublicServiceRuntime implements ProvinceRuntime {
   public state = createPublicServiceState();
-  constructor(protected readonly ports: GameplayPorts) {}
+  private readonly objectives:TimedObjectives;
+  constructor(protected readonly ports: GameplayPorts, public readonly definition:ProvinceDefinition=getProvinceDefinition(ports.read.map.id)) {this.objectives=new TimedObjectives(definition.objectives);}
   start(){this.state.medicalService.status='ACTIVE';this.ports.team.audit('MISSION','TRẬN ĐẤU CHÍNH THỨC BẮT ĐẦU! Nhiệm vụ 1: Mở dịch vụ y tế cho nhân dân.');}
-  reset(){this.state=createPublicServiceState();}
+  reset(){this.state=createPublicServiceState();this.objectives.reset();}
   tick(_dtMs:number){}
-  projection():GameplayProjection{return {citizens:this.state.citizens,m1:this.state.medicalService,m2:this.state.bridgeResponse,m3:this.state.citizenRights};}
-  totalScore(){return this.state.medicalService.score+this.state.bridgeResponse.score+this.state.citizenRights.score;}
+  projection():GameplayProjection{return {objectiveProgress:this.objectives.snapshot(),citizens:this.state.citizens,m1:this.state.medicalService,m2:this.state.bridgeResponse,m3:this.state.citizenRights};}
+  totalScore(){return this.state.medicalService.score+this.state.bridgeResponse.score+this.state.citizenRights.score+this.objectives.score();}
   worldState():CollisionState{return {bridgeBlocked:this.state.bridgeResponse.bridgeBroken&&!this.state.bridgeResponse.bridgeRepaired,fixedDeployed:this.state.medicalService.fixedDeployed,mobileBDeployed:this.state.medicalService.mobileBDeployed,mobileCDeployed:this.state.medicalService.mobileCDeployed};}
   dispatch(player:Player,intent:ClientIntent):ServerAck {
     const {actionId,payload}=intent;
@@ -65,7 +68,8 @@ export class PublicServiceRuntime implements ProvinceRuntime {
 
     if (!payload || typeof payload.type !== 'string' || typeof payload.targetId !== 'string')
       return { actionId, success: false, reason: 'Hành động hoặc địa điểm không hợp lệ.' };
-    const eligible = getInteractionActions(this.ports.read.snapshot(), player.id).some(a =>
+    const module=publicServiceModule(this.definition);
+    const eligible = buildInteractionCatalogue(this.ports.read.snapshot(), player.id, module.interactions, module.describeAction).some(a =>
       a.intent.type === 'START_JOB' && a.intent.payload.type === payload.type && a.intent.payload.targetId === payload.targetId);
     if (!eligible) return { actionId, success: false, reason: 'Hành động chưa hợp lệ, đã hoàn thành hoặc đang có đồng đội thực hiện.' };
     const helperType = payload.type as string;
@@ -82,6 +86,9 @@ export class PublicServiceRuntime implements ProvinceRuntime {
     if (distance(player.x, player.y, poi.x, poi.y) > INTERACTION_RADIUS) {
       return { actionId, success: false, reason: `Bạn cần đến gần ${poi.name} (khoảng cách <= 72 đơn vị).` };
     }
+
+    const objective=this.objectives.find(type,targetId);
+    if(objective)return this.ports.tasks.start(player,{type,targetId,durationMs:objective.durationMs,requiresManpower:false},actionId);
 
     let durationMs = 4000;
     let requiresManpower = false;
@@ -154,6 +161,7 @@ export class PublicServiceRuntime implements ProvinceRuntime {
   }
 
   public completeTask(player: Player, job: ActiveJob) {
+    if(this.objectives.complete(job))return;
     const contrib = this.ports.team.contribution(player.id);
 
     // Job completions

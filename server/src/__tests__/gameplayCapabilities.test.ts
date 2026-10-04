@@ -6,8 +6,18 @@ import { VotingCapability } from '../gameplay/core/voting.js';
 import { ItemCapability } from '../gameplay/core/items.js';
 import { PublicServiceRuntime } from '../gameplay/presets/public-service/runtime.js';
 import type { GameplayPorts } from '../gameplay/core/ports.js';
+import { TimedObjectives } from '../gameplay/core/objectives.js';
 
 describe('Extracted gameplay capabilities', () => {
+  it('derives an objective score once from completion facts', () => {
+    const objectives = new TimedObjectives([{ id: 'inspection', questId: 'inspection-quest', pointId: 'NOTICE_BOARD', label: 'Kiểm tra', jobType: 'AUDIT_RESULT', durationMs: 2000, score: 4, available: () => true }]);
+    expect(objectives.score()).toBe(0);
+    const task = { jobId: 't', type: 'AUDIT_RESULT' as const, targetId: 'NOTICE_BOARD', elapsedMs: 2000, durationMs: 2000, progress: 1, startedAt: 0, requiresManpower: false };
+    expect(objectives.complete(task)).toBe(true);
+    expect(objectives.complete(task)).toBe(true);
+    expect(objectives.score()).toBe(4);
+    objectives.reset(); expect(objectives.score()).toBe(0);
+  });
   it('reserves/releases manpower exactly once for a timed task', () => {
     const engine = new GameEngine('TASK', 'host'), player = engine.addPlayer('p', 'P');
     startTask(player, { type: 'DEPLOY_FIXED_CLINIC', targetId: 'CLINIC_FIXED', durationMs: 8000, requiresManpower: true }, engine.manpower, 'job');
