@@ -1,6 +1,6 @@
 # Nhân vật, depth, animation và camera — 05/10/2026
 
-Đã sửa source và QA theo nhóm `chuowng` của ảnh người dùng. Baseline tái hiện `704b52b`; nhánh giao bản sửa `chuowng` theo yêu cầu commit/push ngày05/10/2026, chưa mở PR. Gameplay, geometry, atlas/polygon nguồn, server MOVE validation, prediction/reconcile/rejoin, chân14px và InputController được bảo toàn. Commit phân công ownership mới trên remote được giữ khi cập nhật nhánh; không force-push. Lượt push không đổi code hoặc chạy lại toàn bộ test chỉ vì cập nhật Markdown; kết quả QA bên dưới thuộc lượt sửa đã thực chạy.
+Đã sửa source và QA theo nhóm `chuowng` của ảnh người dùng. Baseline tái hiện `704b52b`; nhánh giao bản sửa `chuonwng` theo yêu cầu commit/push mới nhất ngày05/10/2026, chưa mở PR. Gameplay, geometry, atlas/polygon nguồn, server MOVE validation, prediction/reconcile/rejoin, chân14px và InputController được bảo toàn. Commit phân công ownership mới trên remote được giữ khi cập nhật nhánh; không force-push. Lượt push không đổi code hoặc chạy lại toàn bộ test chỉ vì cập nhật Markdown; kết quả QA bên dưới thuộc lượt sửa đã thực chạy.
 
 | Mã | Tái hiện / nguyên nhân | Kết quả |
 | --- | --- | --- |

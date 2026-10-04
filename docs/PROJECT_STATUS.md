@@ -1,6 +1,6 @@
 # Hiện hành — Sửa nhân vật/depth/animation/camera — 05/10/2026
 
-Đã sửa phần `chuowng` theo ảnh người dùng; nhánh giao bản sửa là `chuowng` theo yêu cầu push ngày05/10/2026, chưa mở PR. Baseline để tái hiện là `704b52b` (code của mốc phân công). Bằng chứng và giới hạn ở [bugfix-chuowng](bugfix-chuowng.md). Các gói `leeduc` và `datmup` vẫn chờ xử lý riêng.
+Đã sửa phần `chuowng` theo ảnh người dùng; nhánh giao bản sửa là `chuonwng` theo yêu cầu push mới nhất ngày05/10/2026, chưa mở PR. Baseline để tái hiện là `704b52b` (code của mốc phân công). Bằng chứng và giới hạn ở [bugfix-chuowng](bugfix-chuowng.md). Các gói `leeduc` và `datmup` vẫn chờ xử lý riêng.
 
 Đã chứng minh/sửa: neo chân lệch 2px; depth cũ sau authoritative correction; tên bị che cùng thân; fade theo crop box thay vì giao thân/polygon; animation đồng đội có đuôi nội suy và quay theo snapshot mới trước đoạn đang vẽ. Camera bỏ lượng tử hóa scroll, smoothing theo thời gian; follow mobile đặt chân giữa vùng chơi trừ HUD/controls. Animation dùng dịch chuyển thực và tốc độ; không sửa solver/collision, pixel ảnh/mask nguồn hoặc luật nhiệm vụ.
 
@@ -15,6 +15,8 @@ QA dùng server/bundle riêng; không ghi đè `client/dist`, không restart phi
 Theo phản hồi người dùng, game còn lỗi hình ảnh và di chuyển. Đã lập [BUGFIX_ASSIGNMENTS](BUGFIX_ASSIGNMENTS.md): leeduc sửa nền/ảnh/mask; chuowng sửa nhân vật/depth/animation/camera; datmup sửa collision/route/movement. Không giao nhiệm vụ cho ducbanh. Baseline source `69d95bb`; chưa có sửa code hoặc root cause mới được chứng minh trong lượt phân công.
 
 Trạng thái ba gói: **chờ tái hiện và sửa**, tiêu chí gồm ảnh/video trước–sau và route kiểm lại. Không dùng 141 tests PASS để chứng nhận visual/movement đúng. Lượt này chỉ thay Markdown, không chạy lại test/build hoặc thay runtime. Các báo cáo riêng sẽ được tổng hợp khi tích hợp PR.
+
+Theo yêu cầu chốt phạm vi cụ thể, BUGFIX_ASSIGNMENTS bổ sung chủ file duy nhất và ba đầu việc mỗi người. leeduc giữ toàn bộ prepare-regions và regionalMapData; chuowng giữ toàn bộ MainScene; datmup giữ collision/solver/input/server MOVE. Thay DATA hình học hoặc reconcile ngoài ownership phải chuyển trace/đề xuất cho chủ file, tránh hai nhánh cùng sửa. Đây vẫn là tài liệu giao việc, chưa sửa lỗi game.
 
 ---
 
