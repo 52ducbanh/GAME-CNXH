@@ -2,6 +2,8 @@
 
 Lượt mới/bằng chứng cụ thể trong PROJECT_STATUS. Baseline 103 tests PASS. ProvinceModules suite hiện 16 tests registry/map/view/state/reset; gameplayCapabilities 5 tests task/resource/vote/item/public-service state. Khi migrate tỉnh dùng regionalMaps `-t <tên tỉnh>` và ghi SKIPPED đúng, không gọi các tỉnh bị lọc là PASS.
 
+`node scripts/verify-province-parity.mjs` kiểm catalogue/guide với source baseline Git, không tạo phòng hay ghi đè report. REFACTOR_BASELINE có thể chỉ định checkpoint; 426 fixtures trên 7 maps hiện PASS.
+
 Build shared trước server/tests; client build riêng `npm run build --workspace=client -- --outDir dist-province-refactor`. Không ghi đè client/dist live. Browser/socket chưa chạy ở phase đầu, ghi NOT TESTED. Các số/commands/report dưới là lịch sử.
 
 ---
