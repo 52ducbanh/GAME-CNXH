@@ -1,4 +1,12 @@
-# Xác minh trước push GitHub — 04/10/2026
+# Hiện hành — Phân công sửa lỗi hình ảnh/di chuyển — 04/10/2026
+
+Theo phản hồi người dùng, game còn lỗi hình ảnh và di chuyển. Đã lập [BUGFIX_ASSIGNMENTS](BUGFIX_ASSIGNMENTS.md): leeduc sửa nền/ảnh/mask; chuowng sửa nhân vật/depth/animation/camera; datmup sửa collision/route/movement. Không giao nhiệm vụ cho ducbanh. Baseline source `69d95bb`; chưa có sửa code hoặc root cause mới được chứng minh trong lượt phân công.
+
+Trạng thái ba gói: **chờ tái hiện và sửa**, tiêu chí gồm ảnh/video trước–sau và route kiểm lại. Không dùng 141 tests PASS để chứng nhận visual/movement đúng. Lượt này chỉ thay Markdown, không chạy lại test/build hoặc thay runtime. Các báo cáo riêng sẽ được tổng hợp khi tích hợp PR.
+
+---
+
+# Lịch sử — Xác minh trước push GitHub — 04/10/2026
 
 Người dùng yêu cầu commit/push phiên bản hiện tại tới `https://github.com/52ducbanh/GAME-CNXH.git`. Remote `origin` đã cấu hình; repository đích chưa có nhánh tại lúc kiểm tra, nhánh đích là `main`. Nhánh local vẫn là `refactor/province-modules`.
 

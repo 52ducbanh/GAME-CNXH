@@ -1,4 +1,16 @@
-# TASK_CURRENT — Triển khai 5 tỉnh hoàn tất (Ninh Bình, Quảng Ninh, Hải Phòng, Thanh Hóa, Nghệ An)
+# TASK_CURRENT — Sửa lỗi hình ảnh và di chuyển theo ba nhánh
+
+Người dùng yêu cầu chia việc sửa các lỗi hình ảnh/di chuyển còn thấy trong game. Phân công chi tiết, phạm vi file và nghiệm thu ở [BUGFIX_ASSIGNMENTS](docs/BUGFIX_ASSIGNMENTS.md):
+
+- `leeduc`: nền, ảnh vật thể và lớp che/mask.
+- `chuowng`: nhân vật, depth, animation và camera khi đi.
+- `datmup`: collision, đường đi và solver di chuyển.
+
+Không giao việc cho `ducbanh`. Trạng thái mới là **đã phân công, chờ tái hiện/sửa**; chưa chứng nhận lỗi nào đã được sửa trong lượt chia việc. Mỗi bạn ghi báo cáo riêng và mở PR vào main. Giữ scope sửa lỗi, không thêm tính năng.
+
+---
+
+# Lịch sử — Triển khai 5 tỉnh hoàn tất (Ninh Bình, Quảng Ninh, Hải Phòng, Thanh Hóa, Nghệ An)
 
 **DONE — HOÀN THÀNH TOÀN DIỆN 7/7 TỈNH.**
 Đã tiếp quản dự án, đối chiếu và triển khai đầy đủ 5 gói nhiệm vụ đã duyệt (`source/7-tinh-agent-packages-repaired`), bổ sung 15 nhiệm vụ mới đạt chuẩn 100 điểm/tỉnh, bảo toàn tuyệt đối gameplay Hà Nội và Hà Tĩnh (zero regression).
