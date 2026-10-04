@@ -1,0 +1,104 @@
+{
+  "roomUrl": "http://localhost:3100/play/V2_MUS48QSC",
+  "roomCode": "V2_MUS48QSC",
+  "stage": "Complete",
+  "routes": 39,
+  "m1": {
+    "status": "RESOLVED",
+    "surveys": {
+      "A": true,
+      "B": true,
+      "C": true
+    },
+    "surveyAssignedTo": {},
+    "planProposed": "NONE",
+    "planCommitted": "MOBILE",
+    "planVersion": 2,
+    "requiredCrates": 4,
+    "deliveredCratesFixed": 0,
+    "deliveredCratesMobileB": 2,
+    "deliveredCratesMobileC": 2,
+    "fixedDeployed": false,
+    "mobileBDeployed": true,
+    "mobileCDeployed": true,
+    "verifiedA": false,
+    "verifiedB": true,
+    "verifiedC": true,
+    "noticePublished": true,
+    "score": 30
+  },
+  "m2": {
+    "status": "RESOLVED",
+    "bridgeBroken": true,
+    "bridgeRepaired": false,
+    "surveyDone": true,
+    "planProposed": "NONE",
+    "planCommitted": "DETOUR",
+    "planVersion": 2,
+    "bridgeCratesDelivered": 0,
+    "bridgeRepairTask1": false,
+    "bridgeRepairTask2": false,
+    "reliefCratesDeliveredB": 2,
+    "verifiedB": true,
+    "noticePublished": true,
+    "score": 35
+  },
+  "m3": {
+    "status": "RESOLVED",
+    "receivedFeedbackC": true,
+    "crossCheckedList": true,
+    "planConfirmed": true,
+    "deliveredC1": true,
+    "deployedC1": true,
+    "deliveredC2": true,
+    "deployedC2": true,
+    "lossAuditDone": true,
+    "lossAuditConclusion": "Khớp 100% với thực tế, chưa có căn cứ xác định thất thoát vật tư.",
+    "noticePublished": true,
+    "score": 35
+  },
+  "score": 100,
+  "phase": "RESULTS",
+  "resources": {
+    "initialBudget": 100,
+    "currentBudget": 40,
+    "totalCrates": 12,
+    "availableCrates": 4,
+    "entries": [
+      {
+        "id": "LEDGER_1791015838797_22t2",
+        "timestamp": 1791015838797,
+        "missionId": "M2",
+        "description": "Cam kết phương án ứng phó sự cố cầu B: DETOUR",
+        "amount": 10,
+        "balanceAfter": 40
+      },
+      {
+        "id": "LEDGER_1791015829256_wa6u",
+        "timestamp": 1791015829256,
+        "missionId": "M3",
+        "description": "Chi phí hỗ trợ y tế tận nhà cho hai công dân cao tuổi C1 và C2",
+        "amount": 20,
+        "balanceAfter": 50
+      },
+      {
+        "id": "LEDGER_1791015273003_vnz8",
+        "timestamp": 1791015273003,
+        "missionId": "M1",
+        "description": "Cam kết phương án dịch vụ y tế MOBILE",
+        "amount": 30,
+        "balanceAfter": 70
+      },
+      {
+        "id": "init",
+        "timestamp": 1791015259575,
+        "missionId": "INIT",
+        "description": "Cấp phát ngân sách và vật tư ban đầu của thành phố",
+        "amount": 0,
+        "balanceAfter": 100
+      }
+    ],
+    "version": 4
+  },
+  "peerReconnect": true
+}

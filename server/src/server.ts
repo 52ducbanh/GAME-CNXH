@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import QRCode from 'qrcode';
 import dotenv from 'dotenv';
 import { RoomManager } from './roomManager.js';
-import { ClientIntent } from 'shared';
+import { ClientIntent, GAME_MAPS, isMapId } from 'shared';
 
 dotenv.config();
 
@@ -23,7 +23,10 @@ const PORT = parseInt(process.env.PORT || '3000', 10);
 const SERVER_PORT = parseInt(process.env.SERVER_PORT || '3001', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 
-const clientDistPath = path.resolve(__dirname, '../../client/dist');
+// An isolated build lets QA preserve rooms held in the live server's RAM.
+const clientDistPath = process.env.CLIENT_DIST_PATH
+  ? path.resolve(process.env.CLIENT_DIST_PATH)
+  : path.resolve(__dirname, '../../client/dist');
 // In development (npm run dev), server runs on SERVER_PORT (3001) while Vite runs on PORT (3000).
 // In production (npm run start), server runs on PORT (3000) and serves client/dist directly.
 const isDevMode = process.env.npm_lifecycle_event === 'dev';
@@ -43,11 +46,13 @@ const io = new SocketIOServer(server, {
 const roomManager = new RoomManager();
 
 // Pre-create standard default room for immediate testing
-roomManager.createRoom('HANOI_01');
+for(const map of GAME_MAPS)roomManager.createRoom(map.defaultRoom,map.id);
 
 function getLocalLanIp(): string {
   const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
+  // Prefer the physical Wi-Fi/LAN adapter over VirtualBox/VMware/WSL adapters.
+  const priority=(name:string)=>/vmware|vethernet|virtual|loopback|host.only/i.test(name)?0:/wi.fi|wireless|wlan/i.test(name)?20:/ethernet/i.test(name)?10:5;
+  for (const name of Object.keys(interfaces).sort((a,b)=>priority(b)-priority(a))) {
     for (const iface of interfaces[name] || []) {
       if (iface.family === 'IPv4' && !iface.internal) {
         return iface.address;
@@ -94,10 +99,20 @@ app.get('/api/rooms', (req, res) => {
   res.json(roomManager.getAllRoomsList());
 });
 
+app.get('/api/maps', (_req,res)=>res.json(GAME_MAPS.map(({id,name,landmark,defaultRoom,sceneUrl,minimapUrl,iconUrl})=>({id,name,landmark,defaultRoom,sceneUrl,minimapUrl,iconUrl}))));
+app.get('/api/rooms/:roomCode', (req,res)=>{
+  const engine=roomManager.getRoom(req.params.roomCode);
+  if(!engine){res.status(404).json({error:'Phòng chưa được tạo.'});return;}
+  res.json({roomCode:engine.roomCode,mapId:engine.map.id});
+});
+
 app.post('/api/rooms/create', (req, res) => {
-  const { customCode } = req.body;
-  const { roomCode, hostToken } = roomManager.createRoom(customCode);
-  res.json({ roomCode, hostToken });
+  const { customCode, mapId='hanoi' } = req.body;
+  if(!isMapId(mapId)||customCode!==undefined&&(typeof customCode!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(customCode))){res.status(400).json({error:'Bản đồ hoặc mã phòng không hợp lệ.'});return;}
+  try {
+    const {roomCode,hostToken}=roomManager.createRoom(customCode,mapId);
+    res.json({roomCode,hostToken,mapId});
+  }catch(e){res.status(409).json({error:(e as Error).message});}
 });
 
 // Serve client dist in production
@@ -206,20 +221,7 @@ io.on('connection', (socket: Socket) => {
       return;
     }
 
-    // Direct helper handlers for inquiries
-    let ack;
-    if (intent.type === 'START_JOB' && intent.payload?.type === 'SURVEY_BRIDGE') {
-      const p = engine.players.get(meta.playerId);
-      ack = p ? engine.surveyBridgeM2(p) : { actionId: intent.actionId, success: false };
-    } else if (intent.type === 'START_JOB' && intent.payload?.type === 'RECEIVE_FEEDBACK_C') {
-      const p = engine.players.get(meta.playerId);
-      ack = p ? engine.receiveFeedbackM3(p) : { actionId: intent.actionId, success: false };
-    } else if (intent.type === 'START_JOB' && intent.payload?.type === 'CROSS_CHECK_CLINIC') {
-      const p = engine.players.get(meta.playerId);
-      ack = p ? engine.crossCheckClinicM3(p, intent.payload.targetId) : { actionId: intent.actionId, success: false };
-    } else {
-      ack = engine.handleIntent(meta.playerId, intent);
-    }
+    const ack = engine.handleIntent(meta.playerId, intent);
 
     if (ackCallback) ackCallback(ack);
     if (ack.success) {

@@ -1,7 +1,14 @@
-export const WORLD_WIDTH = 1280;
-export const WORLD_HEIGHT = 960;
+export const WORLD_WIDTH = 1672;
+export const WORLD_HEIGHT = 941;
 
 export const PLAYER_SPEED = 180; // world units / sec
+// Sprite origin is the foot at (x,y), not the 32x48 body/nameplate.
+export const MOVEMENT_CONFIG = {
+  footRadius: 14, sweepStep: 1, contactIterations: 4,
+  idleEpsilon: 0.02, maxFrameMs: 250, maxPacketPoints: 128,
+  // Disabled: no demonstrated corner case warrants sideways auto movement.
+  cornerAssistPx: 0
+} as const;
 export const INTERACTION_RADIUS = 72; // world units
 
 export const MATCH_DURATION_MS = 600 * 1000; // 600s (10 phút)

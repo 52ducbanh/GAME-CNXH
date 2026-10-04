@@ -1,0 +1,644 @@
+{
+  "mapId": "hanoi",
+  "name": "Hà Nội",
+  "roomCode": "QA_-1_MUTBGUQR",
+  "roomUrl": "http://127.0.0.1:3112/play/QA_-1_MUTBGUQR",
+  "m1Plan": "MOBILE",
+  "m2Plan": "DETOUR",
+  "routes": 38,
+  "rejectedCollisionProbes": 0,
+  "deploymentChecks": [],
+  "stage": "Complete",
+  "score": 100,
+  "peerReconnect": true,
+  "bridgeRepaired": false,
+  "snapshot": {
+    "roomCode": "QA_-1_MUTBGUQR",
+    "mapId": "hanoi",
+    "phase": "RESULTS",
+    "phaseTimerRemainingMs": 0,
+    "isPaused": false,
+    "totalRunningTimeMs": 149100,
+    "players": {
+      "P_1791087861520_ln1e": {
+        "id": "P_1791087861520_ln1e",
+        "name": "Đức · Kiểm tra",
+        "roomCode": "QA_-1_MUTBGUQR",
+        "color": "#2563eb",
+        "x": 400,
+        "y": 245,
+        "direction": "down",
+        "isMoving": true,
+        "role": "SURVEY",
+        "carriedCrateId": null,
+        "activeJob": null,
+        "isOnline": true,
+        "lastHeartbeat": 1791087861520,
+        "isHost": true
+      },
+      "P_1791088020359_sk07": {
+        "id": "P_1791088020359_sk07",
+        "name": "Ninh · Đồng đội",
+        "roomCode": "QA_-1_MUTBGUQR",
+        "color": "#16a34a",
+        "x": 1558,
+        "y": 387,
+        "direction": "down",
+        "isMoving": true,
+        "role": "SURVEY",
+        "carriedCrateId": null,
+        "activeJob": null,
+        "isOnline": true,
+        "lastHeartbeat": 1791088021420,
+        "isHost": false
+      }
+    },
+    "crates": {
+      "CRATE_1": {
+        "id": "CRATE_1",
+        "state": "DELIVERED",
+        "x": 1555,
+        "y": 480,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_2": {
+        "id": "CRATE_2",
+        "state": "DELIVERED",
+        "x": 1555,
+        "y": 480,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_3": {
+        "id": "CRATE_3",
+        "state": "DELIVERED",
+        "x": 1144,
+        "y": 729,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_4": {
+        "id": "CRATE_4",
+        "state": "DELIVERED",
+        "x": 1144,
+        "y": 729,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_5": {
+        "id": "CRATE_5",
+        "state": "DELIVERED",
+        "x": 1558,
+        "y": 387,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_6": {
+        "id": "CRATE_6",
+        "state": "DELIVERED",
+        "x": 1558,
+        "y": 387,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_7": {
+        "id": "CRATE_7",
+        "state": "DELIVERED",
+        "x": 817,
+        "y": 865,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_8": {
+        "id": "CRATE_8",
+        "state": "DELIVERED",
+        "x": 1040,
+        "y": 835,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_9": {
+        "id": "CRATE_9",
+        "state": "WAREHOUSE",
+        "x": 155,
+        "y": 749,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_10": {
+        "id": "CRATE_10",
+        "state": "WAREHOUSE",
+        "x": 155,
+        "y": 749,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_11": {
+        "id": "CRATE_11",
+        "state": "WAREHOUSE",
+        "x": 155,
+        "y": 749,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      },
+      "CRATE_12": {
+        "id": "CRATE_12",
+        "state": "WAREHOUSE",
+        "x": 155,
+        "y": 749,
+        "carriedByPlayerId": null,
+        "missionContext": "M1",
+        "purpose": "Vật tư công",
+        "deliveredSlotId": null
+      }
+    },
+    "manpower": {
+      "total": 3,
+      "busy": 0
+    },
+    "resources": {
+      "initialBudget": 100,
+      "currentBudget": 40,
+      "totalCrates": 12,
+      "availableCrates": 4,
+      "entries": [
+        {
+          "id": "LEDGER_1791087989207_s10m",
+          "timestamp": 1791087989207,
+          "missionId": "M3",
+          "description": "Chi phí hỗ trợ y tế tận nhà cho hai công dân cao tuổi C1 và C2",
+          "amount": 20,
+          "balanceAfter": 40
+        },
+        {
+          "id": "LEDGER_1791087941506_yclp",
+          "timestamp": 1791087941506,
+          "missionId": "M2",
+          "description": "Cam kết phương án ứng phó sự cố cầu B: DETOUR",
+          "amount": 10,
+          "balanceAfter": 60
+        },
+        {
+          "id": "LEDGER_1791087885210_952k",
+          "timestamp": 1791087885210,
+          "missionId": "M1",
+          "description": "Cam kết phương án dịch vụ y tế MOBILE",
+          "amount": 30,
+          "balanceAfter": 70
+        },
+        {
+          "id": "init",
+          "timestamp": 1791087861455,
+          "missionId": "INIT",
+          "description": "Cấp phát ngân sách và vật tư ban đầu của thành phố",
+          "amount": 0,
+          "balanceAfter": 100
+        }
+      ],
+      "version": 4
+    },
+    "citizens": [
+      {
+        "id": "A1",
+        "name": "Người dân A-1",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A2",
+        "name": "Người dân A-2",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A3",
+        "name": "Người dân A-3",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A4",
+        "name": "Người dân A-4",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A5",
+        "name": "Người dân A-5",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A6",
+        "name": "Người dân A-6",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A7",
+        "name": "Người dân A-7",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A8",
+        "name": "Người dân A-8",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A9",
+        "name": "Người dân A-9",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A10",
+        "name": "Người dân A-10",
+        "zone": "A",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "A11",
+        "name": "Người dân A-11",
+        "zone": "A",
+        "served": false
+      },
+      {
+        "id": "A12",
+        "name": "Người dân A-12",
+        "zone": "A",
+        "served": false
+      },
+      {
+        "id": "B1",
+        "name": "Người dân B-1",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B2",
+        "name": "Người dân B-2",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B3",
+        "name": "Người dân B-3",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B4",
+        "name": "Người dân B-4",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B5",
+        "name": "Người dân B-5",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B6",
+        "name": "Người dân B-6",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B7",
+        "name": "Người dân B-7",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B8",
+        "name": "Người dân B-8",
+        "zone": "B",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "B9",
+        "name": "Người dân B-9",
+        "zone": "B",
+        "served": false
+      },
+      {
+        "id": "B10",
+        "name": "Người dân B-10",
+        "zone": "B",
+        "served": false
+      },
+      {
+        "id": "C1",
+        "name": "Cụ C1 (Khó khăn vận động)",
+        "zone": "C",
+        "isSpecialNeeds": true,
+        "served": true,
+        "servedByMission": "M3"
+      },
+      {
+        "id": "C2",
+        "name": "Cụ C2 (Người cao tuổi neo đơn)",
+        "zone": "C",
+        "isSpecialNeeds": true,
+        "served": true,
+        "servedByMission": "M3"
+      },
+      {
+        "id": "C3",
+        "name": "Người dân C-3",
+        "zone": "C",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "C4",
+        "name": "Người dân C-4",
+        "zone": "C",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "C5",
+        "name": "Người dân C-5",
+        "zone": "C",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "C6",
+        "name": "Người dân C-6",
+        "zone": "C",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "C7",
+        "name": "Người dân C-7",
+        "zone": "C",
+        "served": true,
+        "servedByMission": "M1"
+      },
+      {
+        "id": "C8",
+        "name": "Người dân C-8",
+        "zone": "C",
+        "served": true,
+        "servedByMission": "M1"
+      }
+    ],
+    "citizensServedCount": 26,
+    "totalCitizensCount": 30,
+    "m1": {
+      "status": "RESOLVED",
+      "surveys": {
+        "A": true,
+        "B": true,
+        "C": true
+      },
+      "surveyAssignedTo": {},
+      "planProposed": "NONE",
+      "planCommitted": "MOBILE",
+      "planVersion": 2,
+      "requiredCrates": 4,
+      "deliveredCratesFixed": 0,
+      "deliveredCratesMobileB": 2,
+      "deliveredCratesMobileC": 2,
+      "fixedDeployed": false,
+      "mobileBDeployed": true,
+      "mobileCDeployed": true,
+      "verifiedA": false,
+      "verifiedB": true,
+      "verifiedC": true,
+      "noticePublished": true,
+      "score": 30
+    },
+    "m2": {
+      "status": "RESOLVED",
+      "bridgeBroken": true,
+      "bridgeRepaired": false,
+      "surveyDone": true,
+      "planProposed": "NONE",
+      "planCommitted": "DETOUR",
+      "planVersion": 2,
+      "bridgeCratesDelivered": 0,
+      "bridgeRepairTask1": false,
+      "bridgeRepairTask2": false,
+      "reliefCratesDeliveredB": 2,
+      "verifiedB": true,
+      "noticePublished": true,
+      "score": 35
+    },
+    "m3": {
+      "status": "RESOLVED",
+      "receivedFeedbackC": true,
+      "crossCheckedList": true,
+      "planConfirmed": true,
+      "deliveredC1": true,
+      "deployedC1": true,
+      "deliveredC2": true,
+      "deployedC2": true,
+      "lossAuditDone": true,
+      "lossAuditConclusion": "Khớp 100% với thực tế, chưa có căn cứ xác định thất thoát vật tư.",
+      "noticePublished": true,
+      "score": 35
+    },
+    "voting": null,
+    "totalScore": 100,
+    "recentAuditEvents": [
+      {
+        "id": "EVT_1791088023854_pre0",
+        "timestamp": 1791088023854,
+        "category": "MISSION",
+        "message": "KẾT THÚC TRẬN ĐẤU: TẤT CẢ 3 NHIỆM VỤ ĐÃ HOÀN THÀNH XUẤT SẮC!. Tổng điểm: 100/100."
+      },
+      {
+        "id": "EVT_1791088023854_aqfn",
+        "timestamp": 1791088023854,
+        "category": "MISSION",
+        "message": "HOÀN THÀNH NHIỆM VỤ 3! Điểm M3: 35/35."
+      },
+      {
+        "id": "EVT_1791088023854_3prk",
+        "timestamp": 1791088023854,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "AUDIT",
+        "message": "Đức · Kiểm tra đã niêm yết bản tổng hợp khắc phục M3 (bảo mật thông tin riêng). +6 điểm."
+      },
+      {
+        "id": "EVT_1791088023201_pabc",
+        "timestamp": 1791088023201,
+        "category": "MISSION",
+        "message": "Host đã tiếp tục trận đấu."
+      },
+      {
+        "id": "EVT_1791088023196_traa",
+        "timestamp": 1791088023196,
+        "category": "MISSION",
+        "message": "Host đã tạm dừng trận đấu."
+      },
+      {
+        "id": "EVT_1791088021421_fjx5",
+        "timestamp": 1791088021421,
+        "playerId": "P_1791088020359_sk07",
+        "playerName": "Ninh · Đồng đội",
+        "category": "RESOURCE",
+        "message": "Ninh · Đồng đội đã hoàn trả an toàn kiện vật tư về Kho."
+      },
+      {
+        "id": "EVT_1791088021352_knko",
+        "timestamp": 1791088021352,
+        "playerId": "P_1791088020359_sk07",
+        "playerName": "Ninh · Đồng đội",
+        "category": "RESOURCE",
+        "message": "Ninh · Đồng đội đã lấy kiện CRATE_9 từ Kho vật tư."
+      },
+      {
+        "id": "EVT_1791088020359_f2l9",
+        "timestamp": 1791088020359,
+        "category": "PLAYER",
+        "message": "Ninh · Đồng đội đã tham gia phòng chơi."
+      },
+      {
+        "id": "EVT_1791088020117_faxa",
+        "timestamp": 1791088020117,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "RESOURCE",
+        "message": "Đức · Kiểm tra đối chiếu sổ sách Kho vật tư: Kết luận minh bạch, không phát hiện hao hụt."
+      },
+      {
+        "id": "EVT_1791088014030_hkq5",
+        "timestamp": 1791088014030,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "SERVICE",
+        "message": "Đức · Kiểm tra đã hoàn thành chăm sóc y tế tận nhà cho Hộ gia đình Cụ C2."
+      },
+      {
+        "id": "EVT_1791088007880_z4ut",
+        "timestamp": 1791088007880,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "SERVICE",
+        "message": "Đức · Kiểm tra đã giao tận tay kiện vật tư y tế đến Cụ C2."
+      },
+      {
+        "id": "EVT_1791088004839_w5ys",
+        "timestamp": 1791088004839,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "RESOURCE",
+        "message": "Đức · Kiểm tra đã lấy kiện CRATE_8 từ Kho vật tư."
+      },
+      {
+        "id": "EVT_1791088001182_atzu",
+        "timestamp": 1791088001182,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "SERVICE",
+        "message": "Đức · Kiểm tra đã hoàn thành chăm sóc y tế tận nhà cho Hộ gia đình Cụ C1."
+      },
+      {
+        "id": "EVT_1791087995176_y6j5",
+        "timestamp": 1791087995176,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "SERVICE",
+        "message": "Đức · Kiểm tra đã giao tận tay kiện vật tư y tế đến Cụ C1."
+      },
+      {
+        "id": "EVT_1791087993713_r5ij",
+        "timestamp": 1791087993713,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "RESOURCE",
+        "message": "Đức · Kiểm tra đã lấy kiện CRATE_7 từ Kho vật tư."
+      },
+      {
+        "id": "EVT_1791087989207_imqx",
+        "timestamp": 1791087989207,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "PLAN",
+        "message": "Đức · Kiểm tra xác nhận phương án hỗ trợ tận nơi cho C1 và C2 theo quy tắc căn cứ thực tế. Ngân sách trừ 20 đơn vị."
+      },
+      {
+        "id": "EVT_1791087989207_dmbx",
+        "timestamp": 1791087989207,
+        "category": "RESOURCE",
+        "message": "SỔ SÁCH CÔNG: -20 đơn vị. Số dư ngân sách còn: 40."
+      },
+      {
+        "id": "EVT_1791087983804_mppu",
+        "timestamp": 1791087983804,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "AUDIT",
+        "message": "Đức · Kiểm tra đối chiếu danh sách phục vụ: Xác nhận C1 và C2 chưa nằm trong diện phục vụ trước đây. +5 điểm."
+      },
+      {
+        "id": "EVT_1791087981430_ilvv",
+        "timestamp": 1791087981430,
+        "playerId": "P_1791087861520_ln1e",
+        "playerName": "Đức · Kiểm tra",
+        "category": "SERVICE",
+        "message": "Đức · Kiểm tra đã tiếp nhận phản ánh chính thức về hoàn cảnh Cụ C1, C2 tại Khu C. +5 điểm."
+      },
+      {
+        "id": "EVT_1791087971964_r1oy",
+        "timestamp": 1791087971964,
+        "category": "MISSION",
+        "message": "BẮT ĐẦU NHIỆM VỤ 3: Tiếp nhận phản ánh từ Khu C (Cụ C1, C2 khó khăn tiếp cận) và xác minh thông tin sổ sách kho."
+      }
+    ],
+    "practiceCompleted": false,
+    "practiceCrateDelivered": false,
+    "ruleVersion": 1
+  },
+  "phase": "RESULTS"
+}

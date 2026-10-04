@@ -1,0 +1,8 @@
+{
+  "method": "actual SoundManager bundle with mocked DOM/AudioContext and failing fetch; no human listening",
+  "missingAssetDoesNotThrow": true,
+  "duplicateBeginDoesNotDuplicateListeners": true,
+  "volumeMutePersist": true,
+  "listenersRemoved": true,
+  "pass": true
+}

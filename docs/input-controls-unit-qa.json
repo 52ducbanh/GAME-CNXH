@@ -1,0 +1,14 @@
+{
+  "method": "Bundled production InputController/TouchControls with EventTarget and mock DOM; no real device or human held-key test",
+  "checks": [
+    "WASD / arrows / opposing keys / diagonal normalization",
+    "Shift sprint and release",
+    "E/G/M/Esc abstraction and repeat suppression",
+    "typing excludes gameplay shortcuts",
+    "MAP preserves held movement; Menu lock clears held/touch; fresh press after closing",
+    "joystick analog movement and full-stick sprint",
+    "two pointers: joystick + E/G, unrelated pointer release does not reset left hand",
+    "blur / hidden tab / lost capture resets without stuck movement"
+  ],
+  "pass": true
+}

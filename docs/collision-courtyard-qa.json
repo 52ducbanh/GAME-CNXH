@@ -1,0 +1,21 @@
+{
+  "roomCode": "COURT_MUSR4ZDI",
+  "record": [
+    {
+      "end": {
+        "x": 900,
+        "y": 345
+      },
+      "routePoints": 27,
+      "accepted": true
+    },
+    {
+      "end": {
+        "x": 460,
+        "y": 335
+      },
+      "routePoints": 28,
+      "accepted": true
+    }
+  ]
+}

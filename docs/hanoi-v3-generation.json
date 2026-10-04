@@ -1,0 +1,24 @@
+{
+  "mode": "built-in image_gen.imagegen",
+  "created": "2026-10-03",
+  "reference": "User-supplied Hanoi concept",
+  "referenceOriginalPath": "C:/Users/52duc/AppData/Local/Temp/codex-clipboard-776518b9-6b3d-4928-8ad6-ad395cc60ddf.png",
+  "projectReference": "docs/art-source/hanoi-v3/user-concept.png",
+  "operations": [
+    {
+      "kind": "precise-object-edit",
+      "prompt": "Edit the supplied Hanoi game concept into a clean, playable environment background plate, preserving its composition and painted pixel-art detail extremely closely.\nThis is asset preparation, not a new concept. Preserve the exact irregular turquoise lake shoreline, lush layered foliage, willow trees, stone paving, island with Turtle Tower and its reflection, dense yellow Vietnamese red-tile houses at left/bottom/right edges, warehouse green metal roof at lower left, headquarters at upper left, narrow blue canal at right. Keep the same camera, framing, saturated natural palette, pixel-like textured water and foliage, scale, sunlight, shadows and architectural details. The map must fill the entire wide frame.\nRemove ALL interface: top status bar, upper-right mission card, lower-right minimap, bottom keyboard legend, interaction prompts, dotted route, name labels, dialogue bubbles, all lettering/sign text, and bottom-right caption. Reconstruct the underlying scenery in these areas to match surrounding architecture/trees/paving/canal. All signs may remain as blank cream wooden boards.\nRemove ALL people, characters, vehicles, bicycles and boat/boatman; reconstruct empty paving or water below them. Keep benches, lamps, crates, flowers, potted plants and all environmental detail.\nRemove the white medical tent and its nearby crates at upper middle-left (about 36% across, 19% down). Replace that exact location with the same empty beige stone paving, leaving a clear 140x110-ish pixel footprint for a dynamic tent.\nRemove the stone road bridge across the canal at middle right (about 85% across, 44% down): make a continuous unobstructed turquoise canal below with stone banks on either side, leaving clean open road approaches for a dynamic bridge later. Keep the narrow stone road above it as a small alternate crossing near the top edge if needed; the upper east-bank street must connect across the canal near the top so the game has a north detour.\nDo not add a grid, any UI, new text, characters, markers, decorative fake map borders, huge grass fields, extra ponds or generic European buildings.\nOutput a single clean high-resolution wide landscape background image, same aspect as reference, no transparent margin. Exact reference composition is the top priority.",
+      "output": "docs/art-source/hanoi-v3/clean-scene.png",
+      "runtime": "client/public/assets/hanoi/v3/scene.webp",
+      "transparent_background": false
+    },
+    {
+      "kind": "new atlas with style reference",
+      "prompt": "Create a NEW production game sprite atlas using the attached Hanoi concept as the style reference. The output must be a real transparent PNG cutout sprite sheet, no background, no labels, no HUD.\nExactly THREE isolated stone road bridge sprites, centered one above another, equal-size row cells, with generous transparent gutters. Every row has the IDENTICAL silhouette size, camera, position, lighting, colors, stone texture and foot anchors. Top row: intact. Middle row: visibly broken central road span with a dark missing opening and small rubble on the ends. Bottom row: repaired with slightly fresh stone blocks in the central roadway, completely connected again.\nMatch the original reference's small curved stone bridge over the canal on the right: a horizontal east-west paved ROAD crossing, gently arched shallow top-down three-quarter view, low elegant light gray-beige stone balustrades, squat posts, thin dark outlines, warm weathered textured slabs and shaded river-facing abutments. It is not a tall castle wall, fort, staircase or giant medieval gate. Broad walkable road deck is visible, running horizontally between both open ends; top railing and near/far stone banks have delicate small architectural detail. No towers or lamps, no water underneath, no people, no black/colored matte. Game object logical footprint around 216 pixels wide by 100 pixels tall, drawn at higher resolution then sampled down. All three sprites must face exactly the same way. Keep the hand-painted crisp pixel-like Hanoi style of the reference, natural bright daylight, neutral stone. Only these three sprites on true transparent alpha.",
+      "output": "docs/art-source/hanoi-v3/bridge-states.png",
+      "runtime": "client/public/assets/hanoi/v3/bridge.png",
+      "transparent_background": true
+    }
+  ],
+  "preparation": "scripts/prepare-hanoi-v3.py: crops, masks, WebP encoding, native-size atlas packing, alpha cleanup. Original generated images retained."
+}

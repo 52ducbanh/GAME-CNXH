@@ -25,8 +25,8 @@ export class PracticeModal {
     const isHost = this.socketClient.getHostToken() !== '';
 
     this.container.innerHTML = `
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2">
+      <div class="practice-content flex items-center justify-between">
+        <div class="practice-copy flex items-center space-x-2">
           <span class="text-lg">🎯</span>
           <div>
             <h4 class="font-bold text-emerald-300">GIAI ĐOẠN TẬP DƯỢT THỰC HÀNH</h4>
@@ -37,7 +37,7 @@ export class PracticeModal {
             </p>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
+        <div class="practice-actions flex items-center space-x-2">
           <span class="font-mono font-bold text-amber-300 bg-emerald-900/80 px-2 py-1 rounded-lg">⏱ ${totalSecs}s</span>
           ${isHost ? `
             <button id="btn-skip-practice" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition">

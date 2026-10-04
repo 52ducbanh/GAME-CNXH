@@ -1,0 +1,313 @@
+WORKING TREE HANDOVER
+Captured: 2026-10-03T20:23:25+07:00
+HEAD: f50e6654309b95eac3328544cd21db079bd771cf
+Branch: master
+Tracked modified: 41; untracked: 264
+M/?? show current files, not authorship or an instruction to delete.
+No commit/reset/stash performed. No ignored dist/node_modules/private env contents included.
+
+ M README.md
+ M client/index.html
+ M client/package.json
+ M client/public/assets/bridge_broken.svg
+ M client/public/assets/bridge_intact.svg
+ M client/public/assets/clinic_fixed.svg
+ M client/public/assets/clinic_mobile.svg
+ M client/public/assets/crate.svg
+ M client/public/assets/headquarters.svg
+ M client/public/assets/house_a.svg
+ M client/public/assets/house_b.svg
+ M client/public/assets/house_c.svg
+ M client/public/assets/notice_board.svg
+ M client/public/assets/thap_rua.svg
+ M client/public/assets/warehouse.svg
+ M client/src/game/phaserGame.ts
+ M client/src/main.ts
+ M client/src/network/socketClient.ts
+ M client/src/scenes/MainScene.ts
+ M client/src/ui/actionPanel.ts
+ M client/src/ui/briefingModal.ts
+ M client/src/ui/hostView.ts
+ M client/src/ui/hudView.ts
+ M client/src/ui/lobbyView.ts
+ M client/src/ui/practiceModal.ts
+ M client/src/ui/projectorView.ts
+ M client/src/ui/resultsModal.ts
+ M client/src/ui/taskPanel.ts
+ M client/src/ui/touchControls.ts
+ M docs/ASSET_CREDITS.md
+ M docs/KNOWLEDGE_MAP.md
+ M docs/MVP_SPEC.md
+ M package-lock.json
+ M server/src/__tests__/gameEngine.test.ts
+ M server/src/gameEngine.ts
+ M server/src/roomManager.ts
+ M server/src/server.ts
+ M shared/src/constants.ts
+ M shared/src/index.ts
+ M shared/src/mapData.ts
+ M shared/src/types.ts
+?? AGENTS.md
+?? client/postcss.config.cjs
+?? client/public/assets/credits.html
+?? client/public/assets/hanoi/prompts.md
+?? client/public/assets/hanoi/townhouse-v1.png
+?? client/public/assets/hanoi/turtle-tower-v1.png
+?? client/public/assets/hanoi/v2/bridge.png
+?? client/public/assets/hanoi/v2/citizen.png
+?? client/public/assets/hanoi/v2/clinic.png
+?? client/public/assets/hanoi/v2/crate.png
+?? client/public/assets/hanoi/v2/doctor.png
+?? client/public/assets/hanoi/v2/headquarters.png
+?? client/public/assets/hanoi/v2/house-a.png
+?? client/public/assets/hanoi/v2/house-b.png
+?? client/public/assets/hanoi/v2/house-c.png
+?? client/public/assets/hanoi/v2/manifest.json
+?? client/public/assets/hanoi/v2/mobile-clinic.png
+?? client/public/assets/hanoi/v2/props.png
+?? client/public/assets/hanoi/v2/tower.png
+?? client/public/assets/hanoi/v2/tree.png
+?? client/public/assets/hanoi/v2/volunteer.png
+?? client/public/assets/hanoi/v2/warehouse.png
+?? client/public/assets/hanoi/v2/willow.png
+?? client/public/assets/hanoi/v3/bridge.png
+?? client/public/assets/hanoi/v3/east-canopy.webp
+?? client/public/assets/hanoi/v3/east-roofs.webp
+?? client/public/assets/hanoi/v3/east-willow.webp
+?? client/public/assets/hanoi/v3/hq-roof.webp
+?? client/public/assets/hanoi/v3/layers.json
+?? client/public/assets/hanoi/v3/minimap.webp
+?? client/public/assets/hanoi/v3/north-willow.webp
+?? client/public/assets/hanoi/v3/scene.webp
+?? client/public/assets/hanoi/v3/south-canopy-2.webp
+?? client/public/assets/hanoi/v3/south-canopy.webp
+?? client/public/assets/hanoi/v3/south-east-roof.webp
+?? client/public/assets/hanoi/v3/south-roofs.webp
+?? client/public/assets/hanoi/v3/warehouse-roof.webp
+?? client/public/assets/hanoi/v3/west-canopy.webp
+?? client/public/assets/hanoi/v3/west-garden.webp
+?? client/public/assets/hanoi/v3/west-lane-top.webp
+?? client/public/assets/hanoi/v3/west-willow-south-2.webp
+?? client/public/assets/hanoi/v3/west-willow-south.webp
+?? client/public/assets/hanoi/v3/west-willow.webp
+?? client/public/assets/lpc/CREDITS-trees.txt
+?? client/public/assets/lpc/trees-green.png
+?? client/public/assets/ninja/ninja-blue.png
+?? client/public/assets/ninja/samurai-blue.png
+?? client/public/assets/ninja/samurai-green.png
+?? client/public/assets/ninja/village.png
+?? client/public/assets/regions/ha-tinh/clinic.webp
+?? client/public/assets/regions/ha-tinh/east-canopy.webp
+?? client/public/assets/regions/ha-tinh/hq.webp
+?? client/public/assets/regions/ha-tinh/icon.webp
+?? client/public/assets/regions/ha-tinh/layers.json
+?? client/public/assets/regions/ha-tinh/memorial.webp
+?? client/public/assets/regions/ha-tinh/minimap.webp
+?? client/public/assets/regions/ha-tinh/scene.webp
+?? client/public/assets/regions/ha-tinh/south-roof.webp
+?? client/public/assets/regions/ha-tinh/warehouse.webp
+?? client/public/assets/regions/ha-tinh/west-canopy.webp
+?? client/public/assets/regions/hai-phong/hq.webp
+?? client/public/assets/regions/hai-phong/icon.webp
+?? client/public/assets/regions/hai-phong/layers.json
+?? client/public/assets/regions/hai-phong/minimap.webp
+?? client/public/assets/regions/hai-phong/opera.webp
+?? client/public/assets/regions/hai-phong/palms.webp
+?? client/public/assets/regions/hai-phong/red-canopy.webp
+?? client/public/assets/regions/hai-phong/scene.webp
+?? client/public/assets/regions/hai-phong/south-tree.webp
+?? client/public/assets/regions/hai-phong/warehouse.webp
+?? client/public/assets/regions/hai-phong/west-tree.webp
+?? client/public/assets/regions/nghe-an/east-roof.webp
+?? client/public/assets/regions/nghe-an/hq.webp
+?? client/public/assets/regions/nghe-an/icon.webp
+?? client/public/assets/regions/nghe-an/layers.json
+?? client/public/assets/regions/nghe-an/lotus-tree.webp
+?? client/public/assets/regions/nghe-an/minimap.webp
+?? client/public/assets/regions/nghe-an/scene.webp
+?? client/public/assets/regions/nghe-an/south-canopy.webp
+?? client/public/assets/regions/nghe-an/thatch.webp
+?? client/public/assets/regions/nghe-an/warehouse.webp
+?? client/public/assets/regions/ninh-binh/clinic.webp
+?? client/public/assets/regions/ninh-binh/east-roof.webp
+?? client/public/assets/regions/ninh-binh/gate.webp
+?? client/public/assets/regions/ninh-binh/hq.webp
+?? client/public/assets/regions/ninh-binh/icon.webp
+?? client/public/assets/regions/ninh-binh/layers.json
+?? client/public/assets/regions/ninh-binh/minimap.webp
+?? client/public/assets/regions/ninh-binh/scene.webp
+?? client/public/assets/regions/ninh-binh/south-canopy.webp
+?? client/public/assets/regions/ninh-binh/warehouse.webp
+?? client/public/assets/regions/ninh-binh/willows.webp
+?? client/public/assets/regions/quang-ninh/clinic.webp
+?? client/public/assets/regions/quang-ninh/dock-canopy.webp
+?? client/public/assets/regions/quang-ninh/east-roof.webp
+?? client/public/assets/regions/quang-ninh/hq.webp
+?? client/public/assets/regions/quang-ninh/icon.webp
+?? client/public/assets/regions/quang-ninh/layers.json
+?? client/public/assets/regions/quang-ninh/minimap.webp
+?? client/public/assets/regions/quang-ninh/scene.webp
+?? client/public/assets/regions/quang-ninh/south-canopy.webp
+?? client/public/assets/regions/quang-ninh/south-roof.webp
+?? client/public/assets/regions/quang-ninh/warehouse.webp
+?? client/public/assets/regions/quang-ninh/west-canopy.webp
+?? client/public/assets/regions/shared/boats.png
+?? client/public/assets/regions/shared/bridge-steel.png
+?? client/public/assets/regions/shared/bridge-stone.png
+?? client/public/assets/regions/shared/bridge-wood.png
+?? client/public/assets/regions/shared/palm-sevarihk.png
+?? client/public/assets/regions/shared/waterfall-sevarihk.png
+?? client/public/assets/regions/shared/waterfall.png
+?? client/public/assets/regions/thanh-hoa/banyan.webp
+?? client/public/assets/regions/thanh-hoa/clinic.webp
+?? client/public/assets/regions/thanh-hoa/east-canopy.webp
+?? client/public/assets/regions/thanh-hoa/hq.webp
+?? client/public/assets/regions/thanh-hoa/icon.webp
+?? client/public/assets/regions/thanh-hoa/layers.json
+?? client/public/assets/regions/thanh-hoa/minimap.webp
+?? client/public/assets/regions/thanh-hoa/scene.webp
+?? client/public/assets/regions/thanh-hoa/south-roof.webp
+?? client/public/assets/regions/thanh-hoa/warehouse.webp
+?? client/public/assets/regions/thanh-hoa/west-tree.webp
+?? client/src/game.css
+?? client/src/game/hanoiAssets.ts
+?? client/src/game/hanoiLayout.ts
+?? client/src/game/hanoiMap.ts
+?? client/src/game/hanoiScene.ts
+?? client/src/game/hanoiSceneLayers.ts
+?? client/src/game/regionalLayers.ts
+?? client/src/game/regionalScene.ts
+?? client/src/regions.css
+?? client/src/utilities.css
+?? client/tailwind.config.cjs
+?? docs/ARCHITECTURE.md
+?? docs/ART_SOURCES.md
+?? docs/HANDOVER_SOURCE.json
+?? docs/HANOI_ASSET_RESEARCH.md
+?? docs/HANOI_REDESIGN.md
+?? docs/HANOI_V3_HANDOVER.md
+?? docs/MAPS.md
+?? docs/PROJECT_STATUS.md
+?? docs/REGIONAL_ASSET_RESEARCH.md
+?? docs/REGIONAL_MAPS_HANDOVER.md
+?? docs/TESTING.md
+?? docs/WORKTREE_HANDOVER.txt
+?? docs/art-source/hanoi-v2/bridge-v3.png
+?? docs/art-source/hanoi-v2/bridge.png
+?? docs/art-source/hanoi-v2/citizen.png
+?? docs/art-source/hanoi-v2/clinic.png
+?? docs/art-source/hanoi-v2/doctor.png
+?? docs/art-source/hanoi-v2/headquarters.png
+?? docs/art-source/hanoi-v2/house-a.png
+?? docs/art-source/hanoi-v2/house-b.png
+?? docs/art-source/hanoi-v2/house-c.png
+?? docs/art-source/hanoi-v2/mobile-clinic.png
+?? docs/art-source/hanoi-v2/props.png
+?? docs/art-source/hanoi-v2/style-sample.png
+?? docs/art-source/hanoi-v2/tower.png
+?? docs/art-source/hanoi-v2/tree.png
+?? docs/art-source/hanoi-v2/volunteer.png
+?? docs/art-source/hanoi-v2/warehouse.png
+?? docs/art-source/hanoi-v2/willow.png
+?? docs/art-source/hanoi-v3/bridge-states.png
+?? docs/art-source/hanoi-v3/clean-scene.png
+?? docs/art-source/hanoi-v3/user-concept.png
+?? docs/art-source/regions/ha-tinh/clean-scene.png
+?? docs/art-source/regions/ha-tinh/user-concept.png
+?? docs/art-source/regions/hai-phong/clean-scene.png
+?? docs/art-source/regions/hai-phong/user-concept.png
+?? docs/art-source/regions/nghe-an/clean-scene.png
+?? docs/art-source/regions/nghe-an/user-concept.png
+?? docs/art-source/regions/ninh-binh/clean-scene.png
+?? docs/art-source/regions/ninh-binh/user-concept.png
+?? docs/art-source/regions/quang-ninh/clean-scene.png
+?? docs/art-source/regions/quang-ninh/user-concept.png
+?? docs/art-source/regions/shared/boats-source.png
+?? docs/art-source/regions/shared/bridges-source.png
+?? docs/art-source/regions/thanh-hoa/clean-scene.png
+?? docs/art-source/regions/thanh-hoa/user-concept.png
+?? docs/hanoi-v2-generation.json
+?? docs/hanoi-v2-mobile-runtime-qa.json
+?? docs/hanoi-v2-runtime-qa.json
+?? docs/hanoi-v3-concept-capture-qa.json
+?? docs/hanoi-v3-fixed-runtime-qa.json
+?? docs/hanoi-v3-generation.json
+?? docs/hanoi-v3-mobile-runtime-qa.json
+?? docs/regions-generation.json
+?? docs/regions-ha-tinh-runtime-qa.json
+?? docs/regions-hai-phong-runtime-qa.json
+?? docs/regions-nghe-an-runtime-qa.json
+?? docs/regions-ninh-binh-runtime-qa.json
+?? docs/regions-quang-ninh-runtime-qa.json
+?? docs/regions-runtime-qa.json
+?? docs/regions-thanh-hoa-runtime-qa.json
+?? docs/screenshots/ha-tinh-final.jpg
+?? docs/screenshots/ha-tinh-initial.jpg
+?? docs/screenshots/hai-phong-final.jpg
+?? docs/screenshots/hai-phong-initial.jpg
+?? docs/screenshots/hanoi-redesign-desktop.jpg
+?? docs/screenshots/hanoi-redesign-mobile.jpg
+?? docs/screenshots/hanoi-v2-1280-follow.jpg
+?? docs/screenshots/hanoi-v2-1280-overview.jpg
+?? docs/screenshots/hanoi-v2-1440-follow.jpg
+?? docs/screenshots/hanoi-v2-1440-overview.jpg
+?? docs/screenshots/hanoi-v2-asset-check.png
+?? docs/screenshots/hanoi-v2-before.jpg
+?? docs/screenshots/hanoi-v2-final-1280-follow.jpg
+?? docs/screenshots/hanoi-v2-final-1280-overview.jpg
+?? docs/screenshots/hanoi-v2-final-1440-follow.jpg
+?? docs/screenshots/hanoi-v2-final-1440-overview.jpg
+?? docs/screenshots/hanoi-v2-first-overview.jpg
+?? docs/screenshots/hanoi-v2-host-results.jpg
+?? docs/screenshots/hanoi-v2-landscape-follow.jpg
+?? docs/screenshots/hanoi-v2-mobile-clinics-broken-bridge.jpg
+?? docs/screenshots/hanoi-v2-mobile-first.jpg
+?? docs/screenshots/hanoi-v2-mobile-follow.jpg
+?? docs/screenshots/hanoi-v2-mobile-movement.jpg
+?? docs/screenshots/hanoi-v2-mobile-tasks.jpg
+?? docs/screenshots/hanoi-v2-overview-full.jpg
+?? docs/screenshots/hanoi-v2-projector-results.jpg
+?? docs/screenshots/hanoi-v2-results-100.jpg
+?? docs/screenshots/hanoi-v2-style-sample.png
+?? docs/screenshots/hanoi-v3-desktop-follow.jpg
+?? docs/screenshots/hanoi-v3-final-1280.jpg
+?? docs/screenshots/hanoi-v3-final-1440.jpg
+?? docs/screenshots/hanoi-v3-fixed-repaired-1280.jpg
+?? docs/screenshots/hanoi-v3-fixed-repaired-1440.jpg
+?? docs/screenshots/hanoi-v3-initial-1440.jpg
+?? docs/screenshots/hanoi-v3-landscape-follow.jpg
+?? docs/screenshots/hanoi-v3-mobile-clinics-broken-1440.jpg
+?? docs/screenshots/hanoi-v3-mobile-follow.jpg
+?? docs/screenshots/hanoi-v3-mobile-tasks.jpg
+?? docs/screenshots/nghe-an-final.jpg
+?? docs/screenshots/nghe-an-initial.jpg
+?? docs/screenshots/ninh-binh-final.jpg
+?? docs/screenshots/ninh-binh-initial.jpg
+?? docs/screenshots/quang-ninh-final.jpg
+?? docs/screenshots/quang-ninh-initial.jpg
+?? docs/screenshots/regions-final-contact-sheet.jpg
+?? docs/screenshots/regions-lobby-desktop.jpg
+?? docs/screenshots/regions-mobile-follow.jpg
+?? docs/screenshots/regions-mobile-practice.jpg
+?? docs/screenshots/regions-mobile-tasks.jpg
+?? docs/screenshots/regions-results-100.jpg
+?? docs/screenshots/thanh-hoa-final.jpg
+?? docs/screenshots/thanh-hoa-initial.jpg
+?? scripts/build-hanoi-assets.py
+?? scripts/inspect-hanoi-qa.mjs
+?? scripts/prepare-hanoi-v2.py
+?? scripts/prepare-hanoi-v3.py
+?? scripts/prepare-region-contact-sheet.py
+?? scripts/prepare-region-sprites.py
+?? scripts/prepare-regions.py
+?? scripts/preview-room.mjs
+?? scripts/qa-room-command.mjs
+?? scripts/verify-hanoi-v2.mjs
+?? scripts/verify-regions.mjs
+?? server/src/__tests__/hanoiMap.test.ts
+?? server/src/__tests__/hanoiSolo.test.ts
+?? server/src/__tests__/regionalMaps.test.ts
+?? shared/src/missionGuide.ts
+?? shared/src/navigation.ts
+?? shared/src/regionalMapData.ts
+?? shared/src/worldMaps.ts

@@ -1,0 +1,220 @@
+[
+  {
+    "mapId": "hanoi",
+    "name": "Hà Nội",
+    "roomCode": "QA_-1_MUSR00EH",
+    "roomUrl": "http://127.0.0.1:3111/play/QA_-1_MUSR00EH",
+    "m1Plan": "MOBILE",
+    "m2Plan": "DETOUR",
+    "routes": 39,
+    "rejectedCollisionProbes": 2,
+    "deploymentChecks": [
+      {
+        "clinic": "CLINIC_MOBILE_B",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": true,
+        "position": {
+          "x": 1555,
+          "y": 450
+        }
+      },
+      {
+        "clinic": "CLINIC_MOBILE_C",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 1555,
+          "y": 450
+        }
+      }
+    ],
+    "stage": "Complete",
+    "score": 100,
+    "peerReconnect": true,
+    "bridgeRepaired": false,
+    "phase": "RESULTS"
+  },
+  {
+    "mapId": "hai-phong",
+    "name": "Hải Phòng",
+    "roomCode": "QA_0_MUSR00EH",
+    "roomUrl": "http://127.0.0.1:3111/play/QA_0_MUSR00EH",
+    "m1Plan": "FIXED",
+    "m2Plan": "REPAIR",
+    "routes": 38,
+    "rejectedCollisionProbes": 3,
+    "deploymentChecks": [
+      {
+        "clinic": "CLINIC_FIXED",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 555.4124601408299,
+          "y": 524.3486431909336
+        }
+      }
+    ],
+    "stage": "Complete",
+    "score": 100,
+    "peerReconnect": true,
+    "bridgeRepaired": true,
+    "phase": "RESULTS"
+  },
+  {
+    "mapId": "quang-ninh",
+    "name": "Quảng Ninh",
+    "roomCode": "QA_1_MUSR00EH",
+    "roomUrl": "http://127.0.0.1:3111/play/QA_1_MUSR00EH",
+    "m1Plan": "MOBILE",
+    "m2Plan": "DETOUR",
+    "routes": 38,
+    "rejectedCollisionProbes": 1,
+    "deploymentChecks": [
+      {
+        "clinic": "CLINIC_MOBILE_B",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 374.3364632590871,
+          "y": 520.1374691996057
+        }
+      },
+      {
+        "clinic": "CLINIC_MOBILE_C",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 374.3364632590871,
+          "y": 520.1374691996057
+        }
+      }
+    ],
+    "stage": "Complete",
+    "score": 100,
+    "peerReconnect": true,
+    "bridgeRepaired": false,
+    "phase": "RESULTS"
+  },
+  {
+    "mapId": "ninh-binh",
+    "name": "Ninh Bình",
+    "roomCode": "QA_2_MUSR00EH",
+    "roomUrl": "http://127.0.0.1:3111/play/QA_2_MUSR00EH",
+    "m1Plan": "FIXED",
+    "m2Plan": "REPAIR",
+    "routes": 38,
+    "rejectedCollisionProbes": 1,
+    "deploymentChecks": [
+      {
+        "clinic": "CLINIC_FIXED",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 404.4506356421308,
+          "y": 309.378287786522
+        }
+      }
+    ],
+    "stage": "Complete",
+    "score": 100,
+    "peerReconnect": true,
+    "bridgeRepaired": true,
+    "phase": "RESULTS"
+  },
+  {
+    "mapId": "thanh-hoa",
+    "name": "Thanh Hóa",
+    "roomCode": "QA_3_MUSR00EH",
+    "roomUrl": "http://127.0.0.1:3111/play/QA_3_MUSR00EH",
+    "m1Plan": "MOBILE",
+    "m2Plan": "DETOUR",
+    "routes": 39,
+    "rejectedCollisionProbes": 1,
+    "deploymentChecks": [
+      {
+        "clinic": "CLINIC_MOBILE_B",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": true,
+        "position": {
+          "x": 1180,
+          "y": 518
+        }
+      },
+      {
+        "clinic": "CLINIC_MOBILE_C",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 1180,
+          "y": 518
+        }
+      }
+    ],
+    "stage": "Complete",
+    "score": 100,
+    "peerReconnect": true,
+    "bridgeRepaired": false,
+    "phase": "RESULTS"
+  },
+  {
+    "mapId": "nghe-an",
+    "name": "Nghệ An",
+    "roomCode": "QA_4_MUSR00EH",
+    "roomUrl": "http://127.0.0.1:3111/play/QA_4_MUSR00EH",
+    "m1Plan": "FIXED",
+    "m2Plan": "REPAIR",
+    "routes": 38,
+    "rejectedCollisionProbes": 1,
+    "deploymentChecks": [
+      {
+        "clinic": "CLINIC_FIXED",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 436.33570575570263,
+          "y": 348.9710597755659
+        }
+      }
+    ],
+    "stage": "Complete",
+    "score": 100,
+    "peerReconnect": true,
+    "bridgeRepaired": true,
+    "phase": "RESULTS"
+  },
+  {
+    "mapId": "ha-tinh",
+    "name": "Hà Tĩnh",
+    "roomCode": "QA_5_MUSR00EH",
+    "roomUrl": "http://127.0.0.1:3111/play/QA_5_MUSR00EH",
+    "m1Plan": "MOBILE",
+    "m2Plan": "DETOUR",
+    "routes": 39,
+    "rejectedCollisionProbes": 1,
+    "deploymentChecks": [
+      {
+        "clinic": "CLINIC_MOBILE_B",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": false,
+        "position": {
+          "x": 558.6439365545433,
+          "y": 336.5343217867785
+        }
+      },
+      {
+        "clinic": "CLINIC_MOBILE_C",
+        "bothClientsSawDeployment": true,
+        "overlapRecovered": true,
+        "position": {
+          "x": 1530,
+          "y": 723
+        }
+      }
+    ],
+    "stage": "Complete",
+    "score": 100,
+    "peerReconnect": true,
+    "bridgeRepaired": false,
+    "phase": "RESULTS"
+  }
+]

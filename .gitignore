@@ -5,3 +5,9 @@ Thumbs.db
 *.log
 .env
 .env.local
+
+# Isolated collision QA bundle; live client/dist remains unchanged.
+dist-collision/
+
+# Isolated shared input/interaction QA bundle.
+dist-input/

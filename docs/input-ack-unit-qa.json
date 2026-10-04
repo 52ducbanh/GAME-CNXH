@@ -1,0 +1,9 @@
+{
+  "method": "Actual bundled MainScene.executeAction with mocked renderer/socket and 350ms delayed ACK; no browser-network interception",
+  "pendingUntilAck": true,
+  "spamSuppressed": true,
+  "rejectReasonWithoutSuccess": true,
+  "noClientCargoMutation": true,
+  "successOnlyAfterAck": true,
+  "pass": true
+}

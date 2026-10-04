@@ -1,7 +1,9 @@
-# DANH MỤC NGUỒN VÀ BẢN QUYỀN ĐỒ HỌA (ASSET CREDITS & LICENSES)
+# DANH MỤC SVG BAN ĐẦU VÀ LIÊN KẾT GHI CÔNG HIỆN TẠI
 
 Dự án game: **QUÊ MÌNH ĐỨNG ĐẦU! / HÀ NỘI** (MVP)  
 Ngày rà soát: 02/10/2026.
+
+**Cập nhật bàn giao 03/10/2026:** bảng bên dưới là danh mục/ghi chú của renderer SVG ban đầu, được giữ làm lịch sử. Renderer hiện tại dùng cảnh Hà Nội v3, sprite v2 và sáu vùng mới; SVG/LPC/ninja cũ không được dùng làm bằng chứng chất lượng bản mới. Nguồn/giấy phép asset thực sự nạp được liệt kê tại [ART_SOURCES.md](ART_SOURCES.md) và [trang ghi công trong game](../client/public/assets/credits.html). Các mô tả nguồn tham khảo dưới đây là ghi chép cũ, không được kiểm chứng lại trong lượt bàn giao này.
 
 ---
 
@@ -33,6 +35,12 @@ Ngày rà soát: 02/10/2026.
 | `npc_rep.svg` | `client/public/assets/` | Đại diện cộng đồng dân cư | Tự thiết kế vector 2D | Cán bộ cơ sở mang cặp hồ sơ khảo sát và mũ tai bèo. |
 
 ---
+
+## Movement audio — 2026-10-03
+
+- Runtime: `client/public/assets/audio/movement/`, 10 unmodified OGGs from **Kenney — Impact Sounds 1.0**, [source](https://kenney.nl/assets/impact-sounds), **CC0**. Concrete/grass/wood variants 000–002 and `impactGeneric_light_000.ogg` (quiet gain). Original license retained in `LICENSE-Kenney.txt`.
+- Original archives downloaded: `docs/audio-source/kenney_impact-sounds.zip`, [RPG Audio](https://kenney.nl/assets/rpg-audio) and [Fantozzi's Footsteps](https://opengameart.org/content/fantozzis-footsteps-grasssand-stone) (Fantozzi, submitted by qubodup). All source pages declare CC0; only Impact Sounds is shipped/loaded at runtime.
+- Browser decoded all 10 shipped files. **Human listening was unavailable**: selection uses original surface filenames, not a listening claim. Listening/timbre/volume playtest remains required. No hotlink, music or new quest/UI sound.
 
 ## 3. Tham khảo Cảm hứng & Giấy phép Tài nguyên Thứ ba
 

@@ -1,0 +1,15 @@
+{
+  "base": "http://127.0.0.1:3112",
+  "roomCode": "INPUT_NET_MUTBNZHN",
+  "method": "real Socket.IO two-player disposable room; artificial ACK-consumer delay, not physical LAN latency",
+  "checks": [
+    "two sockets race named crate: exactly one ACK success",
+    "disconnect + reconnect preserves cargo ownership within grace",
+    "duplicate action returns same receipt without repeated mutation",
+    "two sockets race same NPC objective: one reservation",
+    "server reject includes reason; invalid target cannot award progress",
+    "350ms delayed ACK consumption + duplicate retry remains idempotent"
+  ],
+  "delayedAckMs": 353,
+  "pass": true
+}

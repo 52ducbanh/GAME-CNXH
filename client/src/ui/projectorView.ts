@@ -1,4 +1,4 @@
-import { GameSnapshot } from 'shared';
+import { GameSnapshot, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
 export class ProjectorView {
@@ -60,7 +60,7 @@ export class ProjectorView {
               ${snapshot.isPaused ? '<span class="px-2 py-0.5 rounded bg-amber-500 text-black font-black text-xs animate-pulse">TẠM DỪNG</span>' : ''}
             </div>
             <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-2">
-              QUÊ MÌNH ĐỨNG ĐẦU! / HÀ NỘI
+              QUÊ MÌNH ĐỨNG ĐẦU! / ${getGameMap(snapshot.mapId).name.toLocaleUpperCase('vi')}
             </h1>
           </div>
           <div class="text-right">
@@ -114,7 +114,7 @@ export class ProjectorView {
         <!-- Footer -->
         <div class="pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-500">
           <span>Hệ thống mô phỏng thực hành Nhà nước pháp quyền Xã hội Chủ nghĩa Việt Nam</span>
-          <span>Hà Nội: 30 người dân mô phỏng (A: 12, B: 10, C: 8)</span>
+          <span>${getGameMap(snapshot.mapId).name}: 30 người dân mô phỏng (A: 12, B: 10, C: 8)</span>
         </div>
       </div>
     `;

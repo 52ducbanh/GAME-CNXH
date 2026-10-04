@@ -1,0 +1,104 @@
+{
+  "roomUrl": "http://localhost:3100/play/V2_MURZELVS",
+  "roomCode": "V2_MURZELVS",
+  "stage": "Complete",
+  "routes": 38,
+  "m1": {
+    "status": "RESOLVED",
+    "surveys": {
+      "A": true,
+      "B": true,
+      "C": true
+    },
+    "surveyAssignedTo": {},
+    "planProposed": "NONE",
+    "planCommitted": "FIXED",
+    "planVersion": 2,
+    "requiredCrates": 2,
+    "deliveredCratesFixed": 2,
+    "deliveredCratesMobileB": 0,
+    "deliveredCratesMobileC": 0,
+    "fixedDeployed": true,
+    "mobileBDeployed": false,
+    "mobileCDeployed": false,
+    "verifiedA": true,
+    "verifiedB": true,
+    "verifiedC": false,
+    "noticePublished": true,
+    "score": 30
+  },
+  "m2": {
+    "status": "RESOLVED",
+    "bridgeBroken": true,
+    "bridgeRepaired": true,
+    "surveyDone": true,
+    "planProposed": "NONE",
+    "planCommitted": "REPAIR",
+    "planVersion": 2,
+    "bridgeCratesDelivered": 2,
+    "bridgeRepairTask1": true,
+    "bridgeRepairTask2": true,
+    "reliefCratesDeliveredB": 2,
+    "verifiedB": true,
+    "noticePublished": true,
+    "score": 35
+  },
+  "m3": {
+    "status": "RESOLVED",
+    "receivedFeedbackC": true,
+    "crossCheckedList": true,
+    "planConfirmed": true,
+    "deliveredC1": true,
+    "deployedC1": true,
+    "deliveredC2": true,
+    "deployedC2": true,
+    "lossAuditDone": true,
+    "lossAuditConclusion": "Khớp 100% với thực tế, chưa có căn cứ xác định thất thoát vật tư.",
+    "noticePublished": true,
+    "score": 35
+  },
+  "score": 100,
+  "peerReconnect": true,
+  "phase": "RESULTS",
+  "resources": {
+    "initialBudget": 100,
+    "currentBudget": 15,
+    "totalCrates": 12,
+    "availableCrates": 4,
+    "entries": [
+      {
+        "id": "LEDGER_1791007183801_gela",
+        "timestamp": 1791007183801,
+        "missionId": "M3",
+        "description": "Chi phí hỗ trợ y tế tận nhà cho hai công dân cao tuổi C1 và C2",
+        "amount": 20,
+        "balanceAfter": 15
+      },
+      {
+        "id": "LEDGER_1791007161482_fpgn",
+        "timestamp": 1791007161482,
+        "missionId": "M2",
+        "description": "Cam kết phương án ứng phó sự cố cầu B: REPAIR",
+        "amount": 25,
+        "balanceAfter": 35
+      },
+      {
+        "id": "LEDGER_1791007148262_exfg",
+        "timestamp": 1791007148262,
+        "missionId": "M1",
+        "description": "Cam kết phương án dịch vụ y tế FIXED",
+        "amount": 40,
+        "balanceAfter": 60
+      },
+      {
+        "id": "init",
+        "timestamp": 1791007135090,
+        "missionId": "INIT",
+        "description": "Cấp phát ngân sách và vật tư ban đầu của thành phố",
+        "amount": 0,
+        "balanceAfter": 100
+      }
+    ],
+    "version": 4
+  }
+}

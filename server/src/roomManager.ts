@@ -1,5 +1,5 @@
 import { GameEngine } from './gameEngine.js';
-import { GameSnapshot } from 'shared';
+import { MapId } from 'shared';
 
 export interface PlayerSession {
   playerId: string;
@@ -15,11 +15,13 @@ export class RoomManager {
 
   constructor() {}
 
-  public createRoom(customCode?: string): { roomCode: string; hostToken: string; engine: GameEngine } {
-    const roomCode = (customCode || `HN${Math.floor(1000 + Math.random() * 9000)}`).toUpperCase();
+  public createRoom(customCode?: string,mapId:MapId='hanoi'): { roomCode: string; hostToken: string; engine: GameEngine } {
+    let roomCode = (customCode || `VN${Math.floor(1000 + Math.random() * 9000)}`).toUpperCase();
+    if(customCode&&this.rooms.has(roomCode))throw new Error('Mã phòng đã tồn tại.');
+    while(this.rooms.has(roomCode))roomCode=`VN${Math.random().toString(36).slice(2,8).toUpperCase()}`;
     const hostToken = `HOST_${Math.random().toString(36).substring(2, 10)}_${Date.now()}`;
 
-    const engine = new GameEngine(roomCode, hostToken);
+    const engine = new GameEngine(roomCode, hostToken,mapId);
     this.rooms.set(roomCode, engine);
     this.hostTokens.set(roomCode, hostToken);
 
@@ -59,10 +61,11 @@ export class RoomManager {
   }
 
   public getAllRoomsList() {
-    const list: { roomCode: string; phase: string; playerCount: number; score: number }[] = [];
+    const list: { roomCode: string; mapId:MapId; phase: string; playerCount: number; score: number }[] = [];
     for (const [code, engine] of this.rooms.entries()) {
       list.push({
         roomCode: code,
+        mapId: engine.map.id,
         phase: engine.phase,
         playerCount: engine.getOnlinePlayerCount(),
         score: engine.totalScore

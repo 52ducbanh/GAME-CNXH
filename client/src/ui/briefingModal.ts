@@ -1,4 +1,4 @@
-import { GameSnapshot, KNOWLEDGE_INTRO } from 'shared';
+import { GameSnapshot, KNOWLEDGE_INTRO, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
 export class BriefingModal {
@@ -29,7 +29,7 @@ export class BriefingModal {
         <div class="flex justify-between items-center pb-4 border-b border-slate-800">
           <div>
             <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Dẫn nhập lý luận khoa học</span>
-            <h1 class="text-xl sm:text-2xl font-black text-white mt-1">QUÊ MÌNH ĐỨNG ĐẦU! / HÀ NỘI</h1>
+            <h1 class="text-xl sm:text-2xl font-black text-white mt-1">QUÊ MÌNH ĐỨNG ĐẦU! / ${getGameMap(snapshot.mapId).name.toLocaleUpperCase('vi')}</h1>
           </div>
           <div class="px-3 py-1 bg-amber-500/20 border border-amber-500/50 rounded-xl text-amber-400 font-mono font-bold text-sm">
             ⏱ ${totalSecs}s

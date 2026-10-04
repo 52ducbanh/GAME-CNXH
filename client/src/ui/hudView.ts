@@ -1,154 +1,207 @@
-import { GameSnapshot, PlayerRole } from 'shared';
+import { InteractionContext } from 'shared';
+import { GameSnapshot, PlayerRole, WORLD_WIDTH, WORLD_HEIGHT, MapId, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
+import { getMissionGuide } from 'shared';
+import { soundManager } from '../game/soundManager.js';
+
+const sun='<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="7" fill="#f0b52c"/><path d="M16 1V5 M16 27V31 M1 16H5 M27 16H31 M5 5L8 8 M24 24L27 27 M5 27L8 24 M24 8L27 5" stroke="#d99b20" stroke-width="2"/></svg>';
+const coin='<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="#d79b24" stroke="#71552b" stroke-width="2"/><circle cx="16" cy="16" r="9" fill="#ffe287" stroke="#b17a1a"/><path d="M16 8V24 M21 11H13Q9 15 16 16Q23 17 19 21H11" fill="none" stroke="#c59428" stroke-width="2"/></svg>';
+const people='<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13" cy="9" r="5" fill="#4c89b3" stroke="#294755"/><circle cx="23" cy="12" r="4" fill="#76acc2" stroke="#294755"/><path d="M4 28V20Q13 10 22 20V28Z M22 19Q30 17 30 26V28H23Z" fill="#4381a5" stroke="#294755" stroke-width="2"/></svg>';
 
 export class HudView {
-  private container: HTMLElement;
-  private socketClient: SocketClient;
-  private onToggleTasks: () => void;
-  private onToggleLedger: () => void;
+  private container:HTMLElement;
+  private canvas:HTMLCanvasElement;
+  private toastContainer:HTMLElement;
+  private mapImage=new Image();
+  public onToggleMap?:()=>void;
+  public onMenu?:()=>void;
+  public onInteract?:()=>void;
+  public onSecondary?:()=>void;
+  public onLocateTarget?:(x:number,y:number,name:string)=>void;
+  private target:{x:number;y:number;name:string}|null=null;
+  private map=getGameMap();
+  private lastEventId='';
+  private isFirstSnapshot=true;
 
-  constructor(socketClient: SocketClient, onToggleTasks: () => void, onToggleLedger: () => void) {
-    this.socketClient = socketClient;
-    this.onToggleTasks = onToggleTasks;
-    this.onToggleLedger = onToggleLedger;
-
-    this.container = document.createElement('div');
-    this.container.id = 'hud-view';
-    this.container.className = 'fixed top-0 left-0 right-0 z-40 pointer-events-none p-2 sm:p-4';
+  constructor(private socketClient:SocketClient,onToggleTasks:()=>void,onToggleLedger:()=>void,mapId:MapId='hanoi'){
+    this.map=getGameMap(mapId);
+    document.title=`${this.map.name} · Quê mình đứng đầu!`;
+    this.container=document.createElement('div');this.container.id='hud-view';
+    this.container.innerHTML=`
+      <header class="city-bar parchment">
+        <div class="city-brand"><img src="${this.map.iconUrl}" alt=""/><div><strong>${this.map.name.toLocaleUpperCase('vi')}</strong><small>Bản đồ mô phỏng</small></div></div>
+        <div class="city-stat time-stat">${sun}<div><small>Thời gian</small><b id="hud-time">00:00</b></div></div>
+        <button class="city-stat" id="btn-open-ledger" title="Xem sổ ngân sách">${coin}<div><small>Ngân sách</small><b id="hud-budget">100</b></div></button>
+        <button class="city-stat" id="btn-open-crates" title="Xem sổ vật tư"><img src="/assets/hanoi/v2/crate.png" alt=""/><div><small>Trong kho</small><b id="hud-crates">12</b></div></button>
+        <div class="city-stat score-stat"><span class="score-icon">✓</span><div><small>Điểm</small><b><span id="hud-score">0</span><em>/100</em></b></div></div>
+        <div class="city-stat people-stat">${people}<div><small>Đồng đội</small><b><span id="hud-players">1</span><em> người</em></b></div></div>
+      </header>
+      <div class="player-strip"><span id="hud-room"></span><select id="select-role" aria-label="Vai trò gợi ý"><option value="SURVEY">Tiếp nhận</option><option value="PLANNER">Lập phương án</option><option value="LOGISTICS">Tổ chức thực hiện</option><option value="AUDIT">Giám sát</option><option value="RIGHTS">Bảo vệ quyền</option></select><span id="hud-carry" hidden>▣ Đang mang vật tư</span><span id="hud-paused" hidden>TẠM DỪNG</span><button id="btn-toggle-sound" style="background:transparent;border:0;color:#fff4d9;cursor:pointer;font-size:12px;padding:2px 4px;display:flex;align-items:center" title="Bật/Tắt âm thanh"><span id="hud-sound-icon">${soundManager.isMuted()?'🔇':'🔊'}</span></button><input id="sfx-volume" type="range" min="0" max="1" step="0.05" value="${soundManager.getVolume()}" aria-label="Âm lượng bước chân" title="Âm lượng bước chân" style="width:64px"/></div>
+      <div id="hud-toast" class="hud-toast-container" aria-live="polite"></div>
+      <aside class="mission-card parchment" aria-label="Nhiệm vụ hiện tại">
+        <small class="eyebrow" id="mission-phase">THÀNH PHỐ CỦA CHÚNG TA</small>
+        <h1 id="mission-title">CÙNG XÂY DỰNG THÀNH PHỐ</h1>
+        <div id="mission-checks"></div>
+        <button id="btn-waypoint" class="next-step"><span class="waypoint-dot">◆</span><span id="mission-step">Chờ chủ phòng bắt đầu.</span></button>
+        <button id="btn-toggle-tasks" class="blue-button">Xem nhiệm vụ <span>→</span></button>
+        <div class="service-count"><span id="hud-served">0/30</span> người dân đã phục vụ · <span id="hud-manpower">3/3</span> nhân lực rảnh</div>
+      </aside>
+      <button id="btn-map" class="minimap parchment" aria-label="Mở hoặc đóng toàn cảnh bản đồ" aria-pressed="false"><canvas width="256" height="144" aria-label="Bản đồ nhỏ"></canvas><span class="minimap-north">N ↑</span><span class="minimap-caption">${this.map.landmark.toLocaleUpperCase('vi')} <kbd>M</kbd></span></button>
+      <div class="keyboard-hints"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>Đi</span><kbd>Shift</kbd><span>Chạy</span><kbd>E</kbd><span>Tương tác</span><kbd>G</kbd><span>Hành động</span><kbd>M</kbd><span>Bản đồ</span><kbd>Esc</kbd><span>Menu</span></div>
+      <div class="top-controls"><button id="btn-map-icon" aria-label="Bản đồ">⌖ Map</button><button id="btn-menu" aria-label="Mở menu">☰ Menu</button></div>
+      <div class="interaction-prompts"><button id="interaction-hint" hidden><kbd>E</kbd><span></span></button><button id="secondary-hint" hidden><kbd>G</kbd><span></span></button></div>
+      <section id="game-menu" hidden role="dialog" aria-modal="true" aria-labelledby="game-menu-title">
+        <div class="parchment"><h2 id="game-menu-title">Menu / Cài đặt</h2><p>Phòng vẫn chạy khi bạn mở menu.</p><p>WASD / ↑↓←→: đi · Shift: chạy<br>E: tương tác · G: hành động phụ<br>M: bản đồ · Esc: đóng menu</p><p>Mobile: đẩy nhẹ joystick để đi, hết biên để chạy.</p><label>Âm lượng <input id="menu-volume" type="range" min="0" max="1" step=".05" value="${soundManager.getVolume()}"></label><button id="menu-mute" class="blue-button">Bật/tắt âm thanh</button><button id="menu-close" class="blue-button">Tiếp tục</button></div>
+      </section>
+    `;
     document.body.appendChild(this.container);
+    this.canvas=this.container.querySelector('canvas')!;
+    this.toastContainer=this.container.querySelector('#hud-toast')!;
+    this.mapImage.src=this.map.minimapUrl;
+    this.container.querySelector('#btn-toggle-tasks')!.addEventListener('click',onToggleTasks);
+    for(const id of ['#btn-open-ledger','#btn-open-crates'])this.container.querySelector(id)!.addEventListener('click',onToggleLedger);
+    this.container.querySelector('#select-role')!.addEventListener('change',e=>this.socketClient.sendIntent({actionId:`role_${Date.now()}`,type:'SET_ROLE',payload:{role:(e.target as HTMLSelectElement).value as PlayerRole}}));
+    for(const id of ['#btn-map','#btn-map-icon'])this.container.querySelector(id)!.addEventListener('click',()=>this.onToggleMap?.());
+    this.container.querySelector('#btn-menu')!.addEventListener('click',()=>this.onMenu?.());
+    this.container.querySelector('#menu-close')!.addEventListener('click',()=>this.onMenu?.());
+    this.container.querySelector('#interaction-hint')!.addEventListener('click',()=>this.onInteract?.());
+    this.container.querySelector('#secondary-hint')!.addEventListener('click',()=>this.onSecondary?.());
+    this.container.querySelector('#menu-volume')!.addEventListener('input',e=>{
+      soundManager.setVolume(Number((e.target as HTMLInputElement).value));
+      (this.container.querySelector('#sfx-volume') as HTMLInputElement).value=String(soundManager.getVolume());
+    });
+    this.container.querySelector('#menu-mute')!.addEventListener('click',()=>{
+      soundManager.toggleMute();this.container.querySelector('#hud-sound-icon')!.textContent=soundManager.isMuted()?'🔇':'🔊';
+    });
+    this.container.querySelector('#btn-waypoint')!.addEventListener('click',()=>{if(this.target)this.onLocateTarget?.(this.target.x,this.target.y,this.target.name);});
+    this.container.querySelector('#btn-toggle-sound')?.addEventListener('click',()=>{
+      const muted=soundManager.toggleMute();
+      this.container.querySelector('#hud-sound-icon')!.textContent=muted?'🔇':'🔊';
+    });
+    this.container.querySelector('#sfx-volume')?.addEventListener('input',e=>soundManager.setVolume(Number((e.target as HTMLInputElement).value)));
+    this.socketClient.onConnectionStatusChange(status=>{this.container.dataset.connection=status;});
   }
 
-  public update(snapshot: GameSnapshot) {
-    const myId = this.socketClient.getPlayerId();
-    const myPlayer = snapshot.players[myId];
+  public updateControls(context:InteractionContext,pending:boolean,locked:boolean){
+    for(const [id,action,key] of [['interaction-hint',context.primary,'E'],['secondary-hint',context.secondary,'G']] as const){
+      const button=this.container.querySelector('#'+id) as HTMLButtonElement;
+      button.hidden=!action||locked;button.disabled=pending||locked;
+      button.setAttribute('aria-busy',String(pending));
+      const label=pending?'Đang chờ máy chủ…':key==='E'&&context.choices.length?'Chọn phương án':action?.label||'';
+      if(button.querySelector('span')!.textContent!==label)button.querySelector('span')!.textContent=label;
+    }
+  }
+  public isMenuOpen(){return !(this.container.querySelector('#game-menu') as HTMLElement).hidden;}
+  public toggleMenu(){
+    const menu=this.container.querySelector('#game-menu') as HTMLElement;menu.hidden=!menu.hidden;
+    if(!menu.hidden){(this.container.querySelector('#menu-volume') as HTMLInputElement).value=String(soundManager.getVolume());(this.container.querySelector('#menu-close') as HTMLButtonElement).focus();}
+    else (document.activeElement as HTMLElement)?.blur();
+  }
+  public showToast(message:string,category='MISSION'){
+    soundManager.playAlert();
+    const item=document.createElement('div');
+    const catClass=category==='RESOURCE'?'toast-resource':category==='SERVICE'?'toast-service':category==='PLAN'||category==='VOTE'?'toast-plan':'toast-mission';
+    const icon=category==='RESOURCE'?'📦':category==='SERVICE'?'🩺':category==='PLAN'||category==='VOTE'?'🗳️':category==='PLAYER'&&message.includes('📍')?'📍':'🎯';
+    item.className=`hud-toast ${catClass}`;
+    item.innerHTML='<span></span><span></span>';item.children[0].textContent=icon;item.children[1].textContent=message;
+    this.toastContainer.prepend(item);
+    while(this.toastContainer.children.length>3)this.toastContainer.lastElementChild?.remove();
+    setTimeout(()=>{
+      item.style.transition='opacity 0.4s ease, transform 0.4s ease';
+      item.style.opacity='0';
+      item.style.transform='translateY(-6px)';
+      setTimeout(()=>item.remove(),400);
+    },3600);
+  }
 
-    // Format time
-    const totalSecs = Math.floor(snapshot.phaseTimerRemainingMs / 1000);
-    const mins = Math.floor(totalSecs / 60);
-    const secs = totalSecs % 60;
-    const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  public update(s:GameSnapshot){
+    this.container.dataset.phase=s.phase;
+    const set=(id:string,value:string)=>{const el=this.container.querySelector('#'+id)!;if(el.textContent!==value)el.textContent=value;};
+    const id=this.socketClient.getPlayerId(),p=s.players[id],guide=getMissionGuide(s,id);
+    const seconds=Math.max(0,Math.floor(s.phaseTimerRemainingMs/1000));
+    set('hud-time',`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`);
+    set('hud-budget',String(s.resources.currentBudget));set('hud-crates',String(s.resources.availableCrates));
+    set('hud-score',String(s.totalScore));set('hud-players',String(Object.values(s.players).filter(p=>p.isOnline).length));
+    set('hud-room',`PHÒNG ${s.roomCode}`);set('hud-served',`${s.citizensServedCount}/${s.totalCitizensCount}`);
+    set('hud-manpower',`${s.manpower.total-s.manpower.busy}/${s.manpower.total}`);
+    (this.container.querySelector('#hud-carry') as HTMLElement).hidden=!p?.carriedCrateId;
+    (this.container.querySelector('#hud-paused') as HTMLElement).hidden=!s.isPaused;
+    const role=this.container.querySelector('#select-role') as HTMLSelectElement;if(p&&document.activeElement!==role)role.value=p.role;
+    set('mission-title',guide.title);set('mission-step',guide.step);
+    set('mission-phase',s.phase==='RUNNING'?`NHIỆM VỤ ${s.m1.status==='ACTIVE'?1:s.m2.status==='ACTIVE'?2:3} / 3`:({LOBBY:'KHÁM PHÁ THÀNH PHỐ',BRIEFING:'DẪN NHẬP',PRACTICE:'LÀM QUEN THAO TÁC',RESULTS:'KẾT QUẢ',RUNNING:''})[s.phase]);
+    const html=guide.checks.map(c=>`<div class="mission-check ${c.done?'done':''}"><i>${c.done?'✓':''}</i><span>${c.text}</span></div>`).join('');
+    const checks=this.container.querySelector('#mission-checks')!;if(checks.innerHTML!==html)checks.innerHTML=html;
+    this.target=guide.target;(this.container.querySelector('#btn-waypoint') as HTMLButtonElement).disabled=!this.target;
 
-    // Mission text
-    let missionTitle = 'Sảnh chờ trận đấu';
-    let missionBadge = 'CHỜ';
-    if (snapshot.phase === 'BRIEFING') {
-      missionTitle = 'Dẫn nhập lý luận Nhà nước & Pháp quyền XHCN';
-      missionBadge = 'LÝ LUẬN';
-    } else if (snapshot.phase === 'PRACTICE') {
-      missionTitle = 'Thực hành thao tác vận chuyển mẫu';
-      missionBadge = 'TẬP DƯỢT';
-    } else if (snapshot.phase === 'RUNNING') {
-      if (snapshot.m1.status === 'ACTIVE') {
-        missionTitle = `Nhiệm vụ 1: Mở dịch vụ y tế (${snapshot.m1.score}/30 điểm)`;
-        missionBadge = 'NHIỆM VỤ 1';
-      } else if (snapshot.m2.status === 'ACTIVE') {
-        missionTitle = `Nhiệm vụ 2: Cầu hỏng & Ứng phó sự cố B (${snapshot.m2.score}/35 điểm)`;
-        missionBadge = 'NHIỆM VỤ 2';
-      } else if (snapshot.m3.status === 'ACTIVE') {
-        missionTitle = `Nhiệm vụ 3: Bảo đảm quyền & Hỗ trợ C1, C2 (${snapshot.m3.score}/35 điểm)`;
-        missionBadge = 'NHIỆM VỤ 3';
+    // Live feedback toasts for recent events
+    if(s.recentAuditEvents && s.recentAuditEvents.length > 0){
+      const latest=s.recentAuditEvents[0];
+      if(this.isFirstSnapshot){
+        this.lastEventId=latest.id;
+        this.isFirstSnapshot=false;
+      } else if(latest.id !== this.lastEventId){
+        this.lastEventId=latest.id;
+        if(latest.category !== 'PLAYER' || latest.message.includes('📍') || s.phase === 'RUNNING'){
+          this.showToast(latest.message, latest.category);
+        }
       }
-    } else if (snapshot.phase === 'RESULTS') {
-      missionTitle = 'Tổng kết kết quả công tác & Bài học lý luận';
-      missionBadge = 'KẾT THÚC';
     }
 
-    const freeManpower = snapshot.manpower.total - snapshot.manpower.busy;
-
-    this.container.innerHTML = `
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
-        <!-- Left: City, Mission & Clock -->
-        <div class="pointer-events-auto flex items-center space-x-2 bg-slate-900/90 backdrop-blur border border-slate-700/80 px-3 py-2 rounded-xl shadow-lg text-white">
-          <div class="flex flex-col">
-            <div class="flex items-center space-x-2">
-              <span class="px-1.5 py-0.5 text-[10px] font-extrabold uppercase rounded bg-rose-600 text-white tracking-wider">Hà Nội</span>
-              <span class="text-xs font-semibold text-slate-300">${missionTitle}</span>
-              ${snapshot.isPaused ? '<span class="px-1.5 py-0.5 text-[10px] bg-amber-500 text-black font-black rounded animate-pulse">TẠM DỪNG</span>' : ''}
-            </div>
-            <div class="flex items-center space-x-3 mt-0.5 text-xs text-slate-400">
-              <span class="font-mono text-amber-400 font-bold text-sm">⏱ ${timeStr}</span>
-              <span>Điểm: <strong class="text-emerald-400 text-sm">${snapshot.totalScore}</strong>/100</span>
-              <span>Dân đã phục vụ: <strong class="text-sky-400">${snapshot.citizensServedCount}</strong>/${snapshot.totalCitizensCount}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Center: Resource meters -->
-        <div class="pointer-events-auto flex items-center space-x-2 bg-slate-900/90 backdrop-blur border border-slate-700/80 px-3 py-2 rounded-xl shadow-lg text-white text-xs">
-          <!-- Budget -->
-          <div class="flex items-center space-x-1.5 px-2 py-1 bg-slate-800/80 rounded-lg cursor-pointer hover:bg-slate-700/80 transition" id="btn-open-ledger" title="Bấm để xem sổ sách thu chi chi tiết">
-            <span class="text-amber-400 font-bold text-sm">💰</span>
-            <div>
-              <div class="text-[10px] text-slate-400">Ngân sách</div>
-              <div class="font-bold text-amber-400">${snapshot.resources.currentBudget} <span class="text-[10px] text-slate-400">/100</span></div>
-            </div>
-          </div>
-
-          <!-- Crates -->
-          <div class="flex items-center space-x-1.5 px-2 py-1 bg-slate-800/80 rounded-lg cursor-pointer hover:bg-slate-700/80 transition" id="btn-open-crates" title="Bấm để xem phân bổ vật tư">
-            <span class="text-amber-500 font-bold text-sm">📦</span>
-            <div>
-              <div class="text-[10px] text-slate-400">Kho vật tư</div>
-              <div class="font-bold text-amber-300">${snapshot.resources.availableCrates} <span class="text-[10px] text-slate-400">kiện</span></div>
-            </div>
-          </div>
-
-          <!-- Manpower Pool -->
-          <div class="flex items-center space-x-1.5 px-2 py-1 bg-slate-800/80 rounded-lg">
-            <span class="text-blue-400 font-bold text-sm">👥</span>
-            <div>
-              <div class="text-[10px] text-slate-400">Nhân lực</div>
-              <div class="font-bold ${freeManpower > 0 ? 'text-blue-300' : 'text-rose-400'}">${freeManpower}/3 rảnh</div>
-            </div>
-          </div>
-
-          ${myPlayer?.carriedCrateId ? `
-            <div class="flex items-center space-x-1 px-2 py-1 bg-emerald-900/80 border border-emerald-500 rounded-lg text-emerald-200 animate-pulse">
-              <span>Đang mang kiện</span>
-            </div>
-          ` : ''}
-        </div>
-
-        <!-- Right: Role & Task button -->
-        <div class="pointer-events-auto flex items-center space-x-2">
-          <!-- Role selector -->
-          <select id="select-role" class="bg-slate-900/90 text-slate-200 border border-slate-700 text-xs rounded-xl px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer">
-            <option value="SURVEY" ${myPlayer?.role === 'SURVEY' ? 'selected' : ''}>Vai trò: Tiếp nhận</option>
-            <option value="PLANNER" ${myPlayer?.role === 'PLANNER' ? 'selected' : ''}>Vai trò: Lập phương án</option>
-            <option value="LOGISTICS" ${myPlayer?.role === 'LOGISTICS' ? 'selected' : ''}>Vai trò: Tổ chức thực hiện</option>
-            <option value="AUDIT" ${myPlayer?.role === 'AUDIT' ? 'selected' : ''}>Vai trò: Giám sát</option>
-            <option value="RIGHTS" ${myPlayer?.role === 'RIGHTS' ? 'selected' : ''}>Vai trò: Bảo vệ quyền</option>
-          </select>
-
-          <!-- Toggle Tasks button -->
-          <button id="btn-toggle-tasks" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-2 rounded-xl shadow-lg flex items-center space-x-1 transition">
-            <span>📋</span>
-            <span class="hidden sm:inline">Nhiệm vụ</span>
-          </button>
-        </div>
-      </div>
-    `;
-
-    // Bind events
-    const selectRole = this.container.querySelector('#select-role') as HTMLSelectElement;
-    if (selectRole) {
-      selectRole.addEventListener('change', (e) => {
-        const newRole = (e.target as HTMLSelectElement).value as PlayerRole;
-        this.socketClient.sendIntent({
-          actionId: `role_${Date.now()}`,
-          type: 'SET_ROLE',
-          payload: { role: newRole }
-        });
-      });
+    this.drawMinimap(s,id);
+  }
+  private drawMinimap(s:GameSnapshot,id:string){
+    if(s.mapId==='ha-tinh'&&s.hatinhState){
+      const isRescue=s.hatinhState.activeScene==='rescue'||s.hatinhState.dg.status==='ACTIVE';
+      const targetMinimap=isRescue?'/assets/regions/ha-tinh/rescue-minimap.webp':'/assets/regions/ha-tinh/minimap.webp';
+      if(!this.mapImage.src.endsWith(targetMinimap)){
+        this.mapImage.src=targetMinimap;
+      }
     }
-
-    const btnTasks = this.container.querySelector('#btn-toggle-tasks');
-    if (btnTasks) btnTasks.addEventListener('click', () => this.onToggleTasks());
-
-    const btnLedger = this.container.querySelector('#btn-open-ledger');
-    if (btnLedger) btnLedger.addEventListener('click', () => this.onToggleLedger());
-
-    const btnCrates = this.container.querySelector('#btn-open-crates');
-    if (btnCrates) btnCrates.addEventListener('click', () => this.onToggleLedger());
+    const ctx=this.canvas.getContext('2d')!;ctx.clearRect(0,0,256,144);
+    if(this.mapImage.complete&&this.mapImage.naturalWidth)ctx.drawImage(this.mapImage,0,0,256,144);
+    ctx.save();ctx.scale(256/WORLD_WIDTH,144/WORLD_HEIGHT);
+    const POINTS_OF_INTEREST=this.map.points,{a,b}=this.map.bridge;
+    ctx.strokeStyle=s.m2.bridgeBroken&&!s.m2.bridgeRepaired?'#76523d':'#e1d3b1';ctx.lineWidth=34;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    for(const [key,active] of [['CLINIC_FIXED',s.m1.fixedDeployed],['CLINIC_MOBILE_B',s.m1.mobileBDeployed],['CLINIC_MOBILE_C',s.m1.mobileCDeployed]] as const){
+      const p=POINTS_OF_INTEREST[key];
+      if(!p)continue;
+      ctx.fillStyle=active?'#f1eddb':'#9d9b74';ctx.fillRect(p.x-26,p.y-35,52,30);
+      if(active){ctx.fillStyle='#b94437';ctx.fillRect(p.x-4,p.y-31,8,24);ctx.fillRect(p.x-12,p.y-23,24,8);}
+    }
+    if(s.mapId==='ha-tinh'&&s.hatinhState){
+      const ht=s.hatinhState;
+      const drawMarker=(key:string,color:string,size=16)=>{
+        const pt=POINTS_OF_INTEREST[key];
+        if(!pt)return;
+        ctx.fillStyle=color;ctx.beginPath();ctx.arc(pt.x,pt.y,size,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.stroke();
+      };
+      if(ht.currentQuest===1){
+        drawMarker('WORKER_TUAN',ht.va.tuanReported?'#22c55e':'#f59e0b');
+        drawMarker('CAMERA',ht.va.cameraDeployed?'#22c55e':'#3b82f6');
+        drawMarker('SPILL',ht.va.spillCleaned?'#22c55e':'#ef4444');
+        drawMarker('TRAFFIC_VA',ht.va.trafficDiverted?'#22c55e':'#f59e0b');
+        drawMarker('WEIGH_STATION',ht.va.weighed?'#22c55e':'#8b5cf6');
+      } else if(ht.currentQuest===2){
+        drawMarker('RESCUE_STAGING',ht.dg.status==='ACTIVE'?'#22c55e':'#ef4444',20);
+        drawMarker('RESCUE_TRAFFIC_A',ht.dg.barrierA?'#22c55e':'#f59e0b');
+        drawMarker('RESCUE_TRAFFIC_B',ht.dg.barrierB?'#22c55e':'#f59e0b');
+        drawMarker('RESCUE_TECH',ht.dg.ropeReady?'#22c55e':'#3b82f6');
+        drawMarker('RESCUE_WINCH',ht.dg.namLifted?'#22c55e':'#8b5cf6');
+        drawMarker('RESCUE_NAM',ht.dg.firstAidGiven?'#22c55e':'#ef4444');
+        drawMarker('RESCUE_MEDICAL',ht.dg.medicalReceived?'#22c55e':'#10b981');
+      } else if(ht.currentQuest===3){
+        drawMarker('DONG_LOC_TUNG',ht.dl.tungBriefed?'#22c55e':'#f59e0b',20);
+        drawMarker('DONG_LOC_SAU',ht.dl.sauVerified?'#22c55e':'#ef4444');
+        drawMarker('DONG_LOC_TEO',ht.dl.teoVerified?'#22c55e':'#ef4444');
+        drawMarker('DONG_LOC_FLOW',ht.dl.flowOrganized?'#22c55e':'#3b82f6');
+        drawMarker('DONG_LOC_HAI',ht.dl.haiAssisted?'#22c55e':'#10b981');
+        drawMarker('DONG_LOC_ALTAR',ht.dl.incenseSupplied?'#22c55e':'#ec4899');
+        drawMarker('DONG_LOC_TIKTOKER',ht.dl.tiktokerCorrected?'#22c55e':'#8b5cf6');
+      }
+    }
+    if(this.target){ctx.strokeStyle='#fff3b5';ctx.lineWidth=7;ctx.beginPath();ctx.arc(this.target.x,this.target.y,24,0,Math.PI*2);ctx.stroke();}
+    for(const p of Object.values(s.players))if(p.isOnline){ctx.fillStyle=p.id===id?'#fff0a9':p.color;ctx.strokeStyle=p.id===id?'#634d2c':'#fff9e9';ctx.lineWidth=6;ctx.beginPath();ctx.arc(p.x,p.y,p.id===id?23:18,0,Math.PI*2);ctx.fill();ctx.stroke();}
+    ctx.restore();
   }
 }

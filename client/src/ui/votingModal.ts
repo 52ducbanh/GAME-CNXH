@@ -1,3 +1,4 @@
+﻿import { escapeHtml } from './utils.js';
 import { VoteState, GameSnapshot } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
@@ -35,18 +36,18 @@ export class VotingModal {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
           <button id="vote-opt-fixed" class="p-4 rounded-xl border text-left transition ${myVote === 'FIXED' ? 'bg-amber-600/30 border-amber-400 ring-2 ring-amber-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
             <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-amber-400 text-sm">Trạm Cố định (Gần A)</span>
-              ${myVote === 'FIXED' ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiếu của bạn</span>' : ''}
+              <span class="font-bold text-amber-400 text-sm">Tráº¡m Cá»‘ Ä‘á»‹nh (Gáº§n A)</span>
+              ${myVote === 'FIXED' ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
             </div>
-            <p class="text-xs text-slate-300">40 ngân sách, 2 kiện vật tư. Phục vụ 22 dân (A12, B10). Ít chuyến đi nhưng Khu C chưa tiếp cận.</p>
+            <p class="text-xs text-slate-300">40 ngÃ¢n sÃ¡ch, 2 kiá»‡n váº­t tÆ°. Phá»¥c vá»¥ 22 dÃ¢n (A12, B10). Ãt chuyáº¿n Ä‘i nhÆ°ng Khu C chÆ°a tiáº¿p cáº­n.</p>
           </button>
 
           <button id="vote-opt-mobile" class="p-4 rounded-xl border text-left transition ${myVote === 'MOBILE' ? 'bg-sky-600/30 border-sky-400 ring-2 ring-sky-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
             <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-sky-400 text-sm">Điểm Lưu động (B & C)</span>
-              ${myVote === 'MOBILE' ? '<span class="text-xs bg-sky-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiếu của bạn</span>' : ''}
+              <span class="font-bold text-sky-400 text-sm">Äiá»ƒm LÆ°u Ä‘á»™ng (B & C)</span>
+              ${myVote === 'MOBILE' ? '<span class="text-xs bg-sky-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
             </div>
-            <p class="text-xs text-slate-300">30 ngân sách, 4 kiện vật tư. Phục vụ 24 dân (A10, B8, C6). Ngân sách thấp hơn, bao phủ rộng hơn.</p>
+            <p class="text-xs text-slate-300">30 ngÃ¢n sÃ¡ch, 4 kiá»‡n váº­t tÆ°. Phá»¥c vá»¥ 24 dÃ¢n (A10, B8, C6). NgÃ¢n sÃ¡ch tháº¥p hÆ¡n, bao phá»§ rá»™ng hÆ¡n.</p>
           </button>
         </div>
       `;
@@ -55,18 +56,18 @@ export class VotingModal {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
           <button id="vote-opt-repair" class="p-4 rounded-xl border text-left transition ${myVote === 'REPAIR' ? 'bg-emerald-600/30 border-emerald-400 ring-2 ring-emerald-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
             <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-emerald-400 text-sm">Sửa cầu (REPAIR)</span>
-              ${myVote === 'REPAIR' ? '<span class="text-xs bg-emerald-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiếu của bạn</span>' : ''}
+              <span class="font-bold text-emerald-400 text-sm">Sá»­a cáº§u (REPAIR)</span>
+              ${myVote === 'REPAIR' ? '<span class="text-xs bg-emerald-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
             </div>
-            <p class="text-xs text-slate-300">25 ngân sách, 4 kiện vật tư (2 sửa + 2 cứu trợ). Khôi phục lâu dài hạ tầng giao thông sang Khu B.</p>
+            <p class="text-xs text-slate-300">25 ngÃ¢n sÃ¡ch, 4 kiá»‡n váº­t tÆ° (2 sá»­a + 2 cá»©u trá»£). KhÃ´i phá»¥c lÃ¢u dÃ i háº¡ táº§ng giao thÃ´ng sang Khu B.</p>
           </button>
 
           <button id="vote-opt-detour" class="p-4 rounded-xl border text-left transition ${myVote === 'DETOUR' ? 'bg-amber-600/30 border-amber-400 ring-2 ring-amber-400' : 'bg-slate-800 border-slate-700 hover:bg-slate-700'}">
             <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-amber-400 text-sm">Tuyến vòng (DETOUR)</span>
-              ${myVote === 'DETOUR' ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiếu của bạn</span>' : ''}
+              <span class="font-bold text-amber-400 text-sm">Tuyáº¿n vÃ²ng (DETOUR)</span>
+              ${myVote === 'DETOUR' ? '<span class="text-xs bg-amber-500 text-black font-extrabold px-1.5 py-0.5 rounded">Phiáº¿u cá»§a báº¡n</span>' : ''}
             </div>
-            <p class="text-xs text-slate-300">10 ngân sách, 2 kiện cứu trợ. Tiết kiệm 15 ngân sách nhưng cầu vẫn hỏng, đường đi dài hơn gấp đôi.</p>
+            <p class="text-xs text-slate-300">10 ngÃ¢n sÃ¡ch, 2 kiá»‡n cá»©u trá»£. Tiáº¿t kiá»‡m 15 ngÃ¢n sÃ¡ch nhÆ°ng cáº§u váº«n há»ng, Ä‘Æ°á»ng Ä‘i dÃ i hÆ¡n gáº¥p Ä‘Ã´i.</p>
           </button>
         </div>
       `;
@@ -76,17 +77,17 @@ export class VotingModal {
       <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-6 shadow-2xl text-white animate-fade-in mx-4">
         <div class="flex justify-between items-center mb-2">
           <div class="flex items-center space-x-2">
-            <span class="text-xl">🗳️</span>
-            <h2 class="text-lg font-bold text-white tracking-wide">BIỂU QUYẾT TẬP THỂ</h2>
+            <span class="text-xl">ðŸ—³ï¸</span>
+            <h2 class="text-lg font-bold text-white tracking-wide">BIá»‚U QUYáº¾T Táº¬P THá»‚</h2>
           </div>
           <span class="px-2 py-0.5 rounded bg-blue-600/40 text-blue-300 border border-blue-500/50 text-xs font-mono font-bold">
-            ${remainingSecs}s còn lại
+            ${remainingSecs}s cÃ²n láº¡i
           </span>
         </div>
 
         <p class="text-xs text-slate-400">
-          Đồng chí <strong class="text-amber-400">${voting.proposerName}</strong> đã đề xuất phương án cho <strong>${voting.missionId}</strong>.
-          Mọi thành viên đều có quyền bỏ phiếu và thay đổi phiếu trước khi hết giờ.
+          Äá»“ng chÃ­ <strong class="text-amber-400">${escapeHtml(voting.proposerName)}</strong> Ä‘Ã£ Ä‘á» xuáº¥t phÆ°Æ¡ng Ã¡n cho <strong>${voting.missionId}</strong>.
+          Má»i thÃ nh viÃªn Ä‘á»u cÃ³ quyá»n bá» phiáº¿u vÃ  thay Ä‘á»•i phiáº¿u trÆ°á»›c khi háº¿t giá».
         </p>
 
         <!-- Progress bar -->
@@ -97,8 +98,8 @@ export class VotingModal {
         ${optionsHtml}
 
         <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
-          <span>Tiến độ biểu quyết: <strong class="text-white">${totalVotes}/${voting.totalOnlineVoters}</strong> người</span>
-          <span class="italic text-[11px]">Nguyên tắc Tập trung dân chủ</span>
+          <span>Tiáº¿n Ä‘á»™ biá»ƒu quyáº¿t: <strong class="text-white">${totalVotes}/${voting.totalOnlineVoters}</strong> ngÆ°á»i</span>
+          <span class="italic text-[11px]">NguyÃªn táº¯c Táº­p trung dÃ¢n chá»§</span>
         </div>
       </div>
     `;

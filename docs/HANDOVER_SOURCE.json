@@ -1,0 +1,1089 @@
+{
+  "capturedAt": "2026-10-03T20:23:25+07:00",
+  "timezone": "Asia/Saigon",
+  "gitHead": "f50e6654309b95eac3328544cd21db079bd771cf",
+  "branch": "master",
+  "workingTreeInventory": "docs/WORKTREE_HANDOVER.txt",
+  "scope": "Current tracked/untracked source, configs, scripts and client assets; excludes docs, ignored dist/node_modules/private env. This is not a fingerprint retrospectively captured at prior test time.",
+  "runtimeEditedInDocumentationHandover": false,
+  "fileCount": 205,
+  "files": [
+    {
+      "path": ".env.example",
+      "bytes": 258,
+      "sha256": "d623d582ba2b65c614654de5ecbfc634442261f910315ee0cb0612e8186d4196"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 62,
+      "sha256": "62252a426e0eb665bab550d46539a6ecd928d14bbc4a797191532013d3d20004"
+    },
+    {
+      "path": "client/index.html",
+      "bytes": 403,
+      "sha256": "2f519ff0d5bd266aa3e649aa9dd9cf454dd83004de7880873cac8da43dc0118e"
+    },
+    {
+      "path": "client/package.json",
+      "bytes": 483,
+      "sha256": "29c384a3b1284ff66a785dc6987e6ec7cde5774dc6e6b5bb2bc13622b7bb58ae"
+    },
+    {
+      "path": "client/postcss.config.cjs",
+      "bytes": 85,
+      "sha256": "fa5c86f2897d7edbc6ca78345813718e7195332d2e11a26726ccc068ec8378fc"
+    },
+    {
+      "path": "client/public/assets/bridge_broken.svg",
+      "bytes": 2840,
+      "sha256": "33cfaf0849c457d30f12d4aa1d0801857409a216b0fe302ee76426a19e70f846"
+    },
+    {
+      "path": "client/public/assets/bridge_intact.svg",
+      "bytes": 2663,
+      "sha256": "81ff1cab026593e9a286997b0fcaf6f65f5694e2bb370a58ff0a0b00ee868078"
+    },
+    {
+      "path": "client/public/assets/clinic_fixed.svg",
+      "bytes": 1759,
+      "sha256": "b00ba8112ce4e8466a1caa30bb50fca2288149412518a26d981f85369aa5965c"
+    },
+    {
+      "path": "client/public/assets/clinic_mobile.svg",
+      "bytes": 1765,
+      "sha256": "8424482375ab8be461e5322627c8b155e337022140342272bddc9727cee1d1f3"
+    },
+    {
+      "path": "client/public/assets/crate.svg",
+      "bytes": 1015,
+      "sha256": "8895de3135573af5aa57726aac911eda7f7a9c25ac9de9c3da973f85d115a589"
+    },
+    {
+      "path": "client/public/assets/credits.html",
+      "bytes": 3315,
+      "sha256": "b3ef8b070201e5adc92edbebaba95c2bb82b6b5aaf877b3c8e9a9bd1f6a78b85"
+    },
+    {
+      "path": "client/public/assets/hanoi/prompts.md",
+      "bytes": 2763,
+      "sha256": "104963ad38f67cb997ed4d4b85d17a9dc182ff38cf67c6fab02e0b427c0c4146"
+    },
+    {
+      "path": "client/public/assets/hanoi/townhouse-v1.png",
+      "bytes": 2192953,
+      "sha256": "756fdb04dafd52a854052ac30c9f5eb7a3e662452fdd1ee042c5dc024a7f1133"
+    },
+    {
+      "path": "client/public/assets/hanoi/turtle-tower-v1.png",
+      "bytes": 1337125,
+      "sha256": "f3dec65d63544f50d1af16208da217c39204c101d31da7707d804452594f1841"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/bridge.png",
+      "bytes": 73499,
+      "sha256": "21daa9fff51897cb7b0810791100d4086b97c819c78f3e9c00492c31e4fa5bbf"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/citizen.png",
+      "bytes": 31403,
+      "sha256": "ccf958d8b3853f757bfbbe47bed62f154e819bbbd18403d4b427c29cf328ae19"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/clinic.png",
+      "bytes": 26764,
+      "sha256": "22c54b048e5261aec1886848fcd777d032c9575215749159641b3e4ef1f71d2e"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/crate.png",
+      "bytes": 1886,
+      "sha256": "00ad5c235a61d0e5111a8b76fe3b66927a1db6f6ffaaae797e68764b9772f11c"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/doctor.png",
+      "bytes": 33452,
+      "sha256": "b23dad3f09e376b41970d18884ca8812f202bef2338d054b274bc97a0b9cae0f"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/headquarters.png",
+      "bytes": 56118,
+      "sha256": "23842e05460810cf6814c37f6ff33c1eb9e015d5e736bc4bffdde12b885e2263"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/house-a.png",
+      "bytes": 33095,
+      "sha256": "a6b9dc8752b3018a0c19d697531cda29b7fc932d726bb2dec429a2e852500596"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/house-b.png",
+      "bytes": 49531,
+      "sha256": "7f69a644a3a1cd6ffe25452f5866776af16e99131bfe26b52dda24ff2ab15e13"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/house-c.png",
+      "bytes": 39662,
+      "sha256": "92069d8e48104188725b31542832b1df3c22355b45c8813ba9d5d70a1d3f1c96"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/manifest.json",
+      "bytes": 2578,
+      "sha256": "327cbd312623809cbf79053b687d4371c6a69043db09723d83429ebb39fc11db"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/mobile-clinic.png",
+      "bytes": 19730,
+      "sha256": "0dde85e34604bb37d696784ba92007739246f41e0fd27f883c58bc6540b02464"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/props.png",
+      "bytes": 21719,
+      "sha256": "77db68c8d67d3f53ab51074989d03e47ff14f2092ed861c0f03db92e77af0279"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/tower.png",
+      "bytes": 24203,
+      "sha256": "3d3b4333c317c0924202b6d5be55e0ce40e3c685a5ced153036930a1e5ac09a6"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/tree.png",
+      "bytes": 27349,
+      "sha256": "79f38262e852e9a4d140ec4f63b425dd113e829e371f690af9562f0ccf7a1f22"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/volunteer.png",
+      "bytes": 29790,
+      "sha256": "645e788a8aeaa77bb0e3710d7937ba1e9a9eb0c8118d1f5835116203c32ee93e"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/warehouse.png",
+      "bytes": 40062,
+      "sha256": "75681908a148173b712088b0f4bfa4c7ff6f41310e0476c8a9b4450508df881a"
+    },
+    {
+      "path": "client/public/assets/hanoi/v2/willow.png",
+      "bytes": 28927,
+      "sha256": "7f093691ef70278860cd9fb6c36bbf23c604a87ac4cd66e30f50a7a6ee1217d1"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/bridge.png",
+      "bytes": 80544,
+      "sha256": "5db1503d81cf728b308bf266b504b141cbea7eec151ca763278e84f0728cd5b9"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/east-canopy.webp",
+      "bytes": 5432,
+      "sha256": "0d52fb799ef77503ce9e8b2cd57a4a4b40a2dfb4887e13459ca0e54a9fb45fc7"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/east-roofs.webp",
+      "bytes": 39326,
+      "sha256": "623865798b5f119118fc66aaf697ce5797f655de0ecb687671b0e26d9bd291a7"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/east-willow.webp",
+      "bytes": 7718,
+      "sha256": "16ddc0a54303f297056634d8614febc2f17f3d4711a14c53c221a0a97cfbb083"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/hq-roof.webp",
+      "bytes": 30828,
+      "sha256": "34f468fbd5eaf96754cda659c1c8c1a69418ab551f4294e5aee5ee9918f75b3c"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/layers.json",
+      "bytes": 8178,
+      "sha256": "3f9d244358d354d8775a9624ab19399ff08d55f97ea1a8855a9d54039445c9df"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/minimap.webp",
+      "bytes": 19258,
+      "sha256": "2ab4037cd7c7cc5e255ee050d8e7d91bf79fb822a66aa8c76ffff753597fcced"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/north-willow.webp",
+      "bytes": 3724,
+      "sha256": "47d678d68ab291be913ec9378c562c2f08c06f33bdceed691a486ee6ce9554ee"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/scene.webp",
+      "bytes": 741872,
+      "sha256": "61a44c65310ce92e1cb870ac9bdd8088a9a703bcffe95bd1873d5c1cff253500"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/south-canopy-2.webp",
+      "bytes": 5308,
+      "sha256": "4e155dcb8f7e71514215334dce023a8c0f033ce36cef190c1d54753314ce0f6f"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/south-canopy.webp",
+      "bytes": 4426,
+      "sha256": "ae88596bc3f9e5a293f4a095b8b0885594fdbde37de484e3e1f4ebc8270f791b"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/south-east-roof.webp",
+      "bytes": 5458,
+      "sha256": "0d072b46a0ffeb6fd127d75ad9d50e944fd5c1bf945b6007421778620ca88fdb"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/south-roofs.webp",
+      "bytes": 16796,
+      "sha256": "0350a8a685e691f1c8a55f1fa5af8305e79a011f8b961ecc0ed40e14ccd29f02"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/warehouse-roof.webp",
+      "bytes": 14264,
+      "sha256": "be6d4038f746489f4cf1491c117ca742c49d5dc38feca81c925dcff19c4283f9"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/west-canopy.webp",
+      "bytes": 8684,
+      "sha256": "eaf1cca35e67d93d7a6f0c1c163f06590e2c9d3ce816feccd09ff35891604b2a"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/west-garden.webp",
+      "bytes": 11686,
+      "sha256": "bed014dc4cd3243e58a5ada836664f4b0e46cdcc647c002fbded16035e07c51c"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/west-lane-top.webp",
+      "bytes": 6182,
+      "sha256": "89da3cac9cf0d33be47df5488182a1f41d07069e20a9b71681c6821e28daed86"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/west-willow-south-2.webp",
+      "bytes": 6172,
+      "sha256": "1c496cb8d5891c4a1d817e91fa3de3bf36f78ef5c7b14ef4c21354294f6d84e2"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/west-willow-south.webp",
+      "bytes": 5798,
+      "sha256": "c63c8499f7846e06373fddbe04d92fedd16879897660d56f1344f33eb58f8546"
+    },
+    {
+      "path": "client/public/assets/hanoi/v3/west-willow.webp",
+      "bytes": 5142,
+      "sha256": "d78ab7c9a9148be43651e4c7dcd8b77f0583e2ed5f4ffbb73104201b70f07abe"
+    },
+    {
+      "path": "client/public/assets/headquarters.svg",
+      "bytes": 3469,
+      "sha256": "caed31ac7bc366db5ab2e2950f606c8ed40a9ac62f601290c4888982badefbe1"
+    },
+    {
+      "path": "client/public/assets/house_a.svg",
+      "bytes": 2472,
+      "sha256": "9b2ff66289d5b01f5a9ae74e617c70c2ead4419885fbda292b9fc9e03d8da8a2"
+    },
+    {
+      "path": "client/public/assets/house_b.svg",
+      "bytes": 2472,
+      "sha256": "491797392417a4e1010829688b8e53d7337efd7ed5b43228ded954343efb6d93"
+    },
+    {
+      "path": "client/public/assets/house_c.svg",
+      "bytes": 2472,
+      "sha256": "76bc45c1c05538de7805c527708dcbadf2ebab58799b334c86cc22a7b35cc934"
+    },
+    {
+      "path": "client/public/assets/lpc/CREDITS-trees.txt",
+      "bytes": 3168,
+      "sha256": "25f744098f85b596464b2cdea7d337a9ffd8e37f8d3b3c5cd9e54c92bdbe3fdf"
+    },
+    {
+      "path": "client/public/assets/lpc/trees-green.png",
+      "bytes": 185501,
+      "sha256": "694e19b641cb2b2ade5864e9a7bbf145a6c23103361324943b4e1f47a6d83ea2"
+    },
+    {
+      "path": "client/public/assets/ninja/ninja-blue.png",
+      "bytes": 6139,
+      "sha256": "f2dd61a264c251b81e63da7a28ab0fdccd261b807e5fa7d1832a468e14a21078"
+    },
+    {
+      "path": "client/public/assets/ninja/samurai-blue.png",
+      "bytes": 5536,
+      "sha256": "7307266f5a51c5a7446350bf5a5866930fccbebd67429f11dca213086f89e062"
+    },
+    {
+      "path": "client/public/assets/ninja/samurai-green.png",
+      "bytes": 4784,
+      "sha256": "552e1af74a8d565408519ced8c5bb309d291a9d3002e4e37c881d2181f413e96"
+    },
+    {
+      "path": "client/public/assets/ninja/village.png",
+      "bytes": 31779,
+      "sha256": "6787c6e22a4d44ceee4f158309b2519707bdb70c59aca00b3d49006cadcca06e"
+    },
+    {
+      "path": "client/public/assets/notice_board.svg",
+      "bytes": 1576,
+      "sha256": "9d9f0881f04df2aab31e8e5fe5fec197fb0c53fa31fe4a36c3c91a906d4ef5f4"
+    },
+    {
+      "path": "client/public/assets/npc_elder.svg",
+      "bytes": 959,
+      "sha256": "c9749542297622ad83da121fcb91b78ec840e888eeee51aa140d08fe64bec4a1"
+    },
+    {
+      "path": "client/public/assets/npc_rep.svg",
+      "bytes": 868,
+      "sha256": "6561a9b3bd5973a94ad7d3a3bad3814b846f18ffce336e9ea1754e800cb33ba6"
+    },
+    {
+      "path": "client/public/assets/player_base.svg",
+      "bytes": 939,
+      "sha256": "df7214bfb2316789e9ec5b75bbc77dedd529d94f421e690726472afe94857f7f"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/clinic.webp",
+      "bytes": 11650,
+      "sha256": "abeedd92ed1dd72f4f446225c1ebeb3b8d567cfe1852621ffa3727e636476865"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/east-canopy.webp",
+      "bytes": 13200,
+      "sha256": "e245c4b99aaa78b957046774e1ba937b1885bcb5e56101de1a089deaf490bfd2"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/hq.webp",
+      "bytes": 23468,
+      "sha256": "761777494e83d33124cfae41e9e000e19a03596c60acf1bd96654f5306b0caf2"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/icon.webp",
+      "bytes": 1142,
+      "sha256": "a071c067422636b395457e09a606458bdfcf489117adb794c83761fed8bb1783"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/layers.json",
+      "bytes": 2963,
+      "sha256": "dd7863da2b6c3429d0d8f1ce22636eb57a418ba8777fa1e88db89a3ae9517914"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/memorial.webp",
+      "bytes": 31066,
+      "sha256": "71ea4faae2ce5e97d78e8802adbd5723689b10e23bc151ec38a159621b45b1d5"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/minimap.webp",
+      "bytes": 24248,
+      "sha256": "4970c1efcc4ae5ba0ff74ca5ca987a16241a56788b4c14583afa3d5c790b0231"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/scene.webp",
+      "bytes": 827554,
+      "sha256": "1cb2d4b75b57e501e03b825df664b04d1efe48780b29c81cca7c4312a34f661e"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/south-roof.webp",
+      "bytes": 9810,
+      "sha256": "46a040346ff3638345db2a8c2029bed00c20dbbb88b898f49582f0710ed9acc8"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/warehouse.webp",
+      "bytes": 15530,
+      "sha256": "407ba5d484a1e0f4b6fc078a21fbdffe6bb7ab1d1e743997a2d5dae239fc3630"
+    },
+    {
+      "path": "client/public/assets/regions/ha-tinh/west-canopy.webp",
+      "bytes": 11116,
+      "sha256": "b060ac953c66c8766761f937cc82953cda4cad7c72a11632d2785b7d1cd74c05"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/hq.webp",
+      "bytes": 29800,
+      "sha256": "b88ec9707ac634f00bb9fd2535d1ca5baa8f2d6c660032dbc11f37f79b93d9a3"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/icon.webp",
+      "bytes": 1924,
+      "sha256": "95df221dfc3f1fccbb3bd44233c786ddcea037944ee776a6270546d928a78291"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/layers.json",
+      "bytes": 3141,
+      "sha256": "961f47efb074efc3634590a7afd43af3535061668eb73fb77b7a53bc4d98e992"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/minimap.webp",
+      "bytes": 22574,
+      "sha256": "d395daad5c1853ecd6e6066523a5cca6aee212429d67dc93095c46c2a7c99caa"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/opera.webp",
+      "bytes": 67644,
+      "sha256": "0a7db364370391be40cb6124b3f163bd83e5c48f103fb5fca993e8fae9d0a531"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/palms.webp",
+      "bytes": 10792,
+      "sha256": "d011b50317353eafe320f53f1b342a1c602e2b58f2778829ed1367ecc50d188f"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/red-canopy.webp",
+      "bytes": 21026,
+      "sha256": "0e0474fed3f3fd726a4d60ee5c86ab3246b14faddb26617e932778536a3775f6"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/scene.webp",
+      "bytes": 792542,
+      "sha256": "2ba6372ea8f65e0182273bb638d6a8b847e4e61d9bc36384ac68297a92494c64"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/south-tree.webp",
+      "bytes": 15408,
+      "sha256": "324a257a2f3ee64c30dcbc6a5801fded21b6d7c61c4d695201605ac47bae7173"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/warehouse.webp",
+      "bytes": 18518,
+      "sha256": "1f4a8343c88f99cbffb838c338c4cf3104b5e155b35f14a325f69afab5b594ab"
+    },
+    {
+      "path": "client/public/assets/regions/hai-phong/west-tree.webp",
+      "bytes": 9592,
+      "sha256": "f83e3b92ebc4bf612ed1a70ea2630bf664d644d6ea85c1d23cc2876ecc7be82a"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/east-roof.webp",
+      "bytes": 7028,
+      "sha256": "c6759aec779c167a0b9084618052d803e378454b0e7a85378ae5aeec703f1281"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/hq.webp",
+      "bytes": 26446,
+      "sha256": "1e1d655859f74cddceccbf439abe66ca5817ede5ad7428d268aeaeb913405934"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/icon.webp",
+      "bytes": 1270,
+      "sha256": "21c13e8ebbb09a80e527c92bf2ee961e9ab8e22aab143e2f0d5e411f7cf29cb7"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/layers.json",
+      "bytes": 2546,
+      "sha256": "20e33ecdba5d849cc89fff0d74b099ea37c2a3fc98244ddb00ea86fec3657295"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/lotus-tree.webp",
+      "bytes": 27402,
+      "sha256": "ddae3b933b8a65bdaf15385c514d50265062f7bb88f65a147d058165db610085"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/minimap.webp",
+      "bytes": 23674,
+      "sha256": "e1c6a4d1bfd15f6a899b85703fa44e899afc5807e144b78eae42dac2e5d96a52"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/scene.webp",
+      "bytes": 904388,
+      "sha256": "25a7ee9f2ab9a3547b024a7502920a431ff74130560edc513143c56cbb604165"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/south-canopy.webp",
+      "bytes": 18990,
+      "sha256": "36b274de768db6d7bb06ba645f941f35cfabae5463945eef99d6fffa12c4f266"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/thatch.webp",
+      "bytes": 30846,
+      "sha256": "4290b9861d736af66e5294878a78e4baa2680300c76deebc0042c85505f9a4a3"
+    },
+    {
+      "path": "client/public/assets/regions/nghe-an/warehouse.webp",
+      "bytes": 17476,
+      "sha256": "c028f889fe27df87225f2108af82233999542d4dda6b7814a7a3d615bff97765"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/clinic.webp",
+      "bytes": 14456,
+      "sha256": "d3c066de7990a4ddbc001bf1b3df48257042f2a87818982f5f1c73b4a4f2ea00"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/east-roof.webp",
+      "bytes": 15370,
+      "sha256": "0bcb51423eb072a2269d1e450128ca02b30adfcbfc712a083f74c25969d02491"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/gate.webp",
+      "bytes": 13700,
+      "sha256": "5eb8241950218323cb623a44e851135a27a424708a44de681d7cfdcbe09fe033"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/hq.webp",
+      "bytes": 21346,
+      "sha256": "4e470096c102a55c6b9f8f50fea035510f305491e74c05d775afa35ea2416426"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/icon.webp",
+      "bytes": 2022,
+      "sha256": "66a19c339092473e37bdcdf4beff0ff6af3ed792a6c25889565eeff9445864eb"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/layers.json",
+      "bytes": 2956,
+      "sha256": "70943f40711028bdb7a7da6e2f5de2328aed85968f37678810c72bbab9e11e85"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/minimap.webp",
+      "bytes": 23490,
+      "sha256": "309f453a0b7f8699f96ddc765ef592aef5cb952a8275104020bd873fac7d1364"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/scene.webp",
+      "bytes": 842218,
+      "sha256": "c78201869847530431b5256edb6bb780d6d09247e6648c1f68f3bc26a36a0acf"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/south-canopy.webp",
+      "bytes": 16714,
+      "sha256": "2f297a37a238ff45fac95898ecd5758c0dd4d8fe1ce0d170e27d62fc1a3efe43"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/warehouse.webp",
+      "bytes": 16074,
+      "sha256": "224c29c0049f2289183c015a8ed9a29eeef57ae20b3b49133d8bd0553fca89bc"
+    },
+    {
+      "path": "client/public/assets/regions/ninh-binh/willows.webp",
+      "bytes": 11530,
+      "sha256": "efbe056959933cf56aa8975f82b773606ae8bddbf82422b308bebbcf38759609"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/clinic.webp",
+      "bytes": 15600,
+      "sha256": "037bca199ede28ff9e8b3e1e86ebaa002cd7f571f48a9b17da7e712066978f9b"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/dock-canopy.webp",
+      "bytes": 10174,
+      "sha256": "69a22f713aa0ed5564739226d00c09c5e63569c48748a499397454e574ad48b6"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/east-roof.webp",
+      "bytes": 14338,
+      "sha256": "762fc50144784eaa383f73a26cfec658d6d3abf5b020fef9fb428f84dfbc1a4c"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/hq.webp",
+      "bytes": 23742,
+      "sha256": "5fc1b9d8c89481880cd573b084541e2ae343254a757320e3eee75654711ad4bf"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/icon.webp",
+      "bytes": 1672,
+      "sha256": "dc832881c69353f9955123359e3c661dca7e8d025ee44971c24ad11f3abe2f37"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/layers.json",
+      "bytes": 3439,
+      "sha256": "5ce80c89a78715301de1582b6bbf4b0d0f0f4a6ba3e6eaeb783fbe7c56e0b92f"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/minimap.webp",
+      "bytes": 23074,
+      "sha256": "34f43ad4ca7f57a05b10b6511379ca9a3c4d2fec479126f72bd7056895e6bb7d"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/scene.webp",
+      "bytes": 790888,
+      "sha256": "be8895c63ead642750dce87bb043e69300f0a0dbdb30d42b3fd3ddda50043831"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/south-canopy.webp",
+      "bytes": 13992,
+      "sha256": "d427c009326ab808438349281480df0477055bf2d3b86030dc048d553aefc8b2"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/south-roof.webp",
+      "bytes": 12216,
+      "sha256": "f135204b1eac6667c24b211e92d69084b4b4a14897dafa34d691fa78eadacb67"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/warehouse.webp",
+      "bytes": 13438,
+      "sha256": "6be22d3a4116559cfbc3e4b226c560a9035de6a53c391886e5ed56d0a2711a0f"
+    },
+    {
+      "path": "client/public/assets/regions/quang-ninh/west-canopy.webp",
+      "bytes": 12352,
+      "sha256": "75ec838ae824f37088e9845d8303d3bcd17a5836f788f93a6a8e5711799dd7db"
+    },
+    {
+      "path": "client/public/assets/regions/shared/boats.png",
+      "bytes": 84369,
+      "sha256": "647cf5850ad7b687466f5713729749812172d0d13e5f12649b50b028732409fb"
+    },
+    {
+      "path": "client/public/assets/regions/shared/bridge-steel.png",
+      "bytes": 461178,
+      "sha256": "c865c7086252ca408c4d5a186780313a90e868067683089c65b5a8905d2867ad"
+    },
+    {
+      "path": "client/public/assets/regions/shared/bridge-stone.png",
+      "bytes": 471823,
+      "sha256": "34165da9cd8fbf1a03acbfa69166011952166fc84b5f21b641346ab1ad172ff9"
+    },
+    {
+      "path": "client/public/assets/regions/shared/bridge-wood.png",
+      "bytes": 436287,
+      "sha256": "9a9076b939880a8e935343f3aad89b6fca85066eea3e7e39db40b38f26175ed2"
+    },
+    {
+      "path": "client/public/assets/regions/shared/palm-sevarihk.png",
+      "bytes": 24516,
+      "sha256": "900e9e16a553e9b358fce59da4d307f435ae82875c6c6a70d49bc60dc83c4ac8"
+    },
+    {
+      "path": "client/public/assets/regions/shared/waterfall-sevarihk.png",
+      "bytes": 4753,
+      "sha256": "f9ec44758f8ac96c0ff27a4bc708433e581ffdf8e70906759cb63d03432788ed"
+    },
+    {
+      "path": "client/public/assets/regions/shared/waterfall.png",
+      "bytes": 3060,
+      "sha256": "39b4f7aefbba6a668fb1c3a5c86fa1703b36c307c0475a3cfb6dfc9b86a6e01c"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/banyan.webp",
+      "bytes": 38302,
+      "sha256": "9ea22d45894dbb6d2a03dc71e32aaab6996a0a241b5915536c262d513d5e618a"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/clinic.webp",
+      "bytes": 13354,
+      "sha256": "ec22eddb5d73f8b92fd30bf6d8f0d5080302a91217a457808a8d0ad7ff7cea0c"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/east-canopy.webp",
+      "bytes": 14366,
+      "sha256": "b549c53b41aed408a0939651ababa0315be7567f5abf6d362891f3479bea37ea"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/hq.webp",
+      "bytes": 22648,
+      "sha256": "df04591025ab303d0386ae3236c8e4f0be3cd57b13039af6ba06c0b1f5b2b2b4"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/icon.webp",
+      "bytes": 1162,
+      "sha256": "91f660a4e1cc17ab5e9753b8a982221f41f397fa53275f38e11fc5d33c31180e"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/layers.json",
+      "bytes": 3019,
+      "sha256": "7388dde315d94626157f47fb535a7ebc7dba94e978c16590af084335a756423e"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/minimap.webp",
+      "bytes": 24450,
+      "sha256": "b1564d6c2c57e4f52d98c92fc9d796e0e29baac36d0e6508591b7cf24a3e9046"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/scene.webp",
+      "bytes": 899278,
+      "sha256": "c5fd43119c484e8805115903bf5dbcdbbb529c5fd9b2e7b99f209f8535efcdbb"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/south-roof.webp",
+      "bytes": 11918,
+      "sha256": "47b93e7c49b651c930542683dfe627e23ae94b8f3911b8a95ba3b7d74730a92d"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/warehouse.webp",
+      "bytes": 14990,
+      "sha256": "a663c69ce8eaa8c7b67c824c85ffa514cd76459829ffabdb047e0d15481ee9f9"
+    },
+    {
+      "path": "client/public/assets/regions/thanh-hoa/west-tree.webp",
+      "bytes": 15572,
+      "sha256": "da9a7818dfc5f4f70ee4320c825f13c3b42f794d0401829c5ceaccf4f905b31d"
+    },
+    {
+      "path": "client/public/assets/thap_rua.svg",
+      "bytes": 2984,
+      "sha256": "66a67fbeb88d58d1ee775c60439661dfe941e3d096a0b9c16aa494f17d51436f"
+    },
+    {
+      "path": "client/public/assets/warehouse.svg",
+      "bytes": 2236,
+      "sha256": "327cb84d17feaf056abec843204f1cab8915f4c3f259d4134eceae275b462191"
+    },
+    {
+      "path": "client/src/game.css",
+      "bytes": 16705,
+      "sha256": "2860b929769308b7be6c4147f0a75784d2ee1da58324b24d147c7c3ff047d9fc"
+    },
+    {
+      "path": "client/src/game/hanoiAssets.ts",
+      "bytes": 1390,
+      "sha256": "f6987f575e6dfd5af1cfa46574e80588358078e84822b7648851b2d3ac63374c"
+    },
+    {
+      "path": "client/src/game/hanoiLayout.ts",
+      "bytes": 2114,
+      "sha256": "475c4bcb3547596535cd7e8b1b7930ad7c014f892cde5db55687f60900f05251"
+    },
+    {
+      "path": "client/src/game/hanoiMap.ts",
+      "bytes": 122,
+      "sha256": "e7f7bcc07dd1e16306eed883d50603e59bc802f932a1ae673c27e081cc3036a9"
+    },
+    {
+      "path": "client/src/game/hanoiScene.ts",
+      "bytes": 6099,
+      "sha256": "8a932b117cdbfb87157d553f576311f8e14fe3dc6910c77296a96f974344bc02"
+    },
+    {
+      "path": "client/src/game/hanoiSceneLayers.ts",
+      "bytes": 8218,
+      "sha256": "eeb7bfbe06ee24ad1793b2c4d0a9f21ca7b3d7ee065dcd8c53b5e671922ac597"
+    },
+    {
+      "path": "client/src/game/phaserGame.ts",
+      "bytes": 910,
+      "sha256": "1ab45962f99671d0daeafe9941743edc72b12c795076b4cc458bb25d7fd49d04"
+    },
+    {
+      "path": "client/src/game/regionalLayers.ts",
+      "bytes": 15397,
+      "sha256": "ed508723ee0333eeffd6065658192768779b6779d4aecece74dc0cb2ebcf98c5"
+    },
+    {
+      "path": "client/src/game/regionalScene.ts",
+      "bytes": 8440,
+      "sha256": "27e0a6706f6cefc06d65ad5aec55c5e3049b153cb8d6284fc6886e6468c9f329"
+    },
+    {
+      "path": "client/src/main.ts",
+      "bytes": 6274,
+      "sha256": "21b17f61ac5a505c53c806fbb0af979d63095cb40db41cae4770bccc1efd62f0"
+    },
+    {
+      "path": "client/src/network/socketClient.ts",
+      "bytes": 5074,
+      "sha256": "5d8ac9b10ad6d1d884fa85597244d564266010af173193bfdd4a63d423dbd502"
+    },
+    {
+      "path": "client/src/regions.css",
+      "bytes": 5087,
+      "sha256": "f310a693aa2df99814a618bea0d7cb433a6a2f76dd08e1fbc1bdd375de08e42e"
+    },
+    {
+      "path": "client/src/scenes/MainScene.ts",
+      "bytes": 14337,
+      "sha256": "6caed80c69b056b609340d0e417bf78132e75b48b8ade9487117e190f7ebd0ab"
+    },
+    {
+      "path": "client/src/ui/actionPanel.ts",
+      "bytes": 33486,
+      "sha256": "74131705492a7d60059126be025e9e6eaa5c2a54c5f9897be31cb6a25e920ff9"
+    },
+    {
+      "path": "client/src/ui/briefingModal.ts",
+      "bytes": 3811,
+      "sha256": "517de05548345a1ce0f735e5e3cc75e7227e769fed9e7522b4cd558d2298915c"
+    },
+    {
+      "path": "client/src/ui/hostView.ts",
+      "bytes": 9652,
+      "sha256": "67e477efe3d93139530f0bc2a59495c545f51301247cc3d8f22e98fdc27a52e3"
+    },
+    {
+      "path": "client/src/ui/hudView.ts",
+      "bytes": 8889,
+      "sha256": "790dc8fa211ae0da1a08368485a41a4df0bf9ae70c88372cfa2ce0ffe6429c24"
+    },
+    {
+      "path": "client/src/ui/ledgerModal.ts",
+      "bytes": 5038,
+      "sha256": "b228595bdbfab45ef0a6b2980d886f452b91c2df8a619ddb1a4d37032c350e1e"
+    },
+    {
+      "path": "client/src/ui/lobbyView.ts",
+      "bytes": 6768,
+      "sha256": "90ccf454a6d429fb26bf597b544b74ad9f989106d149fae390ff5fe9216a02a6"
+    },
+    {
+      "path": "client/src/ui/practiceModal.ts",
+      "bytes": 2383,
+      "sha256": "0be4a192acf89450a9e109df2670aefc557a7e844c6bceb81bd26777dc3ebe7c"
+    },
+    {
+      "path": "client/src/ui/projectorView.ts",
+      "bytes": 6621,
+      "sha256": "74cdffc7e358083bc064ad2a0d72f9719d0feb334ab2a53fcb530d73d8152b13"
+    },
+    {
+      "path": "client/src/ui/resultsModal.ts",
+      "bytes": 6977,
+      "sha256": "3ed165c8f6f2e2d3b9ba4bc4ac6e91f98672365e6451a5ad781b4aa381df7b1f"
+    },
+    {
+      "path": "client/src/ui/taskPanel.ts",
+      "bytes": 17606,
+      "sha256": "83c6c1ed49a72ed5f157532fb52c30a27e1476dc77027e8bfaf4709b254849b4"
+    },
+    {
+      "path": "client/src/ui/touchControls.ts",
+      "bytes": 2198,
+      "sha256": "c87602e6ac3dcd54771d03a0f6a0649cd165683968b0569ed990803cec31a54f"
+    },
+    {
+      "path": "client/src/ui/votingModal.ts",
+      "bytes": 6642,
+      "sha256": "bae2c75074cea69d64ec75125b86822b44a4103d96ac9d05bd244ebaf09dc79c"
+    },
+    {
+      "path": "client/src/utilities.css",
+      "bytes": 60,
+      "sha256": "fac277053465c84b68014cf53b0e9783ff9e121a0e582e15faecc9f9729ef33e"
+    },
+    {
+      "path": "client/tailwind.config.cjs",
+      "bytes": 109,
+      "sha256": "6f5ff3dcc1d75eeac5fe2072be122cdb8bcad20a64772c18379699bc593ee6b4"
+    },
+    {
+      "path": "client/tsconfig.json",
+      "bytes": 487,
+      "sha256": "cd4fd87048ffb7fb5cb7aa8709e89bb6ce4deca76bc00a5ce67c0231116d5f6d"
+    },
+    {
+      "path": "client/vite.config.ts",
+      "bytes": 530,
+      "sha256": "516611b19a0a5286d7e42af98b6728aa799771d370dd1ecde433793fbacba451"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 191121,
+      "sha256": "7c601046bcfc418a60e4492f5210b6a170cfc106edc958df135a10ae88a2d2bb"
+    },
+    {
+      "path": "package.json",
+      "bytes": 814,
+      "sha256": "95d7dfc1aba54fe3d675162c14c2ca9794a711681c8e09eb7a9a628c76aca47a"
+    },
+    {
+      "path": "scripts/build-hanoi-assets.py",
+      "bytes": 9156,
+      "sha256": "9e70b9db8bbe3f4aa58afe9cd09536ce56794c4598780d86d21f2db9014d8b87"
+    },
+    {
+      "path": "scripts/inspect-hanoi-qa.mjs",
+      "bytes": 808,
+      "sha256": "75a144b1ee1733d5c273cbe5db97743b073e8071d9282c9aaa1c255bf63a088a"
+    },
+    {
+      "path": "scripts/prepare-hanoi-v2.py",
+      "bytes": 5391,
+      "sha256": "fb94baac7b892f9b77fd374016b107984336d704cb4292412c47dcb9908cc528"
+    },
+    {
+      "path": "scripts/prepare-hanoi-v3.py",
+      "bytes": 4063,
+      "sha256": "eb6c33f80318ba4255c81cea0d3ec56f5bc251e907542d89d05ebc83ffc43cd4"
+    },
+    {
+      "path": "scripts/prepare-region-contact-sheet.py",
+      "bytes": 1681,
+      "sha256": "aa256be448ba67732f59a137320e08ddca97c97c0413d3909bb15d9a432f9ceb"
+    },
+    {
+      "path": "scripts/prepare-region-sprites.py",
+      "bytes": 1557,
+      "sha256": "6e70597876b7b4afb145d60ea4d77a5627c3ae6956612269c0bf9a51412773b9"
+    },
+    {
+      "path": "scripts/prepare-regions.py",
+      "bytes": 16137,
+      "sha256": "e50ea2f3fe4b91baf9e28618a579ca8a235b82ff7e43f5ea93ccb796f137bdb9"
+    },
+    {
+      "path": "scripts/preview-room.mjs",
+      "bytes": 1094,
+      "sha256": "add33c49314ff301ddc6f0e0d8360d48aac0626f65e01e3eecb3354e9e598d7c"
+    },
+    {
+      "path": "scripts/qa-room-command.mjs",
+      "bytes": 860,
+      "sha256": "ec1a2255855897d1af76208d0945e704276f0c8683510633af2a41ab01716723"
+    },
+    {
+      "path": "scripts/verify-hanoi-v2.mjs",
+      "bytes": 6967,
+      "sha256": "6b33108b0a3b63ee5cd6828c08462489da29a5878cdda3e5f7155ca271d460f4"
+    },
+    {
+      "path": "scripts/verify-regions.mjs",
+      "bytes": 7551,
+      "sha256": "04e027318d11ee02a439e3519432e68e78a765e7662c1c08ae924987335599c8"
+    },
+    {
+      "path": "server/package.json",
+      "bytes": 648,
+      "sha256": "24bb2f2cf81efc8a1d0c6a9acc4433323dd7f4bd96ebd4ed14ad807ac3dd6e16"
+    },
+    {
+      "path": "server/scripts/endMatch.js",
+      "bytes": 578,
+      "sha256": "812fb9f7ce20c059074d490baea15699dbfe25a7622fdfc1ff431790068deb0d"
+    },
+    {
+      "path": "server/scripts/playMatchToResults.js",
+      "bytes": 13352,
+      "sha256": "dca4710aab3ceaee04f56ad1d5e026639ce2b825d0b024c43afbc425a76c3e65"
+    },
+    {
+      "path": "server/scripts/startMatch.js",
+      "bytes": 983,
+      "sha256": "e19c4953cab35be5f13db981093fa162487f8c87fd6af5b7129a8e266083d57c"
+    },
+    {
+      "path": "server/src/__tests__/gameEngine.test.ts",
+      "bytes": 31086,
+      "sha256": "c9b15e95efe56f37660ec1be2d7e6af82bab7cbd7719147dbad949ab5d9c849d"
+    },
+    {
+      "path": "server/src/__tests__/hanoiMap.test.ts",
+      "bytes": 5381,
+      "sha256": "cfa47a796e6accf103172ca47b6bc6f19d402767a1e51d749d693ff8ec21c3b7"
+    },
+    {
+      "path": "server/src/__tests__/hanoiSolo.test.ts",
+      "bytes": 2628,
+      "sha256": "a18e7246bbd10f0a7f35e7bf05e645bb2187ba442f9e552a26822350c3793c12"
+    },
+    {
+      "path": "server/src/__tests__/regionalMaps.test.ts",
+      "bytes": 5304,
+      "sha256": "d7a5a2e0fa1d658e53ec8c7511d5e82fa44245de0501c90a3f2d939a6a138d47"
+    },
+    {
+      "path": "server/src/gameEngine.ts",
+      "bytes": 62867,
+      "sha256": "9a09a654685db426d02b4527ed999316fe666801e458e3e0e9c409be983152a7"
+    },
+    {
+      "path": "server/src/roomManager.ts",
+      "bytes": 2714,
+      "sha256": "533b638cf847cb5639280673c367465570577a2a39405f700e91bf08c92d6f9b"
+    },
+    {
+      "path": "server/src/server.ts",
+      "bytes": 9963,
+      "sha256": "2427dee6b964b7a29afea199934d9d924b5289db4d14906e0e319f28693cb50c"
+    },
+    {
+      "path": "server/tsconfig.json",
+      "bytes": 312,
+      "sha256": "e2637a9d0db05e329b015c636ca34b2ff4e10b2fb6ee055d2fe9a29507241d77"
+    },
+    {
+      "path": "shared/package.json",
+      "bytes": 248,
+      "sha256": "31e164ec930435dac1af74232965b1f77cfbb4360bc8da58d55b1f9171426dad"
+    },
+    {
+      "path": "shared/src/constants.ts",
+      "bytes": 2261,
+      "sha256": "b39abe66432b90e1abbdf6e7228f45105430a981f1dfb70aa3ff25b0a26a4977"
+    },
+    {
+      "path": "shared/src/index.ts",
+      "bytes": 232,
+      "sha256": "ee1666884258b561b250165c38ad6b44b58fbef768c77b07d8164dc8a4611c1c"
+    },
+    {
+      "path": "shared/src/knowledgeMap.ts",
+      "bytes": 13651,
+      "sha256": "e2e467efa655aa0f96854d75ab76713928860cfe1d9ce05f481cac23bd12667d"
+    },
+    {
+      "path": "shared/src/mapData.ts",
+      "bytes": 10383,
+      "sha256": "d2a12d0d93c9ad9d178c396023c59dc2e70812f56de22c1eb4a69c76dd7df596"
+    },
+    {
+      "path": "shared/src/missionGuide.ts",
+      "bytes": 6147,
+      "sha256": "8b46656d41476ac4f254c55070f924d0e30b316f7c8d7e91abf0775f46d357d4"
+    },
+    {
+      "path": "shared/src/navigation.ts",
+      "bytes": 1889,
+      "sha256": "45b49f379aec5b33b1d789d33f8a79e7c4216e8c30ac37ae48a233e9bc4961d8"
+    },
+    {
+      "path": "shared/src/regionalMapData.ts",
+      "bytes": 39276,
+      "sha256": "4fe750d08ad182d4957b9cb7bcb10afd9b0c7ee6ac76b10a75fd9c14b94fe8db"
+    },
+    {
+      "path": "shared/src/types.ts",
+      "bytes": 5616,
+      "sha256": "e468f3f8b568de934ab135f9a5322ea04f414e4cc1c142cc34dfbebb60b30e66"
+    },
+    {
+      "path": "shared/src/worldMaps.ts",
+      "bytes": 4020,
+      "sha256": "89a96137f847137ee06dd7c127762823404391e8cf7b6c7322ffbe302b97fda2"
+    },
+    {
+      "path": "shared/tsconfig.json",
+      "bytes": 388,
+      "sha256": "d7519fe3134ed2aa7d2a5df7eb5046b31f0024c5ab6297fc1f381952f7d234bd"
+    }
+  ],
+  "documentationValidation": {
+    "files": [
+      "AGENTS.md",
+      "README.md",
+      "docs/PROJECT_STATUS.md",
+      "docs/MVP_SPEC.md",
+      "docs/KNOWLEDGE_MAP.md",
+      "docs/ARCHITECTURE.md",
+      "docs/MAPS.md",
+      "docs/ART_SOURCES.md",
+      "docs/ASSET_CREDITS.md",
+      "docs/TESTING.md",
+      "docs/REGIONAL_MAPS_HANDOVER.md",
+      "docs/HANOI_V3_HANDOVER.md"
+    ],
+    "localTargetsChecked": 96,
+    "brokenTargets": [],
+    "externalLinksAndHeadingAnchorsReverified": false,
+    "explicitSourcePathsChecked": 54,
+    "missingExplicitSourcePaths": [],
+    "gitDiffCheckPassed": true
+  },
+  "runtimeReadOnlyObservation": {
+    "baseUrl": "http://localhost:3102",
+    "network": {
+      "lanIp": "192.168.2.104",
+      "port": 3102,
+      "serverPort": 3001,
+      "publicBaseUrl": "http://192.168.2.104:3102"
+    },
+    "mapIds": [
+      "hanoi",
+      "hai-phong",
+      "quang-ninh",
+      "ninh-binh",
+      "thanh-hoa",
+      "nghe-an",
+      "ha-tinh"
+    ],
+    "processPortNotes": "3102 live regional build; 3100 observed older local preview. No PID/session persisted."
+  },
+  "existingReportsRead": {
+    "count": 6,
+    "allComplete100": true,
+    "totalRoutes": 228,
+    "rerunInHandover": false
+  },
+  "workingTreeCounts": {
+    "trackedModified": 41,
+    "untracked": 264
+  },
+  "runtimeSourceChangesAfterFingerprintCheck": []
+}

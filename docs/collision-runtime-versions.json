@@ -1,0 +1,102 @@
+[
+  {
+    "port": 3102,
+    "roomCode": "VERSION_3102_MUSR3V2O",
+    "start": {
+      "id": "P_1791053663021_47tc",
+      "name": "QA version",
+      "roomCode": "VERSION_3102_MUSR3V2O",
+      "color": "#2563eb",
+      "x": 499.70762841206226,
+      "y": 411.3827006038081,
+      "direction": "down",
+      "isMoving": false,
+      "role": "SURVEY",
+      "carriedCrateId": null,
+      "activeJob": null,
+      "isOnline": true,
+      "lastHeartbeat": 1791053663021,
+      "isHost": true
+    },
+    "directLakeMove": {
+      "actionId": "cross_lake",
+      "success": true
+    },
+    "roomsRequiringPreservation": [
+      {
+        "roomCode": "VN2336",
+        "mapId": "ha-tinh",
+        "phase": "RUNNING",
+        "playerCount": 0,
+        "score": 0
+      },
+      {
+        "roomCode": "VN4705",
+        "mapId": "ha-tinh",
+        "phase": "RUNNING",
+        "playerCount": 0,
+        "score": 0
+      }
+    ]
+  },
+  {
+    "port": 3110,
+    "roomCode": "VERSION_3110_MUSR3V4Y",
+    "start": {
+      "id": "P_1791053663086_c2a7",
+      "name": "QA version",
+      "roomCode": "VERSION_3110_MUSR3V4Y",
+      "color": "#2563eb",
+      "x": 479.8053279222563,
+      "y": 409.0707010232849,
+      "direction": "down",
+      "isMoving": false,
+      "role": "SURVEY",
+      "carriedCrateId": null,
+      "activeJob": null,
+      "isOnline": true,
+      "lastHeartbeat": 1791053663086,
+      "isHost": true
+    },
+    "directLakeMove": {
+      "actionId": "cross_lake",
+      "success": false,
+      "reason": "MOVE: đoạn di chuyển đi qua vật cản."
+    },
+    "roomsRequiringPreservation": []
+  },
+  {
+    "port": 3111,
+    "roomCode": "VERSION_3111_MUSR3V5E",
+    "start": {
+      "id": "P_1791053663097_65tr",
+      "name": "QA version",
+      "roomCode": "VERSION_3111_MUSR3V5E",
+      "color": "#2563eb",
+      "x": 507.3488805091454,
+      "y": 402.38903034968274,
+      "direction": "down",
+      "isMoving": false,
+      "role": "SURVEY",
+      "carriedCrateId": null,
+      "activeJob": null,
+      "isOnline": true,
+      "lastHeartbeat": 1791053663097,
+      "isHost": true
+    },
+    "directLakeMove": {
+      "actionId": "cross_lake",
+      "success": false,
+      "reason": "MOVE: đoạn di chuyển đi qua vật cản."
+    },
+    "roomsRequiringPreservation": [
+      {
+        "roomCode": "QA_-1_MUSQOSY8",
+        "mapId": "hanoi",
+        "phase": "RUNNING",
+        "playerCount": 0,
+        "score": 6
+      }
+    ]
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "method": "Actual SocketClient bundle with mocked Socket.IO transport events; real two-socket checks are separate",
+  "lockUntilJoined": true,
+  "noOfflineReplay": true,
+  "lockUntilRejoined": true,
+  "ackAfterJoined": true,
+  "pass": true
+}

@@ -1,0 +1,79 @@
+{
+  "base": "http://localhost:3110",
+  "roomCode": "MOVE_MUSMW474",
+  "clients": 2,
+  "method": "real Socket.IO, solver input at paced 60Hz, MOVE batches ~66ms",
+  "checks": [
+    {
+      "case": "tree straight contact",
+      "before": {
+        "x": 452.5,
+        "y": 345
+      },
+      "input": {
+        "x": 1,
+        "y": 0
+      },
+      "desired": {
+        "x": 6,
+        "y": 0
+      },
+      "actual": {
+        "x": 453,
+        "y": 345
+      },
+      "collider": {
+        "id": "hanoi:footprint:12",
+        "layer": "environment",
+        "normal": {
+          "x": -1,
+          "y": 0
+        },
+        "rect": {
+          "x": 467,
+          "y": 337,
+          "width": 16,
+          "height": 16
+        }
+      },
+      "pass": true
+    },
+    {
+      "case": "diagonal slide visible to peer",
+      "predicted": {
+        "x": 453.59878400955876,
+        "y": 332.68919018907195
+      },
+      "authoritative": {
+        "x": 453.59878400955876,
+        "y": 332.68919018907195
+      },
+      "pass": true
+    },
+    {
+      "case": "curved shore trace accepted",
+      "pass": true,
+      "contacts": [
+        {
+          "id": "hanoi:lake",
+          "layer": "water",
+          "normal": {
+            "x": -0.9975295184354295,
+            "y": -0.07024855763629556
+          }
+        }
+      ]
+    },
+    {
+      "case": "peer does not hard block (both feet overlap)",
+      "pass": true
+    },
+    {
+      "case": "reconnect stable identity",
+      "pass": true
+    }
+  ],
+  "packets": 44,
+  "rejections": 0,
+  "pass": true
+}

@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-04",
+  "url": "http://127.0.0.1:3112/play/INPUT_UI_QA",
+  "method": "CUA browser UI and read-only DOM measurements; synthetic keyboard taps/clicks/single-pointer drag, not a physical device playtest",
+  "desktop": {
+    "keyTaps": [
+      "W",
+      "A",
+      "S",
+      "D",
+      "ArrowUp",
+      "ArrowDown",
+      "Shift+d"
+    ],
+    "before": {
+      "x": 472.004265678548,
+      "y": 409.23135853838664
+    },
+    "after": {
+      "x": 473.86627567854697,
+      "y": 410.8495585383871
+    },
+    "ePickedCrate": true,
+    "gDroppedCrate": true,
+    "gPingAck": true,
+    "mChangedOverview": true,
+    "menuOpenedAndEscapeClosed": true
+  },
+  "mobile": {
+    "buttonEAndGReceivedAck": true,
+    "joystickBefore": {
+      "x": 473.86627567854697,
+      "y": 410.8495585383871
+    },
+    "joystickAfter": {
+      "x": 501.7574291432205,
+      "y": 410.8495585383871
+    },
+    "inputAfterRelease": {
+      "x": 0,
+      "y": 0
+    },
+    "landscape": {
+      "targets": [
+        {
+          "height": 44,
+          "id": "btn-map-icon",
+          "width": 54,
+          "x": 14,
+          "y": 80
+        },
+        {
+          "height": 44,
+          "id": "btn-menu",
+          "width": 58.453125,
+          "x": 76,
+          "y": 80
+        },
+        {
+          "height": 92,
+          "id": "joystick-zone",
+          "width": 92,
+          "x": 18,
+          "y": 280
+        },
+        {
+          "height": 64,
+          "id": "btn-touch-secondary",
+          "width": 64,
+          "x": 666,
+          "y": 298
+        },
+        {
+          "height": 84,
+          "id": "btn-touch-interact",
+          "width": 84,
+          "x": 742,
+          "y": 288
+        }
+      ],
+      "viewport": {
+        "height": 390,
+        "width": 844
+      }
+    },
+    "portrait": {
+      "targets": [
+        {
+          "height": 44,
+          "id": "btn-map-icon",
+          "width": 48,
+          "x": 275.546875,
+          "y": 89
+        },
+        {
+          "height": 44,
+          "id": "btn-menu",
+          "width": 50.453125,
+          "x": 329.546875,
+          "y": 89
+        },
+        {
+          "height": 112,
+          "id": "joystick-zone",
+          "width": 112,
+          "x": 18,
+          "y": 714
+        },
+        {
+          "height": 64,
+          "id": "btn-touch-secondary",
+          "width": 64,
+          "x": 212,
+          "y": 752
+        },
+        {
+          "height": 84,
+          "id": "btn-touch-interact",
+          "width": 84,
+          "x": 288,
+          "y": 742
+        }
+      ],
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    }
+  },
+  "reloadRejoinReturnedPrompts": true,
+  "physicalMultitouch": "NOT VERIFIED",
+  "continuousHeldKeys": "NOT VERIFIED",
+  "realLanLatencyLoss": "NOT VERIFIED",
+  "pass": true
+}

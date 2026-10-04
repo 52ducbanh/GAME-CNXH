@@ -2,13 +2,15 @@
 
 Tài liệu phục vụ học tập học phần Chủ nghĩa Xã hội Khoa học & Nhà nước Pháp quyền XHCN Việt Nam.
 
+Đối chiếu nơi sử dụng trong source ngày 03/10/2026. Nội dung học tập dùng chung cho bảy vùng; thay cảnh không tạo một bộ kiến thức riêng theo tỉnh. Chưa có giáo trình/ấn bản của lớp để kiểm số trang hay xác nhận toàn bộ thuật ngữ với giảng viên.
+
 ---
 
 ## 1. Dẫn nhập Lý luận Mác – Lênin về Nhà nước
 
 ### 1.1. Nguồn gốc của Nhà nước
 - **Lý luận khoa học:** Nhà nước không phải là hiện tượng vĩnh cửu hay siêu nhiên, mà ra đời trong những điều kiện lịch sử nhất định khi xã hội xuất hiện chế độ tư hữu và phân chia giai cấp, mâu thuẫn giai cấp phát triển đến mức không thể điều hòa được. Nhà nước là cơ quan thống trị giai cấp, nắm giữ quyền lực công đặc biệt có sức mạnh cưỡng chế, đồng thời thực hiện chức năng xã hội nhằm duy trì trật tự chung của cộng đồng.
-- **Minh họa trong Game:** Game đặt bối cảnh một chính quyền địa phương (Hà Nội) quản lý tài sản công (ngân sách 100, vật tư 12) và điều tiết nguồn lực để bảo đảm lợi ích chung của 30 người dân.
+- **Minh họa trong Game:** Mỗi phòng đặt bối cảnh một chính quyền địa phương trên một trong bảy vùng quản lý tài sản công (ngân sách 100, vật tư 12) và điều tiết nguồn lực cho 30 người dân mô phỏng. Đây là minh họa chức năng quản lý/phục vụ, không tái hiện toàn bộ quá trình lịch sử ra đời Nhà nước.
 
 ### 1.2. Bản chất của Nhà nước Xã hội Chủ nghĩa
 - **Lý luận khoa học:** Nhà nước XHCN là kiểu nhà nước mới trong lịch sử, mang bản chất của giai cấp công nhân, gắn liền với quyền làm chủ của nhân dân lao động. Bản chất ấy thể hiện toàn diện trên:
@@ -57,3 +59,14 @@ Tài liệu phục vụ học tập học phần Chủ nghĩa Xã hội Khoa h�
    - *Nội dung cốt lõi:* Tiếp tục xây dựng và hoàn thiện Nhà nước pháp quyền XHCN Việt Nam trong giai đoạn mới.
 3. **Giáo trình Chủ nghĩa xã hội khoa học (Bộ Giáo dục và Đào tạo):**
    - *Lưu ý cho sinh viên:* Trước khi nộp bài tập lớn của lớp, nhóm cần đối chiếu số trang, chương mục và thuật ngữ chính xác theo cuốn giáo trình CNXHKH được giảng viên bộ môn quy định.
+
+## 5. Nơi nội dung được dùng và việc cần đối chiếu
+
+- `shared/src/knowledgeMap.ts`: KNOWLEDGE_INTRO (dẫn nhập), KNOWLEDGE_RULES (khái niệm/mapping/giới hạn), KNOWLEDGE_SOURCES và generateRecap (kết quả theo phương án, người phục vụ, ngân sách, kiện).
+- `client/src/ui/briefingModal.ts` đọc intro và giới hạn; `resultsModal.ts` đọc recap/sources. Gameplay tương ứng được thực thi trong GameEngine, không do câu chữ KNOWLEDGE_RULES tự chạy validation. Năm vai trò là gợi ý chia công việc lớp học, không tương đương quyền hạn của cơ quan nhà nước thực tế.
+- Cụm “căn cứ pháp lý” trong giải thích M3 là **quy tắc kịch bản mô phỏng**; không khẳng định bất kỳ người chơi nào có quyền chi ngân sách hay bỏ quy trình pháp lý ngoài đời. Vote không là bầu cử Quốc hội/HĐND; host không đại diện một thiết chế chính trị.
+- Hai link Chính phủ phía trên đã có trong project và vẫn được giữ. Lượt bàn giao này **không duyệt lại văn bản hiện hành**, không xác nhận phiên bản hợp nhất hoặc trích điều luật mới. Không thêm số điều/số trang từ trí nhớ. Nguồn giáo trình chỉ là mô tả tài liệu học phần, chưa có file/ấn bản cụ thể.
+- Cần nhóm/giảng viên đối chiếu các cách diễn đạt về bản chất/chức năng Nhà nước, nguyên tắc tập trung dân chủ, phân công/phối hợp/kiểm soát quyền lực, quyền công dân và trách nhiệm giải trình với tài liệu lớp trước nộp. Không suy từ test gameplay đạt thành kiến thức đã được thẩm định học thuật.
+- Recap hiện có câu tuyến vòng “dài hơn gấp đôi”; đây là câu giải thích lịch sử trong source, chưa đo tỷ lệ chiều dài trên bảy map. Khi sửa nội dung sau này cần đo hoặc viết mô tả không định lượng, không coi hệ số 2 là dữ kiện đã kiểm chứng.
+
+Đặc tả hành động/nguồn lực tại [MVP_SPEC](MVP_SPEC.md), trạng thái phần chưa xác minh tại [PROJECT_STATUS](PROJECT_STATUS.md).

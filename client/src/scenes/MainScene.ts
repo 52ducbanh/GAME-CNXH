@@ -1,480 +1,369 @@
+import { InputController, InputAction } from '../game/inputController.js';
+import { InteractionAction, InteractionContext, resolveInteraction, getInteractionActions } from 'shared';
 import Phaser from 'phaser';
-import { GameSnapshot, Player, Crate, PointOfInterest } from 'shared';
-import {
-  WORLD_WIDTH,
-  WORLD_HEIGHT,
-  PLAYER_SPEED,
-  INTERACTION_RADIUS,
-  POINTS_OF_INTEREST
-} from 'shared';
-import { SocketClient } from '../network/socketClient.js';
+import { GameSnapshot, Player, PointOfInterest, WORLD_WIDTH, WORLD_HEIGHT, PLAYER_SPEED, INTERACTION_RADIUS, MapId, getGameMap, isWalkableForMap } from 'shared';
+import { SocketClient, newActionId } from '../network/socketClient.js';
+import { preloadHanoi, createCharacterAnimations, drawHanoi } from '../game/hanoiMap.js';
+import { getMissionGuide } from 'shared';
+import { findWalkingRoute } from 'shared';
+import { CHARACTER_ROWS, PROP } from '../game/hanoiAssets.js';
+import { preloadRegion, drawRegion } from '../game/regionalScene.js';
+import { soundManager } from '../game/soundManager.js';
+import { MOVEMENT_CONFIG, MapPoint, inputDisplacement, resolveMovement, collisionContact, surfaceAt } from 'shared';
+import { MovementDebug } from '../game/movementDebug.js';
 
 export class MainScene extends Phaser.Scene {
   private socketClient!: SocketClient;
   private currentSnapshot: GameSnapshot | null = null;
-
-  // Local player state
-  private localPlayerId: string = '';
+  private localPlayerId = '';
   private localPlayerSprite: Phaser.GameObjects.Container | null = null;
-  private otherPlayerSprites: Map<string, Phaser.GameObjects.Container> = new Map();
-  private crateSprites: Map<string, Phaser.GameObjects.Container> = new Map();
-
-  // Landmarks & POI sprites
-  private bridgeSprite: Phaser.GameObjects.Sprite | null = null;
-  private clinicFixedSprite: Phaser.GameObjects.Sprite | null = null;
-  private clinicMobileBSprite: Phaser.GameObjects.Sprite | null = null;
-  private clinicMobileCSprite: Phaser.GameObjects.Sprite | null = null;
-
-  // Controls
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private wasdKeys!: {
-    W: Phaser.Input.Keyboard.Key;
-    A: Phaser.Input.Keyboard.Key;
-    S: Phaser.Input.Keyboard.Key;
-    D: Phaser.Input.Keyboard.Key;
-    E: Phaser.Input.Keyboard.Key;
-  };
-
-  // Virtual Joystick input state from HTML overlay
-  public joystickDelta: { x: number; y: number } = { x: 0, y: 0 };
-  public interactRequested: boolean = false;
-
-  private lastMoveSent: number = 0;
+  private otherPlayerSprites = new Map<string, Phaser.GameObjects.Container>();
+  private crateSprites = new Map<string, Phaser.GameObjects.Container>();
+  private landmarks!: Pick<ReturnType<typeof drawHanoi>,'practiceLabel'|'updateState'|'updateOcclusion'>;
+  private map = getGameMap();
+  public controls!: InputController;
+  private interaction: InteractionContext = {primary:null,secondary:null,choices:[]};
+  private actionPending = false;
+  private drainingMovement = false;
+  private actionCooldown = 0;
+  private inputLocked = false;
+  public onControlsReset?: () => void;
+  public onControlsChanged?: (context:InteractionContext,pending:boolean,locked:boolean) => void;
+  public onActionFeedback?: (message:string,success:boolean) => void;
+  public onActionPending?: (pending:boolean) => void;
+  public onMenu?: () => void;
+  private lastMoveSent = 0;
   private nearestPoi: PointOfInterest | null = null;
-
-  // UI Callback hooks
+  private routeGraphics!: Phaser.GameObjects.Graphics;
+  private groundHotspotsGraphics!: Phaser.GameObjects.Graphics;
+  private marker!: Phaser.GameObjects.Container;
+  private waypoint: {x:number;y:number;name:string}|null = null;
+  private lastRoute = 0;
+  private manualWaypoint = false;
+  private overview = window.innerWidth > 1000 && window.innerHeight > 550;
+  private unsubscribe?: () => void;
+  private loadingLabel?: Phaser.GameObjects.Text;
+  private previousScore = 0;
+  private movementDebug!: MovementDebug;
+  private movePath:MapPoint[]=[];
+  private moveInFlight=false;
+  private moveEpoch=0;
+  private reconcileNext=true;
+  private lastCorrection:unknown=null;
+  private resetInput=()=>{this.controls?.reset();soundManager.resetMovement();};
   public onNearestPoiChanged?: (poi: PointOfInterest | null) => void;
   public onInteractTriggered?: (poi: PointOfInterest) => void;
 
-  constructor() {
-    super('MainScene');
+  constructor(){super('MainScene');}
+  public init(data:{socketClient:SocketClient;mapId?:MapId}){this.socketClient=data.socketClient;this.map=getGameMap(data.mapId);}
+  public preload(){
+    this.loadingLabel=this.add.text(this.scale.width/2,this.scale.height/2,`Đang mở bản đồ ${this.map.name}…`,{fontFamily:'Arial, sans-serif',fontSize:'16px',color:'#314c3c',backgroundColor:'#f5e8cb',padding:{x:18,y:12}}).setOrigin(.5).setDepth(10000);
+    this.load.on('progress',(value:number)=>this.loadingLabel?.setText(`Đang mở bản đồ ${this.map.name}… ${Math.round(value*100)}%`));
+    if(this.map.id==='hanoi')preloadHanoi(this);else preloadRegion(this,this.map);
+  }
+  public create(){
+    this.loadingLabel?.destroy();
+    createCharacterAnimations(this);
+    this.landmarks=this.map.id==='hanoi'?drawHanoi(this):drawRegion(this,this.map);
+    this.groundHotspotsGraphics = this.add.graphics().setDepth(0);
+    this.routeGraphics=this.add.graphics().setDepth(1);
+    const circle=this.add.graphics();circle.lineStyle(3,0xffedb5,.9).strokeEllipse(0,0,40,22);
+    const pin=this.add.text(0,-20,'◆',{fontSize:'18px',color:'#ffe6a2',stroke:'#6c5b39',strokeThickness:2}).setOrigin(.5);
+    this.marker=this.add.container(0,0,[circle,pin]).setDepth(2).setVisible(false);
+    this.tweens.add({targets:pin,y:-26,duration:700,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
+    this.controls = new InputController();
+    this.controls.onAction = action => this.handleControlAction(action);
+    this.controls.onReset = () => {soundManager.resetMovement();this.onControlsReset?.();};
+    this.movementDebug=new MovementDebug(this,this.map.id);
+    this.input.keyboard!.addKey('F2').on('down',()=>{if(!this.isTyping())this.movementDebug.toggle();});
+    window.addEventListener('blur',this.resetInput);
+    document.addEventListener('visibilitychange',this.resetInput);
+    this.events.on('resume',this.resetInput);
+    soundManager.beginMovement();
+    const offJoined=this.socketClient.onJoined(()=>{this.reconcileNext=true;this.moveEpoch++;this.movePath=[];this.moveInFlight=false;this.resetInput();});
+    const offStatus=this.socketClient.onConnectionStatusChange(status=>{if(status!=='CONNECTED'){this.reconcileNext=true;this.moveEpoch++;this.movePath=[];this.moveInFlight=false;this.resetInput();}});
+    this.cameras.main.setBounds(0,0,WORLD_WIDTH,WORLD_HEIGHT).setBackgroundColor('#52773f');
+    this.resizeCamera();
+    this.scale.on('resize',this.resizeCamera,this);
+    this.unsubscribe=this.socketClient.onSnapshot(s=>this.updateFromSnapshot(s));
+    this.events.once('shutdown',()=>{this.unsubscribe?.();offJoined();offStatus();this.scale.off('resize',this.resizeCamera,this);window.removeEventListener('blur',this.resetInput);document.removeEventListener('visibilitychange',this.resetInput);this.controls.destroy();soundManager.endMovement();this.movementDebug.destroy();});
+    this.game.events.emit('hanoi-ready');
+  }
+  private resizeCamera(){
+    const camera=this.cameras.main,w=this.scale.width,h=this.scale.height;
+    const phone=w<=700,landscape=h<550;
+    const top=phone?195:landscape?78:0,bottom=phone?116:landscape?100:0;
+    const right=landscape&&!phone?200:0;
+    camera.setViewport(0,0,w,h);
+    camera.setBackgroundColor('#176f69');
+    if(this.overview){
+      camera.stopFollow();camera.useBounds=false;
+      camera.setZoom(phone||landscape?Math.min(camera.width/WORLD_WIDTH,camera.height/WORLD_HEIGHT):Math.max(camera.width/WORLD_WIDTH,camera.height/WORLD_HEIGHT));
+      camera.centerOn(WORLD_WIDTH/2,WORLD_HEIGHT/2);
+    }else{
+      camera.setBounds(0,-top,WORLD_WIDTH+right,WORLD_HEIGHT+top+bottom);
+      camera.setZoom(1);
+      if(this.localPlayerSprite)camera.startFollow(this.localPlayerSprite,true,.18,.18);
+      camera.setFollowOffset(-right/2,0);
+    }
+    document.querySelectorAll('#btn-map,#btn-map-icon').forEach(el=>el.setAttribute('aria-pressed',String(this.overview)));
+  }
+  public toggleOverview(){
+    this.overview=!this.overview;
+    if(this.overview)this.cameras.main.stopFollow();
+    else if(this.localPlayerSprite)this.cameras.main.startFollow(this.localPlayerSprite,true,.14,.14);
+    this.resizeCamera();
+    document.querySelectorAll('#btn-map,#btn-map-icon').forEach(el=>el.setAttribute('aria-pressed',String(this.overview)));
+  }
+  public setWaypoint(x:number,y:number,name:string){
+    this.waypoint={x,y,name};this.manualWaypoint=true;this.lastRoute=0;
+    if(this.overview)this.toggleOverview();
+  }
+  private isTyping(){return this.controls?.isTyping()??false;}
+  private collisionContext(){const s=this.currentSnapshot;return {bridgeBlocked:this.blockedBridge(),fixedDeployed:!!s?.m1.fixedDeployed,mobileBDeployed:!!s?.m1.mobileBDeployed,mobileCDeployed:!!s?.m1.mobileCDeployed};}
+  private blockedBridge(){const s=this.currentSnapshot;return !!s&&s.m2.bridgeBroken&&!s.m2.bridgeRepaired;}
+
+  private handleControlAction(action:InputAction){
+    if(action==='MENU'){this.onMenu?.();this.resetInput();return;}
+    if(this.getInputLock())return;
+    if(action==='MAP'){this.toggleOverview();return;}
+    this.checkNearestPoi();
+    if(action==='INTERACT')this.triggerInteraction();
+    else if(this.interaction.secondary)void this.executeAction(this.interaction.secondary);
+  }
+  public async executeAction(action:InteractionAction){
+    if(this.actionPending||Date.now()<this.actionCooldown||this.getInputLock())return;
+    this.drainingMovement=true;this.actionPending=true;this.onActionPending?.(true);this.checkNearestPoi();
+    try{
+      // Drain prediction first so the server sees MOVE before the interaction.
+      const deadline=Date.now()+2000;
+      while((this.movePath.length||this.moveInFlight)&&Date.now()<deadline&&this.socketClient.getStatus()==='CONNECTED'){
+        this.flushMovement();await new Promise(resolve=>setTimeout(resolve,20));
+      }
+      if(this.movePath.length||this.moveInFlight||this.getInputLock()||!this.currentSnapshot||!this.localPlayerSprite){this.onActionFeedback?.('Chưa đồng bộ vị trí. Hãy thử lại.',false);return;}
+      const context=resolveInteraction(this.currentSnapshot,this.localPlayerId,this.localPlayerSprite);
+      const valid=context.secondary?.id===action.id||getInteractionActions(this.currentSnapshot,this.localPlayerId).some(a=>a.id===action.id&&Math.hypot(this.localPlayerSprite!.x-a.x,this.localPlayerSprite!.y-a.y)<=a.range&&Math.hypot(this.currentSnapshot!.players[this.localPlayerId].x-a.x,this.currentSnapshot!.players[this.localPlayerId].y-a.y)<=a.range);
+      if(!valid){this.onActionFeedback?.('Hành động đã thay đổi. Hãy thử lại.',false);return;}
+      this.drainingMovement=false;
+      const ack=await this.socketClient.sendIntent({...action.intent,actionId:newActionId()});
+      this.onActionFeedback?.(ack.success?'Đã ghi nhận thao tác.':ack.reason||'Không thể thực hiện.',ack.success);
+      if(ack.success&&action.intent.type==='PING_LOCATION')this.spawnPingEffect(action.x,action.y);
+    }finally{this.drainingMovement=false;this.actionPending=false;this.actionCooldown=Date.now()+300;this.onActionPending?.(false);this.checkNearestPoi();}
+  }
+  private getInputLock():string|null{
+    const modal=document.querySelector('#briefing-modal:not(.hidden), #voting-modal:not(.hidden), #results-modal:not(.hidden), #ledger-modal:not(.hidden), #game-menu:not([hidden])');
+    return document.hidden?'hidden-tab':!document.hasFocus()?'focus':this.isTyping()?'typing':modal?'modal':this.currentSnapshot?.isPaused?'paused':this.socketClient.getStatus()!=='CONNECTED'?'network':null;
   }
 
-  public init(data: { socketClient: SocketClient }) {
-    this.socketClient = data.socketClient;
+  public spawnPingEffect(x:number,y:number){
+    soundManager.playAlert();
+    const ring=this.add.graphics().setDepth(2500);
+    ring.lineStyle(3,0x38bdf8,1);
+    ring.strokeCircle(x,y,14);
+    this.tweens.add({
+      targets:ring,
+      scale:3,
+      alpha:0,
+      duration:900,
+      ease:'Cubic.easeOut',
+      onComplete:()=>ring.destroy()
+    });
   }
 
-  public preload() {
-    // Load SVGs
-    this.load.svg('thap_rua', '/assets/thap_rua.svg', { width: 140, height: 140 });
-    this.load.svg('headquarters', '/assets/headquarters.svg', { width: 110, height: 88 });
-    this.load.svg('warehouse', '/assets/warehouse.svg', { width: 110, height: 88 });
-    this.load.svg('clinic_fixed', '/assets/clinic_fixed.svg', { width: 95, height: 75 });
-    this.load.svg('clinic_mobile', '/assets/clinic_mobile.svg', { width: 85, height: 65 });
-    this.load.svg('bridge_intact', '/assets/bridge_intact.svg', { width: 45, height: 75 });
-    this.load.svg('bridge_broken', '/assets/bridge_broken.svg', { width: 45, height: 75 });
-    this.load.svg('notice_board', '/assets/notice_board.svg', { width: 75, height: 65 });
-    this.load.svg('house_a', '/assets/house_a.svg', { width: 85, height: 65 });
-    this.load.svg('house_b', '/assets/house_b.svg', { width: 85, height: 65 });
-    this.load.svg('house_c', '/assets/house_c.svg', { width: 85, height: 65 });
-    this.load.svg('crate', '/assets/crate.svg', { width: 28, height: 28 });
-    this.load.svg('player_base', '/assets/player_base.svg', { width: 34, height: 34 });
-    this.load.svg('npc_elder', '/assets/npc_elder.svg', { width: 34, height: 34 });
-    this.load.svg('npc_rep', '/assets/npc_rep.svg', { width: 34, height: 34 });
+  public showFloatingText(x:number,y:number,text:string,color='#facc15'){
+    const txt=this.add.text(x,y,text,{
+      fontFamily:'Arial, sans-serif',
+      fontSize:'15px',
+      fontStyle:'bold',
+      color,
+      stroke:'#1c382a',
+      strokeThickness:3
+    }).setOrigin(.5).setDepth(4000);
+    this.tweens.add({
+      targets:txt,
+      y:y-46,
+      alpha:0,
+      duration:1300,
+      ease:'Cubic.easeOut',
+      onComplete:()=>txt.destroy()
+    });
   }
 
-  public create() {
-    this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+  public update(_time:number,delta:number){
+    if(!this.currentSnapshot||!this.localPlayerSprite)return;
+    this.handleMovement(delta);
+    this.flushMovement();
+    for(const [id,c] of this.otherPlayerSprites){
+      const p=this.currentSnapshot.players[id];if(!p)continue;
+      const dx=p.x-c.x,dy=p.y-c.y,moving=Math.hypot(dx,dy)>1;
+      c.x=Phaser.Math.Linear(c.x,p.x,Math.min(1,delta/90));c.y=Phaser.Math.Linear(c.y,p.y,Math.min(1,delta/90));c.setDepth(c.y);
+      this.animate(c,p.direction,moving);
+    }
+    const actors:[string,Phaser.GameObjects.Container][]=[[this.localPlayerId,this.localPlayerSprite],...this.otherPlayerSprites];
+    for(const [id,c] of actors){
+      const group=actors.filter(([,a])=>Math.abs(a.x-c.x)<100&&Math.abs(a.y-c.y)<65)
+        .sort(([a],[b])=>a===this.localPlayerId?-1:b===this.localPlayerId?1:a.localeCompare(b));
+      const name=c.getByName('playerName') as Phaser.GameObjects.Text;
+      name.setY(group.length>1?Math.min(...group.map(([,a])=>a.y))-c.y-57-15*group.findIndex(([a])=>a===id):-57);
+    }
+    this.landmarks.updateOcclusion(this.localPlayerSprite.x,this.localPlayerSprite.y);
+    this.checkNearestPoi();
+    this.drawGroundHotspots();
+    if(Date.now()-this.lastRoute>1000){this.lastRoute=Date.now();this.drawRoute();}
+  }
 
-    this.drawHanoiMap();
+  private handleMovement(delta:number){
+    const c=this.localPlayerSprite!,s=this.currentSnapshot!;
+    const lock=this.getInputLock()||(delta>MOVEMENT_CONFIG.maxFrameMs?'resume-frame':null);
+    this.inputLocked=!!lock;this.controls.setLocked(!!lock);
+    const input=this.controls.read(),dx=input.move.x,dy=input.move.y;
+    const length=Math.hypot(dx,dy);
+    if(length===0||lock||this.drainingMovement){this.animate(c,c.getData('direction')||'down',false);soundManager.idleMovement(delta);this.movementDebug.update({position:c,input:{x:dx,y:dy},desired:{x:0,y:0},actual:{x:0,y:0},contacts:[],lock,authoritative:s.players[this.localPlayerId],correction:this.lastCorrection},delta,this.collisionContext());return;}
+    const isShift=input.sprint;
+    const localPlayer=s.players[this.localPlayerId];
+    const isCarrying=!!localPlayer?.carriedCrateId;
+    const desired=inputDisplacement({x:dx,y:dy},delta,isShift,isCarrying);
+    const oldX=c.x,oldY=c.y;
+    const result=resolveMovement(this.map.id,{x:oldX,y:oldY},desired,this.collisionContext());
+    c.setPosition(result.position.x,result.position.y);
+    this.movePath.push(...result.path);
+    const movedDist=result.distance;
+    const isMoving=movedDist>MOVEMENT_CONFIG.idleEpsilon;
+    soundManager.movementFrame(movedDist,surfaceAt(this.map.id,c),result.contacts.length>0&&!isMoving,delta);
+    this.movementDebug.update({position:c,input:{x:dx,y:dy},desired,actual:{x:c.x-oldX,y:c.y-oldY},contacts:result.contacts,lock,authoritative:s.players[this.localPlayerId],correction:this.lastCorrection},delta,this.collisionContext());
+    const dir=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';
+    this.animate(c,dir,isMoving);c.setDepth(c.y);
+  }
 
-    // Setup input
-    if (this.input.keyboard) {
-      this.cursors = this.input.keyboard.createCursorKeys();
-      this.wasdKeys = {
-        W: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-        A: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-        S: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-        D: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-        E: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
-      };
-
-      this.wasdKeys.E.on('down', () => {
-        this.triggerInteraction();
+  private flushMovement(){
+    const c=this.localPlayerSprite;if(!c||this.socketClient.getStatus()!=='CONNECTED')return;
+    const dir=c.getData('direction')||'down';
+    const now=Date.now();
+    if(now-this.lastMoveSent>66&&!this.moveInFlight&&this.movePath.length){
+      this.lastMoveSent=now;
+      const path=this.movePath.splice(0,MOVEMENT_CONFIG.maxPacketPoints);
+      const end=path[path.length-1];this.moveInFlight=true;
+      const epoch=this.moveEpoch;
+      this.socketClient.sendIntent({actionId:`mv_${now}`,type:'MOVE',payload:{...end,path,dir}}).then(ack=>{
+        if(epoch!==this.moveEpoch)return;
+        this.moveInFlight=false;
+        if(!ack.success&&this.currentSnapshot){const p=this.currentSnapshot.players[this.localPlayerId];if(p){this.lastCorrection={reason:ack.reason,from:{x:c.x,y:c.y},to:{x:p.x,y:p.y}};c.x=p.x;c.y=p.y;this.movePath=[];soundManager.resetMovement();}}
       });
     }
-
-    // Camera
-    this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
-    this.cameras.main.setZoom(1.15);
-
-    // Listen to network snapshot
-    this.socketClient.onSnapshot((snapshot) => {
-      this.updateFromSnapshot(snapshot);
-    });
   }
 
-  private drawHanoiMap() {
-    // 1. Nền cỏ xanh mượt thủ đô
-    const bg = this.add.graphics();
-    bg.fillStyle(0x386641, 1);
-    bg.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
-
-    // Đường đi dạo lát đá quanh phố
-    bg.fillStyle(0x9ca3af, 1);
-    // Tuyến đường trục Tây-Đông
-    bg.fillRect(80, 150, 1120, 36);
-    // Tuyến đường trục Bắc-Nam qua Trụ sở
-    bg.fillRect(340, 60, 36, 840);
-    // Đường vòng quanh bờ hồ Hoàn Kiếm
-    bg.lineStyle(40, 0xd1d5db, 1);
-    bg.strokeRect(510, 330, 300, 280);
-
-    // Tuyến đường nối sang Khu B qua cầu (đoạn ngắn)
-    bg.fillRect(840, 435, 260, 40);
-
-    // Tuyến Detour đi vòng phía Bắc kênh sang Khu B
-    bg.fillRect(840, 150, 260, 36);
-    bg.fillRect(1070, 150, 36, 300);
-
-    // Tuyến đường xuống Kho vật tư và Khu C
-    bg.fillRect(160, 740, 200, 36);
-    bg.fillRect(340, 790, 480, 36);
-
-    // 2. Kênh thoát nước phân cách phía Đông
-    const canal = this.add.graphics();
-    canal.fillStyle(0x0284c7, 0.85);
-    canal.fillRect(870, 180, 30, 240); // Đoạn Bắc kênh
-    canal.fillRect(870, 490, 30, 410); // Đoạn Nam kênh
-
-    // 3. Hồ Gươm ở vị trí trung tâm
-    const lake = this.add.graphics();
-    lake.fillStyle(0x0284c7, 0.9);
-    lake.fillRoundedRect(530, 350, 260, 240, 30);
-    lake.lineStyle(6, 0x38bdf8, 0.8);
-    lake.strokeRoundedRect(530, 350, 260, 240, 30);
-
-    // Tháp Rùa và Đảo cỏ giữa hồ
-    const thapRua = this.add.sprite(660, 465, 'thap_rua');
-    thapRua.setDepth(470);
-
-    // 4. Các công trình chính
-    // Trụ sở chính quyền (Tây Bắc)
-    const hq = this.add.sprite(POINTS_OF_INTEREST.HEADQUARTERS.x, POINTS_OF_INTEREST.HEADQUARTERS.y, 'headquarters');
-    hq.setDepth(POINTS_OF_INTEREST.HEADQUARTERS.y);
-
-    // Bảng công khai kết quả
-    const notice = this.add.sprite(POINTS_OF_INTEREST.NOTICE_BOARD.x, POINTS_OF_INTEREST.NOTICE_BOARD.y, 'notice_board');
-    notice.setDepth(POINTS_OF_INTEREST.NOTICE_BOARD.y);
-
-    // Kho vật tư (Tây Nam)
-    const wh = this.add.sprite(POINTS_OF_INTEREST.WAREHOUSE.x, POINTS_OF_INTEREST.WAREHOUSE.y, 'warehouse');
-    wh.setDepth(POINTS_OF_INTEREST.WAREHOUSE.y);
-
-    // Cầu đường bộ hư cấu qua kênh
-    this.bridgeSprite = this.add.sprite(POINTS_OF_INTEREST.BRIDGE.x, POINTS_OF_INTEREST.BRIDGE.y, 'bridge_intact');
-    this.bridgeSprite.setDepth(POINTS_OF_INTEREST.BRIDGE.y);
-
-    // Khu dân cư A (Nhà A1, A2)
-    const houseA1 = this.add.sprite(220, 210, 'house_a');
-    houseA1.setDepth(210);
-    const houseA2 = this.add.sprite(220, 300, 'house_a');
-    houseA2.setDepth(300);
-
-    // Khu dân cư B (Nhà B1, B2)
-    const houseB1 = this.add.sprite(1085, 290, 'house_b');
-    houseB1.setDepth(290);
-    const houseB2 = this.add.sprite(1085, 380, 'house_b');
-    houseB2.setDepth(380);
-
-    // Khu dân cư C (Nhà C1, C2)
-    const houseC1 = this.add.sprite(600, 865, 'house_c');
-    houseC1.setDepth(865);
-    const houseC2 = this.add.sprite(710, 865, 'house_c');
-    houseC2.setDepth(865);
-
-    // Đại diện NPC tại các khu
-    this.add.sprite(POINTS_OF_INTEREST.ZONE_A.x, POINTS_OF_INTEREST.ZONE_A.y, 'npc_rep').setDepth(POINTS_OF_INTEREST.ZONE_A.y);
-    this.add.sprite(POINTS_OF_INTEREST.ZONE_B.x, POINTS_OF_INTEREST.ZONE_B.y, 'npc_rep').setDepth(POINTS_OF_INTEREST.ZONE_B.y);
-    this.add.sprite(POINTS_OF_INTEREST.ZONE_C.x, POINTS_OF_INTEREST.ZONE_C.y, 'npc_rep').setDepth(POINTS_OF_INTEREST.ZONE_C.y);
-
-    // NPC Người cao tuổi C1 và C2
-    this.add.sprite(POINTS_OF_INTEREST.CITIZEN_C1.x, POINTS_OF_INTEREST.CITIZEN_C1.y, 'npc_elder').setDepth(POINTS_OF_INTEREST.CITIZEN_C1.y);
-    this.add.sprite(POINTS_OF_INTEREST.CITIZEN_C2.x, POINTS_OF_INTEREST.CITIZEN_C2.y, 'npc_elder').setDepth(POINTS_OF_INTEREST.CITIZEN_C2.y);
-
-    // Các điểm trạm y tế
-    this.clinicFixedSprite = this.add.sprite(POINTS_OF_INTEREST.CLINIC_FIXED.x, POINTS_OF_INTEREST.CLINIC_FIXED.y, 'clinic_fixed');
-    this.clinicFixedSprite.setDepth(POINTS_OF_INTEREST.CLINIC_FIXED.y);
-    this.clinicFixedSprite.setAlpha(0.4); // Mờ khi chưa xây
-
-    this.clinicMobileBSprite = this.add.sprite(POINTS_OF_INTEREST.CLINIC_MOBILE_B.x, POINTS_OF_INTEREST.CLINIC_MOBILE_B.y, 'clinic_mobile');
-    this.clinicMobileBSprite.setDepth(POINTS_OF_INTEREST.CLINIC_MOBILE_B.y);
-    this.clinicMobileBSprite.setAlpha(0.4);
-
-    this.clinicMobileCSprite = this.add.sprite(POINTS_OF_INTEREST.CLINIC_MOBILE_C.x, POINTS_OF_INTEREST.CLINIC_MOBILE_C.y, 'clinic_mobile');
-    this.clinicMobileCSprite.setDepth(POINTS_OF_INTEREST.CLINIC_MOBILE_C.y);
-    this.clinicMobileCSprite.setAlpha(0.4);
-
-    // Vẽ nhãn địa danh trực quan trên bản đồ
-    this.addPoiLabels();
-
-    // Nhãn "Bản đồ mô phỏng"
-    const labelSim = this.add.text(28, 20, 'BẢN ĐỒ MÔ PHỎNG — HÀ NỘI', {
-      fontFamily: 'Inter, sans-serif',
-      fontSize: '14px',
-      color: '#ffffff',
-      backgroundColor: '#0f172a',
-      padding: { x: 8, y: 4 }
-    });
-    labelSim.setScrollFactor(0);
-    labelSim.setDepth(2000);
+  private animate(c:Phaser.GameObjects.Container,dir:Player['direction'],moving:boolean){
+    const sprite=c.getByName('body') as Phaser.GameObjects.Sprite;
+    c.setData('direction',dir);
+    if(moving)sprite.play(`${sprite.texture.key}-${dir}`,true);
+    else {sprite.anims.stop();sprite.setFrame(CHARACTER_ROWS[dir]*4);}
   }
 
-  private addPoiLabels() {
-    for (const poi of Object.values(POINTS_OF_INTEREST)) {
-      if (poi.id === 'PRACTICE_TARGET' || poi.id === 'BRIDGE_TASK_1' || poi.id === 'BRIDGE_TASK_2') continue;
-      this.add.text(poi.x, poi.y + 24, poi.vietnameseLabel, {
-        fontFamily: 'Inter, sans-serif',
-        fontSize: '11px',
-        color: '#f8fafc',
-        backgroundColor: '#1e293bcc',
-        padding: { x: 5, y: 2 }
-      }).setOrigin(0.5, 0).setDepth(poi.y + 1);
+  private checkNearestPoi(){
+    if(!this.currentSnapshot||!this.localPlayerSprite)return;
+    const locked=!!this.getInputLock();this.inputLocked=locked;
+    this.interaction=locked?{primary:null,secondary:null,choices:[]}:resolveInteraction(this.currentSnapshot,this.localPlayerId,this.localPlayerSprite,this.interaction.primary?.id);
+    const closest=this.interaction.primary?this.map.points[this.interaction.primary.targetId]??null:null;
+    if(this.nearestPoi?.id!==closest?.id){this.nearestPoi=closest;this.onNearestPoiChanged?.(closest);}
+    this.onControlsChanged?.(this.interaction,this.actionPending,locked);
+  }
+
+  private drawGroundHotspots(){
+    this.groundHotspotsGraphics.clear();
+    const timeNow=Date.now();
+    const pulse=0.45+0.25*Math.sin(timeNow/320);
+    if(this.waypoint){
+      this.groundHotspotsGraphics.lineStyle(2.5,0xf59e0b,pulse);
+      this.groundHotspotsGraphics.fillStyle(0xfde047,0.1*pulse);
+      this.groundHotspotsGraphics.fillCircle(this.waypoint.x,this.waypoint.y,38);
+      this.groundHotspotsGraphics.strokeCircle(this.waypoint.x,this.waypoint.y,38);
+    }
+    const candidate=this.interaction.primary;
+    if(candidate){
+      this.groundHotspotsGraphics.lineStyle(3,0x34d399,0.85);
+      this.groundHotspotsGraphics.fillStyle(0x10b981,0.16);
+      this.groundHotspotsGraphics.fillCircle(candidate.x,candidate.y,46);
+      this.groundHotspotsGraphics.strokeCircle(candidate.x,candidate.y,46);
     }
   }
 
-  public update(time: number, delta: number) {
-    this.handleMovement(delta);
+  public triggerInteraction(){
+    if(this.actionPending||this.getInputLock())return;
     this.checkNearestPoi();
+    if(this.interaction.choices.length&&this.nearestPoi)this.onInteractTriggered?.(this.nearestPoi);
+    else if(this.interaction.primary)void this.executeAction(this.interaction.primary);
+  }
 
-    if (this.interactRequested) {
-      this.interactRequested = false;
-      this.triggerInteraction();
+  private drawRoute(){
+    if(!this.localPlayerSprite)return;
+    const c=this.localPlayerSprite;
+    if(this.waypoint&&Math.hypot(c.x-this.waypoint.x,c.y-this.waypoint.y)<45)this.manualWaypoint=false;
+    if(!this.manualWaypoint&&this.currentSnapshot){const p=getMissionGuide(this.currentSnapshot,this.localPlayerId).target;this.waypoint=p?{x:p.x,y:p.y,name:p.name}:null;}
+    this.routeGraphics.clear();this.marker.setVisible(!!this.waypoint);
+    if(!this.waypoint)return;
+    this.marker.setPosition(this.waypoint.x,this.waypoint.y);
+    const route=findWalkingRoute({x:c.x,y:c.y},this.waypoint,this.collisionContext(),this.map.id);
+    for(let i=1;i<route.length;i+=2){
+      this.routeGraphics.fillStyle(0x496650,.65).fillCircle(route[i].x,route[i].y,4.3);
+      this.routeGraphics.fillStyle(0xfff1c7,.95).fillCircle(route[i].x,route[i].y,3.1);
     }
   }
 
-  private handleMovement(delta: number) {
-    if (!this.localPlayerSprite || !this.currentSnapshot) return;
-
-    // Check if input element is focused in DOM
-    const activeEl = document.activeElement;
-    const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
-
-    let dx = 0;
-    let dy = 0;
-
-    if (!isTyping) {
-      if (this.cursors.left.isDown || this.wasdKeys.A.isDown) dx -= 1;
-      if (this.cursors.right.isDown || this.wasdKeys.D.isDown) dx += 1;
-      if (this.cursors.up.isDown || this.wasdKeys.W.isDown) dy -= 1;
-      if (this.cursors.down.isDown || this.wasdKeys.S.isDown) dy += 1;
+  private updateFromSnapshot(s:GameSnapshot){
+    if(this.currentSnapshot?.phase!==s.phase&&s.phase==='LOBBY')this.reconcileNext=true;
+    if(this.previousScore!==undefined&&s.totalScore>this.previousScore){
+      const diff=s.totalScore-this.previousScore;
+      if(this.localPlayerSprite){
+        this.showFloatingText(this.localPlayerSprite.x,this.localPlayerSprite.y-65,`+${diff} ĐIỂM!`);
+      }
+      soundManager.playScore();
     }
+    this.previousScore=s.totalScore;
 
-    // Combine with virtual joystick
-    if (this.joystickDelta.x !== 0 || this.joystickDelta.y !== 0) {
-      dx += this.joystickDelta.x;
-      dy += this.joystickDelta.y;
-    }
-
-    if (dx !== 0 || dy !== 0) {
-      // Normalize diagonal
-      const len = Math.hypot(dx, dy);
-      const ndx = dx / len;
-      const ndy = dy / len;
-
-      const step = (PLAYER_SPEED * (delta / 1000));
-      const targetX = this.localPlayerSprite.x + ndx * step;
-      const targetY = this.localPlayerSprite.y + ndy * step;
-
-      let dir: 'up' | 'down' | 'left' | 'right' = 'down';
-      if (Math.abs(ndx) > Math.abs(ndy)) {
-        dir = ndx > 0 ? 'right' : 'left';
+    this.currentSnapshot=s;this.localPlayerId=this.socketClient.getPlayerId();
+    this.landmarks.practiceLabel.setVisible(s.phase==='PRACTICE');
+    this.landmarks.updateState(s);
+    const ids=new Set<string>();
+    for(const p of Object.values(s.players)){
+      if(!p.isOnline)continue;ids.add(p.id);
+      if(p.id===this.localPlayerId){
+        if(!this.localPlayerSprite){
+          this.localPlayerSprite=this.createPlayerContainer(p,true);this.resizeCamera();
+        } else if(this.reconcileNext||!isWalkableForMap(this.map.id,this.localPlayerSprite.x,this.localPlayerSprite.y,this.collisionContext())||(!this.moveInFlight&&!this.movePath.length&&Math.hypot(this.localPlayerSprite.x-p.x,this.localPlayerSprite.y-p.y)>55)){this.lastCorrection={reason:'authoritative-snapshot',from:{x:this.localPlayerSprite.x,y:this.localPlayerSprite.y},to:{x:p.x,y:p.y}};this.localPlayerSprite.setPosition(p.x,p.y);this.movePath=[];this.moveEpoch++;this.moveInFlight=false;soundManager.resetMovement();}
+        this.reconcileNext=false;
+        this.updatePlayerDetails(this.localPlayerSprite,p);
       } else {
-        dir = ndy > 0 ? 'down' : 'up';
-      }
-
-      this.localPlayerSprite.x = targetX;
-      this.localPlayerSprite.y = targetY;
-      this.localPlayerSprite.setDepth(targetY);
-
-      // Send intent to server throttled (~15Hz = 66ms)
-      const now = Date.now();
-      if (now - this.lastMoveSent > 66) {
-        this.lastMoveSent = now;
-        this.socketClient.sendIntent({
-          actionId: `mv_${now}`,
-          type: 'MOVE',
-          payload: { x: targetX, y: targetY, dir }
-        });
+        let c=this.otherPlayerSprites.get(p.id);
+        if(!c){c=this.createPlayerContainer(p,false);this.otherPlayerSprites.set(p.id,c);}
+        this.updatePlayerDetails(c,p);
       }
     }
-  }
-
-  private checkNearestPoi() {
-    if (!this.localPlayerSprite) return;
-    const px = this.localPlayerSprite.x;
-    const py = this.localPlayerSprite.y;
-
-    let closest: PointOfInterest | null = null;
-    let minDist = Infinity;
-
-    for (const poi of Object.values(POINTS_OF_INTEREST)) {
-      const dist = Math.hypot(px - poi.x, py - poi.y);
-      if (dist <= INTERACTION_RADIUS && dist < minDist) {
-        minDist = dist;
-        closest = poi;
-      }
-    }
-
-    if (this.nearestPoi?.id !== closest?.id) {
-      this.nearestPoi = closest;
-      if (this.onNearestPoiChanged) {
-        this.onNearestPoiChanged(closest);
-      }
-    }
-  }
-
-  public triggerInteraction() {
-    if (this.nearestPoi && this.onInteractTriggered) {
-      this.onInteractTriggered(this.nearestPoi);
-    }
-  }
-
-  private updateFromSnapshot(snapshot: GameSnapshot) {
-    this.currentSnapshot = snapshot;
-    this.localPlayerId = this.socketClient.getPlayerId();
-
-    // 1. Update Bridge visual
-    if (this.bridgeSprite) {
-      if (snapshot.m2.bridgeBroken && !snapshot.m2.bridgeRepaired) {
-        this.bridgeSprite.setTexture('bridge_broken');
-      } else {
-        this.bridgeSprite.setTexture('bridge_intact');
-      }
-    }
-
-    // 2. Update Clinic visuals
-    if (this.clinicFixedSprite) {
-      this.clinicFixedSprite.setAlpha(snapshot.m1.fixedDeployed ? 1.0 : 0.4);
-    }
-    if (this.clinicMobileBSprite) {
-      this.clinicMobileBSprite.setAlpha(snapshot.m1.mobileBDeployed ? 1.0 : 0.4);
-    }
-    if (this.clinicMobileCSprite) {
-      this.clinicMobileCSprite.setAlpha(snapshot.m1.mobileCDeployed ? 1.0 : 0.4);
-    }
-
-    // 3. Update Players
-    const currentOnlinePlayerIds = new Set<string>();
-
-    for (const [id, p] of Object.entries(snapshot.players)) {
-      if (!p.isOnline) continue;
-      currentOnlinePlayerIds.add(id);
-
-      if (id === this.localPlayerId) {
-        if (!this.localPlayerSprite) {
-          this.localPlayerSprite = this.createPlayerContainer(p, true);
-          this.cameras.main.startFollow(this.localPlayerSprite, true, 0.1, 0.1);
-        } else {
-          // Soft lerp if far from server position
-          const dist = Math.hypot(this.localPlayerSprite.x - p.x, this.localPlayerSprite.y - p.y);
-          if (dist > 60) {
-            this.localPlayerSprite.x = p.x;
-            this.localPlayerSprite.y = p.y;
-          }
-          this.updatePlayerCarriedIcon(this.localPlayerSprite, p);
+    for(const [id,c] of this.otherPlayerSprites)if(!ids.has(id)){c.destroy();this.otherPlayerSprites.delete(id);}
+    for(const [id,crate] of Object.entries(s.crates)){
+      if(crate.state==='DROPPED'){
+        if(!this.crateSprites.has(id)){
+          const c=this.add.container(crate.x,crate.y,[this.add.sprite(0,0,'hn-props',PROP.crate).setOrigin(.5,1)]).setDepth(crate.y);this.crateSprites.set(id,c);
         }
-      } else {
-        let otherContainer = this.otherPlayerSprites.get(id);
-        if (!otherContainer) {
-          otherContainer = this.createPlayerContainer(p, false);
-          this.otherPlayerSprites.set(id, otherContainer);
-        }
-        // Smooth interpolate other players
-        otherContainer.x = Phaser.Math.Linear(otherContainer.x, p.x, 0.3);
-        otherContainer.y = Phaser.Math.Linear(otherContainer.y, p.y, 0.3);
-        otherContainer.setDepth(otherContainer.y);
-        this.updatePlayerCarriedIcon(otherContainer, p);
-      }
-    }
-
-    // Remove disconnected players
-    for (const [id, container] of this.otherPlayerSprites.entries()) {
-      if (!currentOnlinePlayerIds.has(id)) {
-        container.destroy();
-        this.otherPlayerSprites.delete(id);
-      }
-    }
-
-    // 4. Update Dropped Crates on the ground
-    for (const [id, crate] of Object.entries(snapshot.crates)) {
-      if (crate.state === 'DROPPED') {
-        let crateContainer = this.crateSprites.get(id);
-        if (!crateContainer) {
-          crateContainer = this.add.container(crate.x, crate.y);
-          const spr = this.add.sprite(0, 0, 'crate');
-          const txt = this.add.text(0, 16, 'Vật tư', { fontSize: '10px', color: '#fef08a' }).setOrigin(0.5);
-          crateContainer.add([spr, txt]);
-          crateContainer.setDepth(crate.y);
-          this.crateSprites.set(id, crateContainer);
-        } else {
-          crateContainer.x = crate.x;
-          crateContainer.y = crate.y;
-        }
-      } else {
-        const crateContainer = this.crateSprites.get(id);
-        if (crateContainer) {
-          crateContainer.destroy();
-          this.crateSprites.delete(id);
-        }
-      }
+      }else {this.crateSprites.get(id)?.destroy();this.crateSprites.delete(id);}
     }
   }
 
-  private createPlayerContainer(player: Player, isLocal: boolean): Phaser.GameObjects.Container {
-    const container = this.add.container(player.x, player.y);
-
-    // Indicator ring for local player
-    if (isLocal) {
-      const ring = this.add.graphics();
-      ring.lineStyle(2, 0xfacc15, 0.9);
-      ring.strokeCircle(0, 10, 18);
-      container.add(ring);
-    }
-
-    const sprite = this.add.sprite(0, 0, 'player_base');
-    const colorInt = parseInt(player.color.replace('#', '0x'), 16);
-    sprite.setTint(colorInt);
-
-    const nameText = this.add.text(0, -22, player.name + (isLocal ? ' (Bạn)' : ''), {
-      fontFamily: 'Inter, sans-serif',
-      fontSize: '11px',
-      color: '#ffffff',
-      backgroundColor: '#0f172acc',
-      padding: { x: 4, y: 1 }
-    }).setOrigin(0.5);
-
-    // Job progress bar above player
-    const progressBar = this.add.graphics();
-    progressBar.setName('progressBar');
-
-    // Carried crate icon
-    const crateIcon = this.add.sprite(0, -36, 'crate');
-    crateIcon.setScale(0.7);
-    crateIcon.setName('crateIcon');
-    crateIcon.setVisible(!!player.carriedCrateId);
-
-    container.add([sprite, nameText, progressBar, crateIcon]);
-    container.setDepth(player.y);
-    return container;
+  private createPlayerContainer(p:Player,local:boolean){
+    const c=this.add.container(p.x,p.y).setDepth(p.y);
+    const shadow=this.add.ellipse(0,-1,23,9,0x274634,.3);
+    const ring=this.add.ellipse(0,-1,32,17).setStrokeStyle(2,local?0xfff0c2:parseInt(p.color.slice(1),16),.95);
+    const key='hn-volunteer';
+    const sprite=this.add.sprite(0,0,key,0).setOrigin(.5,1).setName('body');
+    const name=this.add.text(0,-57,p.name,{fontFamily:'Arial, sans-serif',fontSize:'12px',fontStyle:'bold',color:local?'#fff4c8':p.color,stroke:'#203c37',strokeThickness:3}).setOrigin(.5).setName('playerName');
+    const progress=this.add.graphics().setName('progressBar');
+    const crate=this.add.sprite(17,-14,'hn-props',PROP.crate).setOrigin(.5,1).setScale(.7).setName('crateIcon').setVisible(!!p.carriedCrateId);
+    c.add([shadow,ring,sprite,name,progress,crate]);this.updatePlayerDetails(c,p);return c;
   }
 
-  private updatePlayerCarriedIcon(container: Phaser.GameObjects.Container, player: Player) {
-    const crateIcon = container.getByName('crateIcon') as Phaser.GameObjects.Sprite;
-    if (crateIcon) {
-      crateIcon.setVisible(!!player.carriedCrateId);
-    }
-
-    const progressBar = container.getByName('progressBar') as Phaser.GameObjects.Graphics;
-    if (progressBar) {
-      progressBar.clear();
-      if (player.activeJob && player.activeJob.progress > 0) {
-        // Draw progress bar
-        progressBar.fillStyle(0x0f172a, 0.8);
-        progressBar.fillRect(-18, -12, 36, 6);
-        progressBar.fillStyle(0x22c55e, 1);
-        progressBar.fillRect(-17, -11, 34 * player.activeJob.progress, 4);
-      }
-    }
+  private updatePlayerDetails(c:Phaser.GameObjects.Container,p:Player){
+    (c.getByName('crateIcon') as Phaser.GameObjects.Sprite).setVisible(!!p.carriedCrateId);
+    (c.getByName('playerName') as Phaser.GameObjects.Text).setText(p.name);
+    const bar=c.getByName('progressBar') as Phaser.GameObjects.Graphics;bar.clear();
+    if(p.activeJob){bar.fillStyle(0x374b3f).fillRoundedRect(-20,-69,40,7,2);bar.fillStyle(0x95bf5c).fillRoundedRect(-18,-67,36*p.activeJob.progress,3,1);}
   }
 }

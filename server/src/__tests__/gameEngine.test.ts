@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+﻿import { describe, it, expect, beforeEach } from 'vitest';
 import { GameEngine } from '../gameEngine.js';
 import { RoomManager } from '../roomManager.js';
 import { POINTS_OF_INTEREST } from 'shared';
@@ -546,9 +546,14 @@ describe('GameEngine - Full MVP Verification', () => {
     expect(r1.engine.phase).toBe('RUNNING');
     expect(r2.engine.phase).toBe('LOBBY'); // R2 unaffected
 
-    r1.engine.handleIntent('p1', { actionId: 'mv1', type: 'MOVE', payload: { x: 500, y: 500 } });
-    expect(p1.x).toBe(500);
-    expect(p2.x).not.toBe(500);
+    const target = POINTS_OF_INTEREST.NOTICE_BOARD;
+    // A room-isolation fixture must not teleport across map geometry.
+    p1.x=target.x-2;p1.y=target.y;
+    const secondRoomPosition = {x:p2.x,y:p2.y};
+    const move = r1.engine.handleIntent('p1', { actionId: 'mv1', type: 'MOVE', payload: target });
+    expect(move.success).toBe(true);
+    expect({x:p1.x,y:p1.y}).toEqual({x:target.x,y:target.y});
+    expect({x:p2.x,y:p2.y}).toEqual(secondRoomPosition);
   });
 
   it('Disconnect Grace Period: Crate kept within 10s, dropped safely after 10s without duplication', () => {
@@ -627,5 +632,136 @@ describe('GameEngine - Full MVP Verification', () => {
     expect(p1.carriedCrateId).toBeNull();
     expect(engine.manpower.busy).toBe(0);
   });
-});
 
+  it('Q1 Robustness: Active Vote timer pauses when game is paused', () => {
+    const p1 = engine.addPlayer('p1', 'Player 1', true);
+    const p2 = engine.addPlayer('p2', 'Player 2', false);
+    engine.startRunning();
+
+    // Surveys
+    engine.m1.surveys.A = true;
+    engine.m1.surveys.B = true;
+    engine.m1.surveys.C = true;
+
+    // Propose plan at HQ
+    p1.x = POINTS_OF_INTEREST.HEADQUARTERS.x;
+    p1.y = POINTS_OF_INTEREST.HEADQUARTERS.y;
+    const ack = engine.handleIntent('p1', {
+      actionId: 'prop_vote',
+      type: 'PROPOSE_PLAN',
+      payload: { missionId: 'M1', plan: 'FIXED' }
+    });
+    expect(ack.success).toBe(true);
+    expect(engine.voting).not.toBeNull();
+    expect(engine.voting?.active).toBe(true);
+    expect(engine.voting?.remainingMs).toBe(15000);
+
+    // Host pauses game
+    engine.hostAction('PAUSE', hostToken);
+    expect(engine.isPaused).toBe(true);
+
+    // Tick 6000ms while paused
+    engine.tick(6000);
+    expect(engine.voting?.remainingMs).toBe(15000);
+    expect(engine.voting?.active).toBe(true);
+
+    // Host resumes
+    engine.hostAction('RESUME', hostToken);
+    expect(engine.isPaused).toBe(false);
+
+    // Tick 5000ms after resume
+    engine.tick(5000);
+    expect(engine.voting?.remainingMs).toBe(10000);
+    expect(engine.voting?.active).toBe(true);
+  });
+
+  it('Q2 Robustness: M2 Publish Notice rejected if plan is REPAIR and bridge is not yet repaired', () => {
+    const p1 = engine.addPlayer('p1', 'Player 1', true);
+    engine.startRunning();
+
+    // Setup M2 active
+    engine.m1.status = 'RESOLVED';
+    engine.m2.status = 'ACTIVE';
+    engine.m2.planCommitted = 'REPAIR';
+    engine.m2.surveyDone = true;
+    engine.m2.bridgeBroken = true;
+
+    // Deliver 2 relief crates to B and verify B
+    engine.m2.reliefCratesDeliveredB = 2;
+    engine.m2.verifiedB = true;
+
+    // Bridge is NOT yet repaired
+    expect(engine.m2.bridgeRepaired).toBe(false);
+
+    // Attempt to publish notice at notice board
+    p1.x = POINTS_OF_INTEREST.NOTICE_BOARD.x;
+    p1.y = POINTS_OF_INTEREST.NOTICE_BOARD.y;
+    let ack = engine.handleIntent('p1', {
+      actionId: 'pub_m2_early',
+      type: 'PUBLISH_NOTICE',
+      payload: { missionId: 'M2' }
+    });
+    expect(ack.success).toBe(false);
+    expect(ack.reason).toContain('REPAIR');
+
+    // Now complete bridge repair
+    engine.m2.bridgeRepairTask1 = true;
+    engine.m2.bridgeRepairTask2 = true;
+    engine.m2.bridgeRepaired = true;
+
+    // Now publish notice succeeds
+    ack = engine.handleIntent('p1', {
+      actionId: 'pub_m2_ok',
+      type: 'PUBLISH_NOTICE',
+      payload: { missionId: 'M2' }
+    });
+    expect(ack.success).toBe(true);
+    expect(engine.m2.noticePublished).toBe(true);
+    expect(engine.m2.status).toBe('RESOLVED');
+    expect(engine.m3.status).toBe('ACTIVE');
+  });
+
+  it('ISSUE-05: Dynamic Manpower scales with online players (up to 8)', () => {
+    // Initially solo: manpower total is at least 3
+    const p1 = engine.addPlayer('p1', 'Player 1', true);
+    expect(engine.manpower.total).toBe(3);
+
+    // Add players up to 6
+    engine.addPlayer('p2', 'Player 2');
+    engine.addPlayer('p3', 'Player 3');
+    engine.addPlayer('p4', 'Player 4');
+    engine.addPlayer('p5', 'Player 5');
+    engine.addPlayer('p6', 'Player 6');
+    expect(engine.manpower.total).toBe(6);
+
+    // Add players up to 10: capped at 8 max
+    engine.addPlayer('p7', 'Player 7');
+    engine.addPlayer('p8', 'Player 8');
+    engine.addPlayer('p9', 'Player 9');
+    expect(engine.manpower.total).toBe(8);
+
+    // Disconnect some players
+    engine.removeOrDisconnectPlayer('p9');
+    engine.removeOrDisconnectPlayer('p8');
+    engine.removeOrDisconnectPlayer('p7');
+    engine.removeOrDisconnectPlayer('p6');
+    expect(engine.manpower.total).toBe(5);
+  });
+
+  it('ISSUE-11: Player can ping location and broadcast via audit events', () => {
+    const p1 = engine.addPlayer('p1', 'Player 1', true);
+    p1.x = POINTS_OF_INTEREST.WAREHOUSE.x;
+    p1.y = POINTS_OF_INTEREST.WAREHOUSE.y;
+
+    const ack = engine.handleIntent('p1', {
+      actionId: 'ping_1',
+      type: 'PING_LOCATION',
+      payload: { x: p1.x, y: p1.y }
+    });
+    expect(ack.success).toBe(true);
+
+    const latestEvent = engine.recentAuditEvents[0];
+    expect(latestEvent.category).toBe('PLAYER');
+    expect(latestEvent.message).toContain('đã phát tín hiệu tại Kho vật tư');
+  });
+});

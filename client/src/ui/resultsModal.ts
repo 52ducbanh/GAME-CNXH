@@ -1,4 +1,4 @@
-import { GameSnapshot, generateRecap, KNOWLEDGE_SOURCES } from 'shared';
+import { GameSnapshot, generateRecap, KNOWLEDGE_SOURCES, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
 export class ResultsModal {
@@ -54,7 +54,7 @@ export class ResultsModal {
           <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full text-xs font-bold uppercase tracking-widest">
             Báo cáo tổng kết công tác thành phố
           </span>
-          <h1 class="text-2xl sm:text-3xl font-black text-white mt-2">KẾT QUẢ TRẬN ĐẤU: HÀ NỘI</h1>
+          <h1 class="text-2xl sm:text-3xl font-black text-white mt-2">KẾT QUẢ TRẬN ĐẤU: ${getGameMap(snapshot.mapId).name.toLocaleUpperCase('vi')}</h1>
           <p class="text-xs sm:text-sm text-slate-400 mt-1">Trò chơi học tập Chủ nghĩa Xã hội Khoa học & Nhà nước pháp quyền XHCN Việt Nam</p>
         </div>
 

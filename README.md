@@ -1,15 +1,23 @@
-# QUÊ MÌNH ĐỨNG ĐẦU! / HÀ NỘI — GAME WEB 2D MULTIPLAYER
+# QUÊ MÌNH ĐỨNG ĐẦU! — GAME WEB 2D MULTIPLAYER
 
 > **Bài tập nhóm chẵn:** “Thiết kế một trò chơi liên quan đến Nhà nước và Nhà nước XHCN, đặc điểm của Nhà nước pháp quyền XHCN Việt Nam.”  
-> **Phiên bản:** MVP Hoàn chỉnh — Thành phố Hà Nội (1 đội hợp tác, 1–10 người chơi).  
+> **Phiên bản:** MVP — 7 vùng Việt Nam (1 đội hợp tác, 1–10 người chơi).<br>
 > **Ngôn ngữ:** Tiếng Việt.
+
+Đổi tài khoản Codex: xem [hướng dẫn tiếp quản + prompt cho agent mới](docs/ACCOUNT_TRANSFER.md). Giữ cả working tree/untracked; không chỉ checkout HEAD.
+
+Agent tiếp quản bắt đầu ở [AGENTS.md](AGENTS.md) và [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md). PROJECT_STATUS là nguồn trạng thái hiện tại; các handover đồ họa dưới đây là bằng chứng của lần triển khai trước. Bảy vùng đang có lựa chọn map/phòng riêng, chưa có giải đấu hoặc xếp hạng liên đội.
+
+Đồ họa Hà Nội v3 theo ảnh concept: xem [bàn giao, ảnh trong game và kết quả kiểm tra](docs/HANOI_V3_HANDOVER.md), [nguồn asset và ghi công](docs/ART_SOURCES.md), [prompt tạo/chỉnh ảnh](docs/hanoi-v3-generation.json). [Bàn giao v2](docs/HANOI_REDESIGN.md) được giữ để đối chiếu.
+
+Đã thêm **Hải Phòng, Quảng Ninh, Ninh Bình, Thanh Hóa, Nghệ An và Hà Tĩnh** theo sáu concept người dùng cung cấp. Chọn vùng ngay tại sảnh, bấm **Chơi một mình** để bắt đầu hoặc **Tạo phòng cho đội** để điều khiển trận. Xem [bàn giao sáu vùng và ảnh game thực tế](docs/REGIONAL_MAPS_HANDOVER.md), [kết quả chạy đủ nhiệm vụ qua Socket.IO](docs/regions-runtime-qa.json) và [prompt đồ họa](docs/regions-generation.json).
 
 ---
 
 ## 🌟 1. Giới thiệu Cốt lõi & Trải nghiệm Gameplay
 
-Trò chơi mô phỏng công tác quản trị và phục vụ nhân dân của chính quyền Thủ đô Hà Nội trong khuôn khổ Nhà nước pháp quyền Xã hội Chủ nghĩa Việt Nam:
-- **Di chuyển & Tương tác thực tế trên bản đồ 2D:** Nhân vật cán bộ trực tiếp di chuyển qua các phố, Hồ Gươm, Tháp Rùa, các khu dân cư A, B, C, Kho vật tư, Trụ sở chính quyền và Bảng công khai.
+Trò chơi mô phỏng công tác quản trị và phục vụ nhân dân trong khuôn khổ Nhà nước pháp quyền Xã hội Chủ nghĩa Việt Nam, trên bảy bản đồ vùng:
+- **Di chuyển & Tương tác thực tế trên bản đồ 2D:** Nhân vật trực tiếp di chuyển qua các địa danh và khu dân cư A, B, C, Kho vật tư, Trụ sở chính quyền và Bảng công khai. Mỗi vùng có cảnh quan, vị trí tương tác, cầu và tuyến vòng riêng.
 - **Một người (Solo) chơi trọn vẹn được từ đầu đến cuối:** Không bị kẹt bởi yêu cầu quorum, không đòi hỏi đủ 5 vai trò hay đủ phiếu online.
 - **Nhiều người (Co-op) cùng phối hợp:** Phân chia nhiệm vụ khảo sát, vận chuyển vật tư song song giúp hoàn thành nhanh và nhàn hơn.
 - **Tác động trực tiếp vào thế giới game:** Chọn phương án sẽ trừ ngân sách thật trên sổ sách công, vận chuyển vật tư thật, công trình mở ra đổi diện mạo thật, người dân được phục vụ được đếm ID độc nhất.
@@ -20,13 +28,15 @@ Trò chơi mô phỏng công tác quản trị và phục vụ nhân dân của 
 ## 🚀 2. Hướng dẫn Khởi chạy Dự án
 
 ### Yêu cầu môi trường:
-- Node.js version 18+ (Đã kiểm nghiệm hoàn hảo trên Node v24).
-- npm 9+.
+- Node.js 18+; môi trường đã chạy trong phiên phát triển: **Node 24.12.0**, **npm 11.6.2**. `package-lock.json` được giữ trong repo, chưa có field engines khóa phiên bản.
+- npm 9+; Python/Pillow chỉ cần khi tái sinh ảnh/map, không cần để chơi/build bằng npm.
 
 ### Bước 1: Cài đặt phụ thuộc
 ```bash
 npm install
 ```
+
+Nếu khôi phục đúng dependency theo lock trong checkout mới, dùng `npm ci`. Shared có entry ở `shared/dist`; trước chạy dev/test trên checkout chưa build, chạy `npm run build --workspace=shared`. Copy `.env.example` thành `.env` nếu cần cấu hình riêng; không commit `.env`.
 
 ### Bước 2: Chạy môi trường Phát triển (Development)
 Chạy đồng thời cả Server (Socket.IO + API) và Client (Vite + Phaser) chỉ bằng một lệnh duy nhất:
@@ -35,6 +45,8 @@ npm run dev
 ```
 - **Máy tính (Desktop):** Mở trình duyệt truy cập `http://localhost:3000`
 - **Điện thoại cùng mạng Wi-Fi/LAN:** Truy cập theo địa chỉ IP mạng nội bộ được hiển thị trên console (Ví dụ: `http://192.168.1.xxx:3000`).
+
+Dev dùng Vite 3000, proxy API/socket sang server 3001. `PORT=3000`, `SERVER_PORT=3001`, `HOST=0.0.0.0`, optional `PUBLIC_HOST=http://<IP-LAN>:3000` có mẫu trong [.env.example](.env.example). Nếu đổi cổng dev, phải đổi target proxy trong `client/vite.config.ts` và lệnh Vite tương ứng; chỉ đổi env chưa đổi proxy cố định. Production phục vụ frontend/API/socket chung PORT.
 
 ### Bước 3: Kiểm tra Kiểu dữ liệu & Chạy Test tự động
 ```bash
@@ -55,6 +67,31 @@ npm run start
 ```
 *Truy cập trực tiếp tại `http://localhost:3000` (hoặc IP mạng LAN).*
 
+Có thể chọn cổng khác trong PowerShell, ví dụ bản bàn giao chạy ở cổng 3102:
+
+```powershell
+$env:PORT='3102'
+$env:HOST='0.0.0.0'
+npm run start
+```
+
+Mở `http://localhost:3102/`; địa chỉ Wi-Fi/LAN cho điện thoại được server in khi khởi động.
+
+Với bản build đã có cũng có thể chạy `node server/dist/server.js` từ root; `npm run start` hiện chạy `tsx src/server.ts` của workspace server. Không mở process khác vào cùng cổng nếu server còn chạy. Trạng thái process hiện tại ở PROJECT_STATUS, cần kiểm lại tại máy tiếp quản.
+
+### Cấu trúc chính
+
+| Đường dẫn | Vai trò |
+| --- | --- |
+| `client/src/main.ts`, `scenes/MainScene.ts`, `ui/` | Route, Phaser, input/camera và giao diện |
+| `client/public/assets/` | Ảnh runtime và trang nguồn đồ họa |
+| `server/src/server.ts`, `roomManager.ts`, `gameEngine.ts` | API/socket, phòng/session, rules/tick |
+| `shared/src/` | Types, thông số, học thuật, map/route/mission guide |
+| `scripts/` | Pipeline ảnh/geometry và QA Socket.IO |
+| `docs/` | Đặc tả, source ảnh, báo cáo và trạng thái bàn giao |
+
+Chi tiết entry point và nơi sửa: [ARCHITECTURE](docs/ARCHITECTURE.md).
+
 ---
 
 ## 📱 3. Hướng dẫn Cách Chơi & Điều khiển
@@ -65,14 +102,19 @@ npm run start
 - `/host/:roomCode`: Bảng điều khiển dành riêng cho Host (Bắt đầu, Bỏ qua, Tạm dừng, +60s, Reset). Có nút **"Tham gia chơi"** để Host chơi một mình.
 - `/projector/:roomCode`: Màn hình máy chiếu lớn trong lớp học (hiển thị radar, bảng chỉ tiêu, nhật ký hoạt động thời gian thực).
 
+Solo: chọn vùng, nhập tên → **Chơi một mình** tạo phòng riêng và START. Co-op: **Tạo phòng cho đội** → host START, dùng link tham gia/QR hoặc mã phòng để mời các client khác. Host và projector chỉ xem không tính là player; host muốn trực tiếp làm nhiệm vụ dùng link **Tham gia chơi**. Phòng trống RUNNING tự pause, host resume khi người chơi trở lại. Restart server mất tiến độ.
+
+Kiểm tra hai người bằng browser/profile/device độc lập để tránh dùng chung `token_<ROOM>` trong localStorage. Mở host/projector cùng mã để theo dõi score/ledger. Checklist và scripts QA ở [TESTING](docs/TESTING.md).
+
 ### 3.2. Điều khiển nhân vật:
-- **Máy tính / Laptop:**
-  - `W, A, S, D` hoặc các phím mũi tên: Di chuyển nhân vật (tốc độ 180 units/giây, chuẩn hóa góc chéo).
-  - Phím `E`: Mở bảng hành động tương tác khi đứng gần mục tiêu (khoảng cách $\le 72$ units).
-  - Chuột: Bấm các nút chức năng trên giao diện HUD.
-- **Điện thoại di động / Màn hình cảm ứng:**
-  - Cần điều khiển ảo (Virtual Joystick) góc dưới bên trái để di chuyển mượt mà 360 độ.
-  - Nút tròn lớn **TƯƠNG TÁC [E]** góc dưới bên phải để thao tác.
+
+- **Máy tính / Laptop:** WASD hoặc mũi tên để đi, Shift để chạy; E thực hiện hành động được HUD gợi ý. Khi cần chọn phương án, E mở bảng lựa chọn.
+- **G:** hủy công việc đang làm; nếu đang cầm vật tư thì đặt xuống; còn lại gửi báo hiệu.
+- **M:** mở/đóng toàn cảnh bản đồ, vẫn có thể di chuyển. **Esc:** đóng menu/bảng đang mở hoặc mở Menu/Cài đặt; Menu chỉ khóa điều khiển của bạn, phòng vẫn chạy.
+- **Điện thoại / Tablet:** joystick trái (đẩy nhẹ để đi, hết biên để chạy); E lớn và G nhỏ bên phải; Map/Menu phía trên. Labels thay đổi theo context, không phải nhớ thao tác cho từng quest.
+- Chờ ACK khi nút báo đang gửi. Nếu bị từ chối, đọc lý do trên HUD. Sau khi đóng menu/mất focus cần thao tác mới để di chuyển.
+
+Chi tiết implementation, các test đã chạy và giới hạn playtest: [INPUT_INTERACTION_IMPLEMENTATION_REPORT](docs/INPUT_INTERACTION_IMPLEMENTATION_REPORT.md).
 
 ---
 
@@ -111,7 +153,7 @@ Trận đấu diễn ra liên tục qua 3 giai đoạn nhiệm vụ nối tiếp
 ## 🔍 5. Checklist Nghiệm thu Kỹ thuật
 
 - [x] **Build & Typecheck:** Chạy qua không có bất kỳ lỗi TypeScript nào ở cả 3 gói `shared`, `server`, `client`.
-- [x] **Unit & Integration Tests:** Đã kiểm thử tự động 9 kịch bản trọng yếu (toàn bộ 4 tổ hợp phương án đạt 100 điểm, bảo toàn ngân sách không âm, chống double spend khi nhặt kiện cùng lúc, chống gian lận khoảng cách).
+- [x] **Unit tests trong lượt phát triển trước bàn giao:** 54 bài ở 4 suite, gồm 9 bài engine ban đầu và các bài Hà Nội/map/vùng bổ sung. Cả bốn tổ hợp được kiểm ở từng vùng; kết quả qua server thật và giới hạn kiểm thử ở [TESTING](docs/TESTING.md). Lượt viết bàn giao tài liệu không chạy lại toàn bộ test.
 - [x] **Chơi Solo độc lập:** Một người chơi từ đầu đến cuối hoàn thành cả 3 nhiệm vụ, không bị khóa quyền bởi vai trò.
 - [x] **Chơi Hợp tác Co-op:** Nhiều người cùng phòng chia việc song song, đồng bộ thời gian thực qua Socket.IO.
 - [x] **Cơ chế Reconnect an toàn:** Rớt mạng trong 10 giây giữ nguyên vị trí và kiện mang; quá 10 giây tự động đặt kiện an toàn xuống đất, không sinh bản sao vật tư.
@@ -122,6 +164,12 @@ Trận đấu diễn ra liên tục qua 3 giai đoạn nhiệm vụ nối tiếp
 ---
 
 ## 📚 6. Tài liệu Đi kèm trong Thư mục `docs/`
-- [MVP_SPEC.md](file:///c:/Users/52duc/Desktop/Game%20CNXH/docs/MVP_SPEC.md): Bảng thông số chi tiết, bảng tính khả thi tài nguyên 4 tổ hợp.
-- [KNOWLEDGE_MAP.md](file:///c:/Users/52duc/Desktop/Game%20CNXH/docs/KNOWLEDGE_MAP.md): Ma trận đối chiếu lý luận Mác - Lênin & Hiến pháp với các hành động game.
-- [ASSET_CREDITS.md](file:///c:/Users/52duc/Desktop/Game%20CNXH/docs/ASSET_CREDITS.md): Nguồn gốc, giấy phép bản quyền và giải pháp đồ họa Tháp Rùa 2D.
+
+- [PROJECT_STATUS.md](docs/PROJECT_STATUS.md): Trạng thái bàn giao chính, việc tiếp theo, working tree và bằng chứng.
+- [MVP_SPEC.md](docs/MVP_SPEC.md): Phase, ba nhiệm vụ, điểm và bảng nguồn lực bốn tổ hợp.
+- [KNOWLEDGE_MAP.md](docs/KNOWLEDGE_MAP.md): Kiến thức → hành động, nguồn và phần chưa đối chiếu giáo trình.
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md): Entry point, network/session/state và nơi sửa từng tính năng.
+- [MAPS.md](docs/MAPS.md): Registry bảy vùng, collision/route và nguồn sinh geometry/layers.
+- [ART_SOURCES.md](docs/ART_SOURCES.md): Asset/runtime hiện tại và pipeline mỹ thuật.
+- [ASSET_CREDITS.md](docs/ASSET_CREDITS.md): Danh mục SVG lịch sử và liên kết ghi công hiện tại.
+- [TESTING.md](docs/TESTING.md): Lệnh, suite/script QA, checklist và giới hạn chứng cứ.

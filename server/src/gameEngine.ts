@@ -1,3 +1,4 @@
+import { getInteractionActions } from 'shared';
 import {
   RoomPhase,
   Player,
@@ -18,7 +19,8 @@ import {
   ClientIntent,
   ServerAck,
   M1Plan,
-  M2Plan
+  M2Plan,
+  HatinhState
 } from 'shared';
 
 import {
@@ -41,12 +43,7 @@ import {
   INITIAL_CITIZENS
 } from 'shared';
 
-import {
-  STATIC_COLLIDERS,
-  BRIDGE_COLLIDER,
-  POINTS_OF_INTEREST,
-  Rect
-} from 'shared';
+import { Rect, MapId, WorldMap, getGameMap, isWalkableForMap, isMovementSegmentClear, safeSpawn, MOVEMENT_CONFIG, MapPoint, CollisionState } from 'shared';
 
 function distance(x1: number, y1: number, x2: number, y2: number): number {
   return Math.hypot(x2 - x1, y2 - y1);
@@ -83,11 +80,15 @@ export class GameEngine {
   public practiceCompleted: boolean = false;
   public practiceCrateDelivered: boolean = false;
   public ruleVersion: number = 1;
+  public hatinhState?: HatinhState;
 
-  private processedActionIds: Set<string> = new Set();
+  private processedActionIds = new Map<string, {fingerprint:string;ack:ServerAck}>();
   private hostToken: string;
 
-  constructor(roomCode: string, hostToken: string) {
+  public readonly map:WorldMap;
+
+  constructor(roomCode: string, hostToken: string, mapId:MapId='hanoi') {
+    this.map=getGameMap(mapId);
     this.roomCode = roomCode;
     this.hostToken = hostToken;
 
@@ -114,6 +115,96 @@ export class GameEngine {
     this.m2 = this.initM2();
     this.m3 = this.initM3();
     this.initCrates();
+    if (mapId === 'ha-tinh') {
+      this.hatinhState = this.initHatinhState();
+      this.syncHatinhScores();
+    }
+  }
+
+  private initHatinhState(): HatinhState {
+    return {
+      activeScene: 'main',
+      currentQuest: 1,
+      va: {
+        status: 'ACTIVE',
+        tuanReported: false,
+        cameraDeployed: false,
+        spillCleaned: false,
+        trafficDiverted: false,
+        weighed: false,
+        inspectedBang: false,
+        dossierPrepared: false,
+        negotiatedDoan: false,
+        routeReopened: false,
+        score: 0
+      },
+      dg: {
+        status: 'NOT_STARTED',
+        readyPlayers: [],
+        countdownRemaining: 0,
+        timeOfDay: 'day',
+        barrierA: false,
+        barrierB: false,
+        roadLight: false,
+        ravineLight: false,
+        anchorReady: false,
+        ropeReady: false,
+        winchReady: false,
+        rescuerDown: false,
+        namComforted: false,
+        bikeHazardSecured: false,
+        firstAidGiven: false,
+        namSplinted: false,
+        readyToWinch: false,
+        winchOperating: false,
+        winchProgress: 0,
+        winchSignal: 'HOLD',
+        namLifted: false,
+        receptionReady: false,
+        medicalReceived: false,
+        rescuerSafe: false,
+        bikeRecovered: false,
+        score: 0
+      },
+      dl: {
+        status: 'NOT_STARTED',
+        tungBriefed: false,
+        sauVerified: false,
+        teoVerified: false,
+        dossierFiled: false,
+        flowOrganized: false,
+        haiAssisted: false,
+        incenseSupplied: false,
+        tiktokerCorrected: false,
+        score: 0
+      },
+      score: {
+        va: 0,
+        dg: 0,
+        dl: 0,
+        total: 0
+      }
+    };
+  }
+
+  private syncHatinhScores() {
+    if (!this.hatinhState) return;
+    const { va, dg, dl } = this.hatinhState;
+    this.hatinhState.va.score = Math.min(30, Math.max(0, va.score));
+    this.hatinhState.dg.score = Math.min(35, Math.max(0, dg.score));
+    this.hatinhState.dl.score = Math.min(35, Math.max(0, dl.score));
+    this.hatinhState.score.va = this.hatinhState.va.score;
+    this.hatinhState.score.dg = this.hatinhState.dg.score;
+    this.hatinhState.score.dl = this.hatinhState.dl.score;
+    this.hatinhState.score.total = this.hatinhState.score.va + this.hatinhState.score.dg + this.hatinhState.score.dl;
+    this.totalScore = this.hatinhState.score.total;
+
+    this.m1.score = this.hatinhState.score.va;
+    this.m2.score = this.hatinhState.score.dg;
+    this.m3.score = this.hatinhState.score.dl;
+    this.m1.status = va.status === 'RESOLVED' ? 'RESOLVED' : va.status === 'ACTIVE' ? 'ACTIVE' : 'LOCKED';
+    this.m2.status = dg.status === 'RESOLVED' ? 'RESOLVED' : (dg.status === 'ACTIVE' || dg.status === 'GATHERING' || dg.status === 'COUNTDOWN') ? 'ACTIVE' : 'LOCKED';
+    this.m3.status = dl.status === 'RESOLVED' ? 'RESOLVED' : dl.status === 'ACTIVE' ? 'ACTIVE' : 'LOCKED';
   }
 
   public getHostToken(): string {
@@ -231,13 +322,21 @@ export class GameEngine {
       this.crates.set(id, {
         id,
         state: 'WAREHOUSE',
-        x: POINTS_OF_INTEREST.WAREHOUSE.x,
-        y: POINTS_OF_INTEREST.WAREHOUSE.y,
+        x: this.map.points.WAREHOUSE.x,
+        y: this.map.points.WAREHOUSE.y,
         carriedByPlayerId: null,
         missionContext: 'M1',
         purpose: 'Vật tư công',
         deliveredSlotId: null
       });
+    }
+  }
+
+  private collisionContext():CollisionState {return {bridgeBlocked:this.m2.bridgeBroken&&!this.m2.bridgeRepaired,fixedDeployed:this.m1.fixedDeployed,mobileBDeployed:this.m1.mobileBDeployed,mobileCDeployed:this.m1.mobileCDeployed};}
+  private recoverCollisionOverlaps(){
+    for(const p of this.players.values())if(!isWalkableForMap(this.map.id,p.x,p.y,this.collisionContext())){
+      const q=safeSpawn(this.map.id,p,this.collisionContext());p.x=q.x;p.y=q.y;
+      this.addAuditEvent('PLAYER',`${p.name} được đưa ra khỏi footprint công trình mới.`,p.id);
     }
   }
 
@@ -247,6 +346,8 @@ export class GameEngine {
       p.isOnline = true;
       p.lastHeartbeat = Date.now();
       p.disconnectedAt = undefined;
+      const valid = safeSpawn(this.map.id,p,this.collisionContext());
+      p.x=valid.x;p.y=valid.y;
       return p;
     }
 
@@ -258,8 +359,8 @@ export class GameEngine {
       name,
       roomCode: this.roomCode,
       color,
-      x: POINTS_OF_INTEREST.HEADQUARTERS.x + (Math.random() * 40 - 20),
-      y: POINTS_OF_INTEREST.HEADQUARTERS.y + 40 + (Math.random() * 30),
+      x: this.map.spawn.x + (Math.random() * 40 - 20),
+      y: this.map.spawn.y + (Math.random() * 30 - 15),
       direction: 'down',
       isMoving: false,
       role: 'SURVEY',
@@ -271,6 +372,8 @@ export class GameEngine {
     };
 
     this.players.set(id, p);
+    const validSpawn=safeSpawn(this.map.id,p,this.collisionContext());
+    p.x=validSpawn.x;p.y=validSpawn.y;
 
     if (!this.personalContributions.has(id)) {
       this.personalContributions.set(id, {
@@ -286,6 +389,7 @@ export class GameEngine {
     }
 
     this.addAuditEvent('PLAYER', `${name} đã tham gia phòng chơi.`);
+    this.updateManpowerTotal();
     return p;
   }
 
@@ -294,6 +398,8 @@ export class GameEngine {
     if (!p) return;
     p.isOnline = false;
     p.disconnectedAt = Date.now();
+    this.updateManpowerTotal();
+    this.updateManpowerTotal();
   }
 
   public addAuditEvent(category: AuditEvent['category'], message: string, playerId?: string) {
@@ -310,6 +416,11 @@ export class GameEngine {
     if (this.recentAuditEvents.length > 50) {
       this.recentAuditEvents.pop();
     }
+  }
+
+  private updateManpowerTotal() {
+    const online = this.getOnlinePlayerCount();
+    this.manpower.total = Math.max(TOTAL_MANPOWER_UNITS, Math.min(8, online));
   }
 
   public getOnlinePlayerCount(): number {
@@ -380,11 +491,27 @@ export class GameEngine {
       }
     }
 
-    // Active Voting ticking
+    // Active Voting ticking � paused when game is paused (guard above returns early)
     if (this.voting && this.voting.active) {
       this.voting.remainingMs = Math.max(0, this.voting.remainingMs - dtMs);
-      if (this.voting.remainingMs <= 0 || now >= this.voting.endsAt) {
+      if (this.voting.remainingMs <= 0) {
         this.resolveVote();
+      }
+    }
+
+    // Hà Tĩnh Đèo Ngang countdown ticking and scene transition
+    if (this.hatinhState && this.hatinhState.dg.status === 'COUNTDOWN') {
+      this.hatinhState.dg.countdownRemaining = Math.max(0, this.hatinhState.dg.countdownRemaining - dtMs / 1000);
+      if (this.hatinhState.dg.countdownRemaining <= 1.5 && this.hatinhState.dg.timeOfDay !== 'afternoon') {
+        this.hatinhState.dg.timeOfDay = 'afternoon';
+      }
+      if (this.hatinhState.dg.countdownRemaining <= 0) {
+        this.hatinhState.dg.countdownRemaining = 0;
+        this.hatinhState.dg.status = 'ACTIVE';
+        this.hatinhState.activeScene = 'rescue';
+        this.hatinhState.dg.timeOfDay = 'dusk';
+        this.syncHatinhScores();
+        this.addAuditEvent('MISSION', 'BẮT ĐẦU CHIẾN DỊCH CỨU HỘ ĐÈO NGANG! Trời chập tối, sương mù dày đặc.');
       }
     }
   }
@@ -480,9 +607,16 @@ export class GameEngine {
     }
     this.manpower.busy = 0;
 
-    // Activate M1
-    this.m1.status = 'ACTIVE';
-    this.addAuditEvent('MISSION', 'TRẬN ĐẤU CHÍNH THỨC BẮT ĐẦU! Nhiệm vụ 1: Mở dịch vụ y tế cho nhân dân.');
+    if (this.map.id === 'ha-tinh') {
+      this.hatinhState = this.initHatinhState();
+      this.hatinhState.va.status = 'ACTIVE';
+      this.syncHatinhScores();
+      this.addAuditEvent('MISSION', 'TRẬN ĐẤU BẮT ĐẦU! Nhiệm vụ 1: Lửa đỏ tuyến Vũng Áng - Kiểm soát trật tự cảng biển và tải trọng.');
+    } else {
+      // Activate M1
+      this.m1.status = 'ACTIVE';
+      this.addAuditEvent('MISSION', 'TRẬN ĐẤU CHÍNH THỨC BẮT ĐẦU! Nhiệm vụ 1: Mở dịch vụ y tế cho nhân dân.');
+    }
   }
 
   public endMatch(reason: string) {
@@ -522,10 +656,14 @@ export class GameEngine {
     this.m2 = this.initM2();
     this.m3 = this.initM3();
     this.initCrates();
+    if (this.map.id === 'ha-tinh') {
+      this.hatinhState = this.initHatinhState();
+      this.syncHatinhScores();
+    }
 
     for (const p of this.players.values()) {
-      p.x = POINTS_OF_INTEREST.HEADQUARTERS.x;
-      p.y = POINTS_OF_INTEREST.HEADQUARTERS.y + 40;
+      p.x = this.map.spawn.x;
+      p.y = this.map.spawn.y;
       p.activeJob = null;
       p.carriedCrateId = null;
     }
@@ -534,14 +672,15 @@ export class GameEngine {
   }
 
   public handleIntent(playerId: string, intent: ClientIntent): ServerAck {
-    if (this.processedActionIds.has(intent.actionId)) {
-      return { actionId: intent.actionId, success: true, reason: 'Thao tác đã được ghi nhận.' };
-    }
-
     const player = this.players.get(playerId);
-    if (!player) {
-      return { actionId: intent.actionId, success: false, reason: 'Người chơi không tồn tại trong phòng.' };
-    }
+    if (!player || !player.isOnline) return { actionId: intent.actionId, success: false, reason: 'Người chơi không tồn tại hoặc đã mất kết nối.' };
+    const actionKey = `${playerId}:${intent.actionId}`;
+    const fingerprint = JSON.stringify([intent.type, intent.payload ?? null]);
+    const previous = this.processedActionIds.get(actionKey);
+    if (previous) return previous.fingerprint === fingerprint ? {...previous.ack}
+      : {actionId:intent.actionId,success:false,reason:'actionId đã được dùng cho hành động khác.'};
+    if (this.isPaused && !['SET_ROLE','HOST_COMMAND'].includes(intent.type))
+      return {actionId:intent.actionId,success:false,reason:'Trận đấu đang tạm dừng.'};
 
     let result: ServerAck;
 
@@ -594,40 +733,47 @@ export class GameEngine {
         result = this.handleConfirmM3Plan(player, intent.actionId);
         break;
 
+      case 'PING_LOCATION':
+        result = this.handlePingLocation(player, intent.payload, intent.actionId);
+        break;
+
+      case 'HATINH_ACTION':
+        result = this.handleHatinhAction(player, intent.payload, intent.actionId);
+        break;
+
       default:
         result = { actionId: intent.actionId, success: false, reason: 'Lệnh không xác định.' };
     }
 
-    if (result.success) {
-      this.processedActionIds.add(intent.actionId);
-      // Keep processed action IDs bounded
-      if (this.processedActionIds.size > 2000) {
-        const first = this.processedActionIds.values().next().value;
-        if (first) this.processedActionIds.delete(first);
-      }
+    this.processedActionIds.set(actionKey, {fingerprint,ack:{...result}});
+    // Bounded per-room receipts, scoped by player; repeat failures are stable too.
+    if (this.processedActionIds.size > 2000) {
+      const first = this.processedActionIds.keys().next().value;
+      if (first) this.processedActionIds.delete(first);
     }
 
     return result;
   }
 
-  private handleMove(player: Player, payload: { x: number; y: number; dir?: 'up' | 'down' | 'left' | 'right' }, actionId: string): ServerAck {
+  private handleMove(player: Player, payload: { x: number; y: number; path?:MapPoint[]; dir?: 'up' | 'down' | 'left' | 'right' }, actionId: string): ServerAck {
     if (this.isPaused) {
       return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     }
 
-    const newX = Math.max(25, Math.min(WORLD_WIDTH - 25, payload.x));
-    const newY = Math.max(25, Math.min(WORLD_HEIGHT - 25, payload.y));
+    if(!payload||!Number.isFinite(payload.x)||!Number.isFinite(payload.y))return {actionId,success:false,reason:'MOVE: tọa độ không hợp lệ.'};
+    const newX=payload.x,newY=payload.y;
 
     // Collision check
-    const isBridgeBlocked = this.m2.status === 'ACTIVE' && this.m2.bridgeBroken && !this.m2.bridgeRepaired;
-    if (isBridgeBlocked && checkRectOverlap(newX, newY, 14, BRIDGE_COLLIDER)) {
-      return { actionId, success: false, reason: 'Cầu đang bị hỏng, không thể qua!' };
+    const isBridgeBlocked = this.collisionContext();
+    if (!isWalkableForMap(this.map.id,newX,newY,isBridgeBlocked)) {
+      return { actionId, success:false, reason:'Vướng vật cản!' };
     }
-
-    for (const rect of STATIC_COLLIDERS) {
-      if (checkRectOverlap(newX, newY, 14, rect)) {
-        return { actionId, success: false, reason: 'Vướng vật cản!' };
-      }
+    if(payload.path!==undefined&&(!Array.isArray(payload.path)||payload.path.length>MOVEMENT_CONFIG.maxPacketPoints))return {actionId,success:false,reason:'MOVE: đường đi không hợp lệ.'};
+    const path=[...(payload.path??[]),{x:newX,y:newY}];
+    let from:MapPoint=player;
+    for(const point of path){
+      if(!point||!Number.isFinite(point.x)||!Number.isFinite(point.y)||!isMovementSegmentClear(this.map.id,from,point,isBridgeBlocked))return {actionId,success:false,reason:'MOVE: đoạn di chuyển đi qua vật cản.'};
+      from=point;
     }
 
     // Cancel in-place job if player moved significantly (> 10 units)
@@ -678,8 +824,18 @@ export class GameEngine {
       return { actionId, success: false, reason: 'Bạn đang thực hiện một công việc khác.' };
     }
 
+    if (!payload || typeof payload.type !== 'string' || typeof payload.targetId !== 'string')
+      return { actionId, success: false, reason: 'Hành động hoặc địa điểm không hợp lệ.' };
+    const eligible = getInteractionActions(this.getSnapshot(), player.id).some(a =>
+      a.intent.type === 'START_JOB' && a.intent.payload.type === payload.type && a.intent.payload.targetId === payload.targetId);
+    if (!eligible) return { actionId, success: false, reason: 'Hành động chưa hợp lệ, đã hoàn thành hoặc đang có đồng đội thực hiện.' };
+    const helperType = payload.type as string;
+    if (helperType === 'SURVEY_BRIDGE') return { ...this.surveyBridgeM2(player), actionId };
+    if (helperType === 'RECEIVE_FEEDBACK_C') return { ...this.receiveFeedbackM3(player), actionId };
+    if (helperType === 'CROSS_CHECK_CLINIC') return { ...this.crossCheckClinicM3(player, payload.targetId), actionId };
+
     const { type, targetId } = payload;
-    const poi = POINTS_OF_INTEREST[targetId];
+    const poi = this.map.points[targetId];
     if (!poi) {
       return { actionId, success: false, reason: 'Địa điểm không hợp lệ.' };
     }
@@ -814,12 +970,13 @@ export class GameEngine {
         this.m1.score += SCORES.M1.SURVEY_PER_ZONE;
       }
       if (contrib) contrib.surveys++;
-      this.addAuditEvent('MISSION', `${player.name} hoàn thành khảo sát nhu cầu tại ${POINTS_OF_INTEREST[job.targetId]?.name}.`, player.id);
+      this.addAuditEvent('MISSION', `${player.name} hoàn thành khảo sát nhu cầu tại ${this.map.points[job.targetId]?.name}.`, player.id);
     } else if (job.type === 'DEPLOY_FIXED_CLINIC') {
       this.m1.fixedDeployed = true;
       this.totalScore += SCORES.M1.DEPLOY_TOTAL;
       this.m1.score += SCORES.M1.DEPLOY_TOTAL;
       if (contrib) contrib.deployments++;
+      this.recoverCollisionOverlaps();
       this.addAuditEvent('MISSION', `${player.name} đã thi công hoàn tất Trạm y tế cố định.`, player.id);
     } else if (job.type === 'DEPLOY_MOBILE_CLINIC') {
       if (job.targetId === 'CLINIC_MOBILE_B') {
@@ -832,7 +989,8 @@ export class GameEngine {
         this.m1.score += 5;
       }
       if (contrib) contrib.deployments++;
-      this.addAuditEvent('MISSION', `${player.name} đã triển khai thành công ${POINTS_OF_INTEREST[job.targetId]?.name}.`, player.id);
+      this.recoverCollisionOverlaps();
+      this.addAuditEvent('MISSION', `${player.name} đã triển khai thành công ${this.map.points[job.targetId]?.name}.`, player.id);
     } else if (job.type === 'REPAIR_BRIDGE_1') {
       this.m2.bridgeRepairTask1 = true;
       if (contrib) contrib.deployments++;
@@ -858,7 +1016,7 @@ export class GameEngine {
         this.m3.score += SCORES.M3.SUPPORT_PER_CITIZEN;
       }
       if (contrib) contrib.deployments++;
-      this.addAuditEvent('SERVICE', `${player.name} đã hoàn thành chăm sóc y tế tận nhà cho ${POINTS_OF_INTEREST[job.targetId]?.name}.`, player.id);
+      this.addAuditEvent('SERVICE', `${player.name} đã hoàn thành chăm sóc y tế tận nhà cho ${this.map.points[job.targetId]?.name}.`, player.id);
     } else if (job.type === 'AUDIT_LEDGER') {
       this.m3.lossAuditDone = true;
       this.m3.lossAuditConclusion = 'Khớp 100% với thực tế, chưa có căn cứ xác định thất thoát vật tư.';
@@ -896,7 +1054,7 @@ export class GameEngine {
         }
       }
       if (contrib) contrib.audits++;
-      this.addAuditEvent('MISSION', `${player.name} hoàn thành kiểm tra kết quả tại ${POINTS_OF_INTEREST[job.targetId]?.name}.`, player.id);
+      this.addAuditEvent('MISSION', `${player.name} hoàn thành kiểm tra kết quả tại ${this.map.points[job.targetId]?.name}.`, player.id);
     }
   }
 
@@ -953,6 +1111,7 @@ export class GameEngine {
         droppedCrate = c;
       }
     }
+    if (crateId && !droppedCrate) return { actionId, success: false, reason: 'Kiện này đã được nhặt hoặc không còn trong phạm vi.' };
     if (!droppedCrate) {
       for (const c of this.crates.values()) {
         if (c.state === 'DROPPED' && distance(player.x, player.y, c.x, c.y) <= INTERACTION_RADIUS) {
@@ -974,7 +1133,7 @@ export class GameEngine {
     }
 
     // 2. Otherwise pick from Warehouse stock if at Warehouse
-    const warehousePoi = POINTS_OF_INTEREST.WAREHOUSE;
+    const warehousePoi = this.map.points.WAREHOUSE;
     const isAtWarehouse = distance(player.x, player.y, warehousePoi.x, warehousePoi.y) <= INTERACTION_RADIUS;
 
     if (isAtWarehouse) {
@@ -1038,7 +1197,7 @@ export class GameEngine {
       return { actionId, success: false, reason: 'Bạn không mang kiện vật tư nào.' };
     }
 
-    const warehousePoi = POINTS_OF_INTEREST.WAREHOUSE;
+    const warehousePoi = this.map.points.WAREHOUSE;
     if (distance(player.x, player.y, warehousePoi.x, warehousePoi.y) > INTERACTION_RADIUS) {
       return { actionId, success: false, reason: 'Cần đến gần Kho vật tư để hoàn trả.' };
     }
@@ -1061,7 +1220,7 @@ export class GameEngine {
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     if (!player.carriedCrateId) return { actionId, success: false, reason: 'Bạn không mang kiện vật tư nào để giao.' };
 
-    const poi = POINTS_OF_INTEREST[targetId];
+    const poi = this.map.points[targetId];
     if (!poi) return { actionId, success: false, reason: 'Điểm giao không hợp lệ.' };
     if (distance(player.x, player.y, poi.x, poi.y) > INTERACTION_RADIUS) {
       return { actionId, success: false, reason: `Bạn cần đến gần ${poi.name} để giao kiện.` };
@@ -1169,7 +1328,7 @@ export class GameEngine {
 
   private handleProposePlan(player: Player, missionId: 'M1' | 'M2', plan: string, actionId: string): ServerAck {
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
-    const hq = POINTS_OF_INTEREST.HEADQUARTERS;
+    const hq = this.map.points.HEADQUARTERS;
     if (distance(player.x, player.y, hq.x, hq.y) > INTERACTION_RADIUS) {
       return { actionId, success: false, reason: 'Cần đến Trụ sở chính quyền để đề xuất kế hoạch.' };
     }
@@ -1338,9 +1497,18 @@ export class GameEngine {
     this.addAuditEvent('RESOURCE', `SỔ SÁCH CÔNG: -${amount} đơn vị. Số dư ngân sách còn: ${this.resources.currentBudget}.`);
   }
 
+  private handlePingLocation(player: Player, payload: { x: number; y: number }, actionId: string): ServerAck {
+    const x = Math.round(payload?.x ?? player.x);
+    const y = Math.round(payload?.y ?? player.y);
+    const poi = Object.values(this.map.points).find(p => distance(x, y, p.x, p.y) <= 100);
+    const locationName = poi ? poi.name : `vị trí (${x}, ${y})`;
+    this.addAuditEvent('PLAYER', `${player.name} 📍 đã phát tín hiệu tại ${locationName}!`, player.id);
+    return { actionId, success: true };
+  }
+
   private handleConfirmM3Plan(player: Player, actionId: string): ServerAck {
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
-    const hq = POINTS_OF_INTEREST.HEADQUARTERS;
+    const hq = this.map.points.HEADQUARTERS;
     if (distance(player.x, player.y, hq.x, hq.y) > INTERACTION_RADIUS) {
       return { actionId, success: false, reason: 'Cần đến Trụ sở để xác nhận kế hoạch hỗ trợ.' };
     }
@@ -1364,7 +1532,7 @@ export class GameEngine {
 
   private handlePublishNotice(player: Player, missionId: 'M1' | 'M2' | 'M3', actionId: string): ServerAck {
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
-    const board = POINTS_OF_INTEREST.NOTICE_BOARD;
+    const board = this.map.points.NOTICE_BOARD;
     if (distance(player.x, player.y, board.x, board.y) > INTERACTION_RADIUS) {
       return { actionId, success: false, reason: 'Cần đến Bảng công khai kết quả để niêm yết.' };
     }
@@ -1391,6 +1559,7 @@ export class GameEngine {
       return { actionId, success: true };
     } else if (missionId === 'M2') {
       if (this.m2.status !== 'ACTIVE') return { actionId, success: false, reason: 'M2 chưa kích hoạt.' };
+      if (this.m2.planCommitted === 'REPAIR' && !this.m2.bridgeRepaired) { return { actionId, success: false, reason: 'Ph\u01b0\u01a1ng \u00e1n REPAIR c\u1ea7n ho\u00e0n t\u1ea5t s\u1eeda c\u1ea7u tr\u01b0\u1edbc khi ni\u00eam y\u1ebft.' }; }
       if (this.m2.reliefCratesDeliveredB < 2 || !this.m2.verifiedB) {
         return { actionId, success: false, reason: 'Cần giao đủ 2 kiện cứu trợ và kiểm tra kết quả tại B trước.' };
       }
@@ -1433,6 +1602,14 @@ export class GameEngine {
     // Trigger M2
     this.m2.status = 'ACTIVE';
     this.m2.bridgeBroken = true;
+    // A bridge can fail under a player. Recovery belongs to the server;
+    // prediction must never try to escape an invalid origin through water.
+    for(const player of this.players.values()){
+      if(!isWalkableForMap(this.map.id,player.x,player.y,this.collisionContext())){
+        const valid=safeSpawn(this.map.id,player,this.collisionContext());player.x=valid.x;player.y=valid.y;
+        this.addAuditEvent('PLAYER',`${player.name} được đưa về vị trí an toàn khi cầu hỏng.`,player.id);
+      }
+    }
     this.addAuditEvent('MISSION', 'SỰ KIỆN KHẨN CẤP: Cầu qua kênh sang Khu B bị sự cố sụt lún! Tuyến ngắn bị chặn. Bắt đầu Nhiệm vụ 2.');
   }
 
@@ -1454,7 +1631,7 @@ export class GameEngine {
   // Quick helper for M2 and M3 field inquiries
   public surveyBridgeM2(player: Player): ServerAck {
     if (this.m2.status !== 'ACTIVE') return { actionId: 'bridge_survey', success: false, reason: 'M2 chưa kích hoạt.' };
-    const bridgePoi = POINTS_OF_INTEREST.BRIDGE;
+    const bridgePoi = this.map.points.BRIDGE;
     if (distance(player.x, player.y, bridgePoi.x, bridgePoi.y) > INTERACTION_RADIUS) {
       return { actionId: 'bridge_survey', success: false, reason: 'Cần đến gần Cầu để khảo sát.' };
     }
@@ -1472,7 +1649,7 @@ export class GameEngine {
 
   public receiveFeedbackM3(player: Player): ServerAck {
     if (this.m3.status !== 'ACTIVE') return { actionId: 'm3_feedback', success: false, reason: 'M3 chưa kích hoạt.' };
-    const zoneC = POINTS_OF_INTEREST.ZONE_C;
+    const zoneC = this.map.points.ZONE_C;
     if (distance(player.x, player.y, zoneC.x, zoneC.y) > INTERACTION_RADIUS) {
       return { actionId: 'm3_feedback', success: false, reason: 'Cần đến Khu C gặp đại diện.' };
     }
@@ -1490,7 +1667,7 @@ export class GameEngine {
 
   public crossCheckClinicM3(player: Player, targetId: string): ServerAck {
     if (this.m3.status !== 'ACTIVE') return { actionId: 'm3_cross_check', success: false, reason: 'M3 chưa kích hoạt.' };
-    const poi = POINTS_OF_INTEREST[targetId];
+    const poi = this.map.points[targetId];
     if (!poi) return { actionId: 'm3_cross_check', success: false, reason: 'Địa điểm không hợp lệ.' };
     if (distance(player.x, player.y, poi.x, poi.y) > INTERACTION_RADIUS) {
       return { actionId: 'm3_cross_check', success: false, reason: `Cần đến ${poi.name} để đối chiếu danh sách.` };
@@ -1505,6 +1682,543 @@ export class GameEngine {
 
     this.addAuditEvent('AUDIT', `${player.name} đối chiếu danh sách phục vụ: Xác nhận C1 và C2 chưa nằm trong diện phục vụ trước đây. +5 điểm.`, player.id);
     return { actionId: 'm3_cross_check', success: true };
+  }
+
+  public handleHatinhAction(player: Player, payload: { action?: string } | undefined, actionId: string): ServerAck {
+    if (!this.hatinhState) {
+      return { actionId, success: false, reason: 'Bản đồ hiện tại không phải Hà Tĩnh.' };
+    }
+    const action = payload?.action;
+    if (!action) {
+      return { actionId, success: false, reason: 'Không có mã hành động Hà Tĩnh.' };
+    }
+
+    const { va, dg, dl } = this.hatinhState;
+    const contrib = this.personalContributions.get(player.id);
+    const checkNear = (poiKey: string) => {
+      const p = this.map.points[poiKey];
+      if (!p) return false;
+      return distance(player.x, player.y, p.x, p.y) <= INTERACTION_RADIUS + 35;
+    };
+
+    switch (action) {
+      // ===== QUEST 1: VŨNG ÁNG =====
+      case 'VA_REPORT_TUAN': {
+        if (!checkNear('WORKER_TUAN')) return { actionId, success: false, reason: 'Cần đến gặp công nhân Tuấn.' };
+        if (va.tuanReported) return { actionId, success: true };
+        va.tuanReported = true;
+        va.score += 3;
+        if (contrib) contrib.surveys++;
+        this.addAuditEvent('SERVICE', `${player.name} tiếp nhận phản ánh từ anh Tuấn về sự cố xe quá tải và đá dăm rơi vãi tại cảng. +3 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_DEPLOY_CAMERA': {
+        if (!checkNear('CAMERA')) return { actionId, success: false, reason: 'Cần đến vị trí cột camera.' };
+        if (!va.tuanReported) return { actionId, success: false, reason: 'Cần tiếp nhận phản ánh trước.' };
+        if (va.cameraDeployed) return { actionId, success: true };
+        va.cameraDeployed = true;
+        va.score += 4;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} đã kích hoạt hệ thống camera giám sát tự động luồng xe. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_CLEAN_SPILL': {
+        if (!checkNear('SPILL')) return { actionId, success: false, reason: 'Cần đến khu vực vật liệu rơi vãi.' };
+        if (!va.tuanReported) return { actionId, success: false, reason: 'Cần tiếp nhận phản ánh trước.' };
+        if (va.spillCleaned) return { actionId, success: true };
+        va.spillCleaned = true;
+        va.score += 4;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} đã thu dọn toàn bộ vật liệu đá dăm rơi vãi, bảo đảm mặt đường an toàn. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_DIVERT_TRAFFIC': {
+        if (!checkNear('TRAFFIC_VA')) return { actionId, success: false, reason: 'Cần đến chốt phân luồng Vũng Áng.' };
+        if (!va.tuanReported) return { actionId, success: false, reason: 'Cần tiếp nhận phản ánh trước.' };
+        if (va.trafficDiverted) return { actionId, success: true };
+        va.trafficDiverted = true;
+        va.score += 4;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} đã phân luồng xe tải nặng vào làn kiểm tra, giải tỏa ùn tắc cảng Vũng Áng. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_WEIGH_TRUCK': {
+        if (!checkNear('WEIGH_STATION')) return { actionId, success: false, reason: 'Cần đến trạm cân tải trọng.' };
+        if (!va.trafficDiverted) return { actionId, success: false, reason: 'Cần phân luồng xe vào trạm cân trước.' };
+        if (va.weighed) return { actionId, success: true };
+        va.weighed = true;
+        va.score += 4;
+        if (contrib) contrib.audits++;
+        this.addAuditEvent('AUDIT', `${player.name} vận hành trạm cân: Phát hiện xe tải vượt 45% tải trọng cho phép. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_INSPECT_BANG': {
+        if (!checkNear('INSPECTION_BANG')) return { actionId, success: false, reason: 'Cần đến chốt kiểm tra của đ/c Bàng.' };
+        if (!va.weighed) return { actionId, success: false, reason: 'Cần cân tải trọng trước.' };
+        if (va.inspectedBang) return { actionId, success: true };
+        va.inspectedBang = true;
+        va.score += 4;
+        if (contrib) contrib.audits++;
+        this.addAuditEvent('AUDIT', `${player.name} phối hợp cùng đ/c Bàng kiểm tra giấy tờ vận tải và tem kiểm định xe. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_PREPARE_DOSSIER': {
+        if (!checkNear('INSPECTION_BANG')) return { actionId, success: false, reason: 'Cần đến chốt kiểm tra để lập biên bản.' };
+        if (!va.inspectedBang) return { actionId, success: false, reason: 'Cần hoàn thành kiểm tra xe trước.' };
+        if (va.dossierPrepared) return { actionId, success: true };
+        va.dossierPrepared = true;
+        va.score += 3;
+        if (contrib) contrib.plansProposed++;
+        this.addAuditEvent('PLAN', `${player.name} lập biên bản vi phạm hành chính, ghi nhận cam kết hạ tải trước khi lưu thông. +3 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_NEGOTIATE_DOAN': {
+        if (!checkNear('DOSSIER_DOAN')) return { actionId, success: false, reason: 'Cần đến gặp ông Doãn (chủ xe/doanh nghiệp).' };
+        if (!va.dossierPrepared) return { actionId, success: false, reason: 'Cần lập hồ sơ biên bản trước.' };
+        if (va.negotiatedDoan) return { actionId, success: true };
+        va.negotiatedDoan = true;
+        va.score += 2;
+        if (contrib) contrib.audits++;
+        this.addAuditEvent('SERVICE', `${player.name} làm việc với ông Doãn: Doanh nghiệp chấp hành phương án sang tải an toàn. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'VA_REOPEN_ROUTE': {
+        if (!checkNear('TRAFFIC_VA')) return { actionId, success: false, reason: 'Cần đến chốt điều tiết Vũng Áng.' };
+        if (!va.negotiatedDoan || !va.spillCleaned || !va.cameraDeployed) {
+          return { actionId, success: false, reason: 'Cần hoàn tất dọn vật liệu, camera và xử lý vi phạm trước khi thông tuyến.' };
+        }
+        if (va.routeReopened) return { actionId, success: true };
+        va.routeReopened = true;
+        va.status = 'RESOLVED';
+        va.score += 2;
+        this.hatinhState.currentQuest = 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `HOÀN THÀNH NHIỆM VỤ 1! Tuyến đường Vũng Áng đã thông suốt, an toàn và đúng quy chuẩn. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      // ===== QUEST 2: ĐÈO NGANG =====
+      case 'DG_TRIGGER_ALERT': {
+        if (!checkNear('DEO_GATHER')) return { actionId, success: false, reason: 'Cần đến khu vực Đèo Ngang để quan sát hiện trường.' };
+        if (dg.status !== 'NOT_STARTED') return { actionId, success: true };
+        dg.status = 'GATHERING';
+        dg.gatherTimeStarted = Date.now();
+        dg.readyPlayers = [player.id];
+        dg.score += 2;
+        this.addAuditEvent('MISSION', `CẢNH BÁO KHẨN CẤP: Tai nạn tại Đèo Ngang! Toàn đội mau chóng tập kết tại Trạm chỉ huy (RESCUE_STAGING). +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_READY_CHECK': {
+        if (!checkNear('RESCUE_STAGING')) return { actionId, success: false, reason: 'Cần tập kết tại Trạm chỉ huy (RESCUE_STAGING).' };
+        if (dg.status !== 'GATHERING') return { actionId, success: false, reason: 'Chưa trong trạng thái tập kết.' };
+        if (!dg.readyPlayers.includes(player.id)) {
+          dg.readyPlayers.push(player.id);
+          this.addAuditEvent('PLAYER', `${player.name} đã sẵn sàng ứng cứu tại trạm chỉ huy!`, player.id);
+        }
+        const onlineCount = this.getOnlinePlayerCount();
+        const minRequired = onlineCount <= 1 ? 1 : Math.min(onlineCount, 4);
+        if (dg.readyPlayers.length >= minRequired) {
+          dg.status = 'COUNTDOWN';
+          dg.countdownRemaining = 3;
+          dg.timeOfDay = 'afternoon';
+          dg.score += 2;
+          this.addAuditEvent('MISSION', `Tất cả vị trí đã sẵn sàng (${dg.readyPlayers.length} người)! Bắt đầu đếm ngược cứu hộ 3 giây... +2 điểm.`);
+        }
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_CANCEL_READY': {
+        if (dg.status !== 'GATHERING') return { actionId, success: true };
+        dg.readyPlayers = dg.readyPlayers.filter(id => id !== player.id);
+        this.addAuditEvent('PLAYER', `${player.name} đã hủy trạng thái sẵn sàng.`, player.id);
+        return { actionId, success: true };
+      }
+
+      case 'DG_SUMMON_TEAM': {
+        this.addAuditEvent('PLAYER', `HIỆU LỆNH TẬP HỢP: ${player.name} yêu cầu tất cả đồng đội khẩn trương về Trạm chỉ huy Đèo Ngang!`, player.id);
+        return { actionId, success: true };
+      }
+
+      case 'DG_SET_BARRIER_A': {
+        if (!checkNear('RESCUE_TRAFFIC_A')) return { actionId, success: false, reason: 'Cần đến chốt phía Bắc đèo (Traffic A).' };
+        if (dg.status !== 'ACTIVE') return { actionId, success: false, reason: 'Chiến dịch cứu hộ chưa bắt đầu.' };
+        if (dg.barrierA) return { actionId, success: true };
+        dg.barrierA = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} thiết lập chốt chặn an toàn phía Bắc đèo (Traffic A). +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_SET_BARRIER_B': {
+        if (!checkNear('RESCUE_TRAFFIC_B')) return { actionId, success: false, reason: 'Cần đến chốt phía Nam đèo (Traffic B).' };
+        if (dg.status !== 'ACTIVE') return { actionId, success: false, reason: 'Chiến dịch cứu hộ chưa bắt đầu.' };
+        if (dg.barrierB) return { actionId, success: true };
+        dg.barrierB = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} thiết lập chốt chặn an toàn phía Nam đèo (Traffic B). +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_TURN_ROAD_LIGHT': {
+        if (!checkNear('RESCUE_TECH')) return { actionId, success: false, reason: 'Cần đến khu vực kỹ thuật thiết bị.' };
+        if (dg.status !== 'ACTIVE') return { actionId, success: false, reason: 'Chiến dịch cứu hộ chưa bắt đầu.' };
+        if (dg.roadLight) return { actionId, success: true };
+        dg.roadLight = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} bật đèn pha dải rộng chiếu sáng toàn tuyến đường đèo. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_TURN_RAVINE_LIGHT': {
+        if (!checkNear('RESCUE_TECH')) return { actionId, success: false, reason: 'Cần đến khu vực kỹ thuật thiết bị.' };
+        if (!dg.roadLight) return { actionId, success: false, reason: 'Cần bật đèn mặt đường trước.' };
+        if (dg.ravineLight) return { actionId, success: true };
+        dg.ravineLight = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} điều chỉnh đèn pha công suất cao rọi thẳng xuống lòng vực. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_SET_ANCHOR': {
+        if (!checkNear('RESCUE_TECH')) return { actionId, success: false, reason: 'Cần đến khu vực mỏm neo kỹ thuật.' };
+        if (dg.status !== 'ACTIVE') return { actionId, success: false, reason: 'Chiến dịch cứu hộ chưa bắt đầu.' };
+        if (dg.anchorReady) return { actionId, success: true };
+        dg.anchorReady = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} đóng điểm neo chịu lực an toàn tại mỏm đá kỹ thuật. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_SET_ROPE': {
+        if (!checkNear('RESCUE_TECH')) return { actionId, success: false, reason: 'Cần đến khu vực mỏm neo kỹ thuật.' };
+        if (!dg.anchorReady) return { actionId, success: false, reason: 'Cần chuẩn bị điểm neo trước.' };
+        if (dg.ropeReady) return { actionId, success: true };
+        dg.ropeReady = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} thả dây cứu nạn chuyên dụng kết nối điểm neo xuống vực. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_CHECK_WINCH': {
+        if (!checkNear('RESCUE_WINCH')) return { actionId, success: false, reason: 'Cần đến vị trí tời cứu hộ (Winch).' };
+        if (dg.status !== 'ACTIVE') return { actionId, success: false, reason: 'Chiến dịch cứu hộ chưa bắt đầu.' };
+        if (dg.winchReady) return { actionId, success: true };
+        dg.winchReady = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} kiểm tra tải trọng và bộ hãm tời cơ khí (Winch). +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_DESCEND_RESCUER': {
+        if (!checkNear('RESCUE_WINCH') && !checkNear('RESCUE_TECH')) return { actionId, success: false, reason: 'Cần đến vị trí đu dây cứu hộ.' };
+        const safeReady = dg.barrierA && dg.barrierB && dg.roadLight && dg.ravineLight && dg.anchorReady && dg.ropeReady && dg.winchReady;
+        if (!safeReady) {
+          return { actionId, success: false, reason: 'Chưa đủ an toàn: Cần chốt chặn 2 đầu, bật đèn, neo cáp và tời sẵn sàng trước khi xuống vực!' };
+        }
+        if (dg.rescuerDown) return { actionId, success: true };
+        dg.rescuerDown = true;
+        dg.rescuerPlayerId = player.id;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} đu dây tiếp cận hiện trường đáy vực an toàn! +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_COMFORT_NAM': {
+        if (!checkNear('RESCUE_NAM')) return { actionId, success: false, reason: 'Cần tiếp cận vị trí nạn nhân Nam dưới lòng vực.' };
+        if (!dg.rescuerDown) return { actionId, success: false, reason: 'Cứu nạn viên chưa xuống tới hiện trường.' };
+        if (dg.namComforted) return { actionId, success: true };
+        dg.namComforted = true;
+        dg.score += 2;
+        if (contrib) contrib.surveys++;
+        this.addAuditEvent('SERVICE', `${player.name} trấn an tinh thần và đánh giá tri giác nạn nhân Nam. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_SECURE_BIKE': {
+        if (!checkNear('RESCUE_NAM')) return { actionId, success: false, reason: 'Cần tiếp cận vị trí xe máy dưới lòng vực.' };
+        if (!dg.rescuerDown) return { actionId, success: false, reason: 'Cứu nạn viên chưa xuống tới hiện trường.' };
+        if (dg.bikeHazardSecured) return { actionId, success: true };
+        dg.bikeHazardSecured = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} đã ngắt khóa điện và khóa van xăng xe máy, loại trừ nguy cơ cháy nổ. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_FIRST_AID': {
+        if (!checkNear('RESCUE_NAM')) return { actionId, success: false, reason: 'Cần ở cạnh nạn nhân Nam.' };
+        if (!dg.namComforted) return { actionId, success: false, reason: 'Cần trấn an và kiểm tra tri giác nạn nhân trước.' };
+        if (dg.firstAidGiven) return { actionId, success: true };
+        dg.firstAidGiven = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('SERVICE', `${player.name} sơ cứu, sát khuẩn và băng ép vết thương hở cho Nam. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_SPLINT_NAM': {
+        if (!checkNear('RESCUE_NAM')) return { actionId, success: false, reason: 'Cần ở cạnh nạn nhân Nam.' };
+        if (!dg.firstAidGiven) return { actionId, success: false, reason: 'Cần sơ cứu vết thương trước.' };
+        if (dg.namSplinted) return { actionId, success: true };
+        dg.namSplinted = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('SERVICE', `${player.name} cố định nẹp xương đùi và mặc đai cứu hộ an toàn cho Nam. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_SIGNAL_READY_WINCH': {
+        if (!checkNear('RESCUE_NAM')) return { actionId, success: false, reason: 'Cần ở vị trí cứu nạn dưới vực để phát tín hiệu.' };
+        if (!dg.namSplinted || !dg.bikeHazardSecured) {
+          return { actionId, success: false, reason: 'Cần cố định nẹp đùi và xử lý nguy cơ xăng xe an toàn trước khi kéo tời.' };
+        }
+        if (dg.readyToWinch) return { actionId, success: true };
+        dg.readyToWinch = true;
+        dg.winchSignal = 'PULL';
+        dg.score += 1;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} phát tín hiệu: Nạn nhân đã nẹp cố định an toàn, sẵn sàng kéo tời! +1 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_PREP_RECEPTION': {
+        if (!checkNear('RESCUE_MEDICAL')) return { actionId, success: false, reason: 'Cần đến trạm y tế đón tiếp (Medical).' };
+        if (dg.status !== 'ACTIVE') return { actionId, success: false, reason: 'Chiến dịch chưa bắt đầu.' };
+        if (dg.receptionReady) return { actionId, success: true };
+        dg.receptionReady = true;
+        dg.score += 2;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('SERVICE', `${player.name} chuẩn bị cáng cứu thương và trang thiết bị hồi sức tại điểm y tế. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_OPERATE_WINCH': {
+        if (!checkNear('RESCUE_WINCH')) return { actionId, success: false, reason: 'Cần đứng tại máy tời (Winch).' };
+        if (!dg.readyToWinch) {
+          return { actionId, success: false, reason: 'Chưa có tín hiệu sẵn sàng từ dưới vực (cần nẹp đùi và xử lý nguy cơ xăng xe).' };
+        }
+        if (dg.namLifted) return { actionId, success: true };
+        dg.winchProgress = Math.min(100, dg.winchProgress + 50);
+        if (dg.winchProgress >= 100) {
+          dg.namLifted = true;
+          dg.score += 2;
+          if (contrib) contrib.deployments++;
+          this.addAuditEvent('MISSION', `${player.name} đã vận hành tời kéo cáng đưa Nam lên mặt đường đèo an toàn! +2 điểm.`, player.id);
+        } else {
+          this.addAuditEvent('MISSION', `${player.name} vận hành tời cứu hộ: Tiến độ nâng cáng đạt ${dg.winchProgress}%.`, player.id);
+        }
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_HANDOVER_MEDICAL': {
+        if (!checkNear('RESCUE_MEDICAL')) return { actionId, success: false, reason: 'Cần ở trạm y tế tiếp nhận (Medical).' };
+        if (!dg.namLifted || !dg.receptionReady) {
+          return { actionId, success: false, reason: 'Cần đưa Nam lên đỉnh đèo và chuẩn bị điểm đón tiếp y tế.' };
+        }
+        if (dg.medicalReceived) return { actionId, success: true };
+        dg.medicalReceived = true;
+        dg.score += 2;
+        if (contrib) contrib.audits++;
+        this.addAuditEvent('SERVICE', `${player.name} bàn giao Nam cho đội ngũ y tế, chuyển lên xe cứu thương cấp cứu kịp thời. +2 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_RECOVER_RESCUER': {
+        if (!checkNear('RESCUE_WINCH')) return { actionId, success: false, reason: 'Cần ở vị trí máy tời.' };
+        if (!dg.medicalReceived) return { actionId, success: false, reason: 'Cần bàn giao nạn nhân an toàn cho y tế trước.' };
+        if (dg.rescuerSafe) return { actionId, success: true };
+        dg.rescuerSafe = true;
+        dg.score += 1;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} hỗ trợ kéo cứu nạn viên và thu hồi dây cáp an toàn. +1 điểm.`, player.id);
+        if (dg.rescuerSafe && dg.bikeRecovered) {
+          dg.status = 'RESOLVED';
+          this.hatinhState.currentQuest = 3;
+          this.addAuditEvent('MISSION', `HOÀN THÀNH XUẤT SẮC CHIẾN DỊCH CỨU HỘ ĐÈO NGANG!`);
+        }
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DG_RECOVER_BIKE': {
+        if (!checkNear('RESCUE_WINCH')) return { actionId, success: false, reason: 'Cần ở vị trí máy tời.' };
+        if (!dg.medicalReceived) return { actionId, success: false, reason: 'Cần bàn giao nạn nhân an toàn cho y tế trước.' };
+        if (dg.bikeRecovered) return { actionId, success: true };
+        dg.bikeRecovered = true;
+        dg.score += 1;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} trục vớt xe máy khỏi lòng vực, hoàn tất dọn dẹp hiện trường. +1 điểm.`, player.id);
+        if (dg.rescuerSafe && dg.bikeRecovered) {
+          dg.status = 'RESOLVED';
+          this.hatinhState.currentQuest = 3;
+          this.addAuditEvent('MISSION', `HOÀN THÀNH XUẤT SẮC CHIẾN DỊCH CỨU HỘ ĐÈO NGANG!`);
+        }
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      // ===== QUEST 3: ĐỒNG LỘC =====
+      case 'DL_BRIEF_TUNG': {
+        if (!checkNear('DONG_LOC_TUNG')) return { actionId, success: false, reason: 'Cần đến gặp Bác Tùng tại Ban Quản lý di tích.' };
+        if (dl.tungBriefed) return { actionId, success: true };
+        dl.status = 'ACTIVE';
+        dl.tungBriefed = true;
+        dl.score += 3;
+        if (contrib) contrib.surveys++;
+        this.addAuditEvent('SERVICE', `${player.name} gặp Bác Tùng tiếp nhận nhiệm vụ: Giữ gìn trật tự, văn minh tại Khu di tích Ngã ba Đồng Lộc. +3 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_VERIFY_SAU': {
+        if (!checkNear('DONG_LOC_SAU')) return { actionId, success: false, reason: 'Cần đến vị trí Mụ Sáu.' };
+        if (!dl.tungBriefed) return { actionId, success: false, reason: 'Cần gặp Bác Tùng tiếp nhận nhiệm vụ trước.' };
+        if (dl.sauVerified) return { actionId, success: true };
+        dl.sauVerified = true;
+        dl.score += 4;
+        if (contrib) contrib.audits++;
+        this.addAuditEvent('AUDIT', `${player.name} tuyên truyền, nhắc nhở và thu giữ các ấn phẩm bói toán, mê tín dị đoan của Mụ Sáu. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_VERIFY_TEO': {
+        if (!checkNear('DONG_LOC_TEO')) return { actionId, success: false, reason: 'Cần đến vị trí Tèo.' };
+        if (!dl.tungBriefed) return { actionId, success: false, reason: 'Cần gặp Bác Tùng tiếp nhận nhiệm vụ trước.' };
+        if (dl.teoVerified) return { actionId, success: true };
+        dl.teoVerified = true;
+        dl.score += 4;
+        if (contrib) contrib.audits++;
+        this.addAuditEvent('AUDIT', `${player.name} lập biên bản xử lý hành vi đổi tiền lẻ hưởng chênh lệch 30% trái phép của Tèo. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_FILE_DOSSIER': {
+        if (!checkNear('DONG_LOC_TUNG')) return { actionId, success: false, reason: 'Cần đến gặp Bác Tùng để bàn giao tang vật.' };
+        if (!dl.sauVerified || !dl.teoVerified) {
+          return { actionId, success: false, reason: 'Cần xử lý xong cả 2 trường hợp Mụ Sáu và Tèo trước.' };
+        }
+        if (dl.dossierFiled) return { actionId, success: true };
+        dl.dossierFiled = true;
+        dl.score += 4;
+        if (contrib) contrib.plansProposed++;
+        this.addAuditEvent('PLAN', `${player.name} bàn giao tang vật vi phạm văn hóa cho Ban Quản lý lập hồ sơ xử lý. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_ORGANIZE_FLOW': {
+        if (!checkNear('DONG_LOC_FLOW')) return { actionId, success: false, reason: 'Cần đến khu vực phân luồng du khách.' };
+        if (!dl.tungBriefed) return { actionId, success: false, reason: 'Cần gặp Bác Tùng tiếp nhận nhiệm vụ trước.' };
+        if (dl.flowOrganized) return { actionId, success: true };
+        dl.flowOrganized = true;
+        dl.score += 4;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('MISSION', `${player.name} phân luồng lối đi một chiều cho các đoàn khách viếng, chấm dứt chen lấn xô đẩy. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_ASSIST_HAI': {
+        if (!checkNear('DONG_LOC_HAI')) return { actionId, success: false, reason: 'Cần đến gặp Bác Hải tại khu đón tiếp.' };
+        if (!dl.tungBriefed) return { actionId, success: false, reason: 'Cần gặp Bác Tùng tiếp nhận nhiệm vụ trước.' };
+        if (dl.haiAssisted) return { actionId, success: true };
+        dl.haiAssisted = true;
+        dl.score += 4;
+        if (contrib) contrib.surveys++;
+        this.addAuditEvent('SERVICE', `${player.name} đón tiếp và hỗ trợ đoàn cựu chiến binh của Bác Hải dâng hương tưởng niệm. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_SUPPLY_INCENSE': {
+        if (!checkNear('DONG_LOC_ALTAR')) return { actionId, success: false, reason: 'Cần đến khu vực bàn dâng hương tưởng niệm.' };
+        if (!dl.tungBriefed) return { actionId, success: false, reason: 'Cần gặp Bác Tùng tiếp nhận nhiệm vụ trước.' };
+        if (dl.incenseSupplied) return { actionId, success: true };
+        dl.incenseSupplied = true;
+        dl.score += 4;
+        if (contrib) contrib.deployments++;
+        this.addAuditEvent('SERVICE', `${player.name} cấp phát hương hoa miễn phí và hướng dẫn du khách thắp một nén tâm hương. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_CORRECT_TIKTOKER': {
+        if (!checkNear('DONG_LOC_TIKTOKER')) return { actionId, success: false, reason: 'Cần đến vị trí TikToker đang phát sóng.' };
+        if (!dl.tungBriefed) return { actionId, success: false, reason: 'Cần gặp Bác Tùng tiếp nhận nhiệm vụ trước.' };
+        if (dl.tiktokerCorrected) return { actionId, success: true };
+        dl.tiktokerCorrected = true;
+        dl.score += 4;
+        if (contrib) contrib.audits++;
+        this.addAuditEvent('AUDIT', `${player.name} chấn chỉnh hành vi quay phim thiếu tôn nghiêm, giải thích đúng lịch sử 10 Nữ liệt sĩ cho TikToker. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        return { actionId, success: true };
+      }
+
+      case 'DL_COMPLETE_MISSION': {
+        if (!checkNear('DONG_LOC_TUNG')) return { actionId, success: false, reason: 'Cần đến báo cáo Bác Tùng.' };
+        const allBranchesDone = dl.dossierFiled && dl.flowOrganized && dl.haiAssisted && dl.incenseSupplied && dl.tiktokerCorrected;
+        if (!allBranchesDone) {
+          return { actionId, success: false, reason: 'Chưa hoàn thành đủ 3 nhánh công việc tại Ngã ba Đồng Lộc.' };
+        }
+        if (dl.status === 'RESOLVED') return { actionId, success: true };
+        dl.status = 'RESOLVED';
+        dl.score += 4;
+        if (contrib) contrib.plansProposed++;
+        this.addAuditEvent('MISSION', `HOÀN THÀNH XUẤT SẮC TOÀN BỘ NHIỆM VỤ TẠI HÀ TĨNH! Tổng kết thành tích và trao thưởng. +4 điểm.`, player.id);
+        this.syncHatinhScores();
+        this.endMatch('Hoàn thành xuất sắc nhiệm vụ tại Hà Tĩnh');
+        return { actionId, success: true };
+      }
+
+      default:
+        return { actionId, success: false, reason: `Hành động ${action} không xác định.` };
+    }
   }
 
   public getSnapshot(): GameSnapshot {
@@ -1522,6 +2236,7 @@ export class GameEngine {
 
     return {
       roomCode: this.roomCode,
+      mapId: this.map.id,
       phase: this.phase,
       phaseTimerRemainingMs: this.phaseTimerRemainingMs,
       isPaused: this.isPaused,
@@ -1544,7 +2259,8 @@ export class GameEngine {
       recentAuditEvents: [...this.recentAuditEvents.slice(0, 20)],
       practiceCompleted: this.practiceCompleted,
       practiceCrateDelivered: this.practiceCrateDelivered,
-      ruleVersion: this.ruleVersion
+      ruleVersion: this.ruleVersion,
+      hatinhState: this.hatinhState ? JSON.parse(JSON.stringify(this.hatinhState)) : undefined
     };
   }
 }
