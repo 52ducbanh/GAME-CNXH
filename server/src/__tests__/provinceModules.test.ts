@@ -30,11 +30,15 @@ describe('Province contract and static registry', () => {
     expect(view.guide.target).toBeDefined();
     expect(view.results.recap).toBeInstanceOf(Array);
     expect(getInteractionActions(before, p.id).length).toBeGreaterThan(0);
+    p.x = a.map.points.WAREHOUSE.x; p.y = a.map.points.WAREHOUSE.y;
+    expect(a.handleIntent(p.id, { actionId: 'stock', type: 'PICK_CRATE' }).success).toBe(true);
     a.m1.surveys.A = true;
     expect(b.m1.surveys.A).toBe(false);
     a.resetToLobby();
     expect(a.m1.surveys.A).toBe(false);
     expect(a.getSnapshot().mapId).toBe(id);
     expect(a.totalScore).toBe(0);
+    expect([...a.crates.values()].every(crate => crate.state === 'WAREHOUSE' && crate.carriedByPlayerId === null)).toBe(true);
+    expect(a.resources.availableCrates).toBe(12);
   });
 });

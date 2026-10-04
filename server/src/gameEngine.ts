@@ -689,7 +689,7 @@ export class GameEngine {
     ];
 
     this.manpower.busy = 0;
-    if (this.province) { this.province.reset(); this.adoptProvinceState(); } else {
+    if (this.province) { this.province.reset(); this.adoptProvinceState(); this.initCrates(); } else {
     this.initCitizens();
     this.m1 = this.initM1();
     this.m2 = this.initM2();
