@@ -2,7 +2,7 @@
 
 - Branch: `refactor/province-modules`.
 - REFRACTOR_BASELINE: `b76710245e8f19f2a871de67ff4b4d7d2e586546`; HEAD tại lúc kiểm Phase 1 là baseline này. Checkpoint mới được ghi trong Git, xem `git log`.
-- Tiến độ runtime: **3/7**. Phase 0/1 hoàn tất; Phase 2 đã extract task, items, voting, resource và public-service rules qua narrow ports, đã có Ninh Bình đi qua registry.
+- Tiến độ runtime: **4/7**. Phase 0/1 hoàn tất; Phase 2 đã extract task, items, voting, resource và public-service rules qua narrow ports, đã có Ninh Bình đi qua registry.
 - Baseline hiện tại: **PASS** typecheck ba workspace, shared/server build, client build riêng `dist-province-refactor`, 103/103 tests (8 suites). Chưa dùng số tests lịch sử làm bằng chứng.
 - Phase 1: **PASS** typecheck/build; 9/9 contract tests. Đủ bảy definitions, semantic quest IDs, typed command/envelope boundary, ProvinceView và runtime contract.
 - **NOT TESTED** trong phase này: browser, socket hai client thực, host/projector trực quan. Unit tests đã kiểm authority, reset/rejoin, score, E/G catalogue, movement/collision.
@@ -11,7 +11,8 @@
 - Ninh Bình: **PASS** 6/6 region checks (24 cases tỉnh khác SKIPPED), 7/7 input catalogue checks, 7/7 Hà Tĩnh custom regression, 16/16 province contract/view/reset checks; typecheck/build PASS. Catalogue/guide đã chọn policy qua shared registry; HUD/minimap/results/projector và renderer đọc ProvinceView; native Hanoi adapter giữ art/depth.
 - Hải Phòng: **PASS** typecheck/build, 23/23 province/input checks, 6/6 region checks (24 SKIPPED); metadata palms và map bindings giữ nguyên. Rà soát đã sửa lỗi reset kho do nhánh migration mới thiếu gọi initCrates; 16 province tests kiểm lại ownership/reset đầy đủ.
 - Quảng Ninh: **PASS** typecheck/build, 23 province/input + 6 region checks (24 SKIPPED). `node scripts/verify-province-parity.mjs`: **PASS 426 fixtures/7 maps**, catalogue và guide so trực tiếp source của baseline commit, không giữ implementation cũ trong production.
-- Tiếp theo: Thanh Hóa; không thay art/geometry/scoring/protocol.
+- Thanh Hóa: **PASS** typecheck/build, 23 province/input + 6 region checks (24 SKIPPED). Giữ POI mobile B/C2 và paths/geometry nguyên trạng.
+- Tiếp theo: Nghệ An; không thay art/geometry/scoring/protocol.
 - Safety: source/config/runtime assets đã checkpoint; 594 file versioned/non-ignored được lưu zip có SHA256 ở thư mục backup Codex ngoài repo. 291 file art-source/screenshots/ZIP lớn được lưu archive, giữ nguyên tại chỗ và chưa stage.
 
 ---
