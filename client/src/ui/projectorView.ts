@@ -1,4 +1,4 @@
-import { GameSnapshot, getGameMap } from 'shared';
+import { GameSnapshot, getProvinceView, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
 export class ProjectorView {
@@ -30,6 +30,7 @@ export class ProjectorView {
   public update(snapshot: GameSnapshot) {
     if (this.container.classList.contains('hidden')) return;
 
+    const view=getProvinceView(snapshot);
     const totalSecs = Math.floor(snapshot.phaseTimerRemainingMs / 1000);
     const mins = Math.floor(totalSecs / 60);
     const secs = totalSecs % 60;
@@ -74,7 +75,7 @@ export class ProjectorView {
           <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl text-center">
             <div class="text-xs uppercase font-bold text-slate-400">Điểm số thành phố</div>
             <div class="text-5xl font-black text-emerald-400 mt-2">${snapshot.totalScore} <span class="text-lg text-slate-500">/100</span></div>
-            <div class="text-xs text-slate-400 mt-1">M1: ${snapshot.m1.score} | M2: ${snapshot.m2.score} | M3: ${snapshot.m3.score}</div>
+            <div class="text-xs text-slate-400 mt-1">${view.quests.map(q=>`${q.scoreLabel}: ${q.score}`).join(' | ')}</div>
           </div>
 
           <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl text-center">

@@ -1,3 +1,4 @@
+import { getProvinceView } from 'shared';
 import { InteractionContext } from 'shared';
 import { GameSnapshot, PlayerRole, WORLD_WIDTH, WORLD_HEIGHT, MapId, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
@@ -117,7 +118,7 @@ export class HudView {
   public update(s:GameSnapshot){
     this.container.dataset.phase=s.phase;
     const set=(id:string,value:string)=>{const el=this.container.querySelector('#'+id)!;if(el.textContent!==value)el.textContent=value;};
-    const id=this.socketClient.getPlayerId(),p=s.players[id],guide=getMissionGuide(s,id);
+    const id=this.socketClient.getPlayerId(),p=s.players[id],view=getProvinceView(s,id),guide=view.guide;
     const seconds=Math.max(0,Math.floor(s.phaseTimerRemainingMs/1000));
     set('hud-time',`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`);
     set('hud-budget',String(s.resources.currentBudget));set('hud-crates',String(s.resources.availableCrates));
@@ -128,7 +129,7 @@ export class HudView {
     (this.container.querySelector('#hud-paused') as HTMLElement).hidden=!s.isPaused;
     const role=this.container.querySelector('#select-role') as HTMLSelectElement;if(p&&document.activeElement!==role)role.value=p.role;
     set('mission-title',guide.title);set('mission-step',guide.step);
-    set('mission-phase',s.phase==='RUNNING'?`NHIỆM VỤ ${s.m1.status==='ACTIVE'?1:s.m2.status==='ACTIVE'?2:3} / 3`:({LOBBY:'KHÁM PHÁ THÀNH PHỐ',BRIEFING:'DẪN NHẬP',PRACTICE:'LÀM QUEN THAO TÁC',RESULTS:'KẾT QUẢ',RUNNING:''})[s.phase]);
+    set('mission-phase',s.phase==='RUNNING'?`NHIỆM VỤ ${view.activeQuestNumber} / ${view.quests.length}`:({LOBBY:'KHÁM PHÁ THÀNH PHỐ',BRIEFING:'DẪN NHẬP',PRACTICE:'LÀM QUEN THAO TÁC',RESULTS:'KẾT QUẢ',RUNNING:''})[s.phase]);
     const html=guide.checks.map(c=>`<div class="mission-check ${c.done?'done':''}"><i>${c.done?'✓':''}</i><span>${c.text}</span></div>`).join('');
     const checks=this.container.querySelector('#mission-checks')!;if(checks.innerHTML!==html)checks.innerHTML=html;
     this.target=guide.target;(this.container.querySelector('#btn-waypoint') as HTMLButtonElement).disabled=!this.target;
@@ -150,55 +151,23 @@ export class HudView {
     this.drawMinimap(s,id);
   }
   private drawMinimap(s:GameSnapshot,id:string){
-    if(s.mapId==='ha-tinh'&&s.hatinhState){
-      const isRescue=s.hatinhState.activeScene==='rescue'||s.hatinhState.dg.status==='ACTIVE';
-      const targetMinimap=isRescue?'/assets/regions/ha-tinh/rescue-minimap.webp':'/assets/regions/ha-tinh/minimap.webp';
-      if(!this.mapImage.src.endsWith(targetMinimap)){
-        this.mapImage.src=targetMinimap;
-      }
-    }
+    const view=getProvinceView(s,id);
+    if(!this.mapImage.src.endsWith(view.minimapUrl))this.mapImage.src=view.minimapUrl;
     const ctx=this.canvas.getContext('2d')!;ctx.clearRect(0,0,256,144);
     if(this.mapImage.complete&&this.mapImage.naturalWidth)ctx.drawImage(this.mapImage,0,0,256,144);
     ctx.save();ctx.scale(256/WORLD_WIDTH,144/WORLD_HEIGHT);
     const POINTS_OF_INTEREST=this.map.points,{a,b}=this.map.bridge;
-    ctx.strokeStyle=s.m2.bridgeBroken&&!s.m2.bridgeRepaired?'#76523d':'#e1d3b1';ctx.lineWidth=34;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
-    for(const [key,active] of [['CLINIC_FIXED',s.m1.fixedDeployed],['CLINIC_MOBILE_B',s.m1.mobileBDeployed],['CLINIC_MOBILE_C',s.m1.mobileCDeployed]] as const){
+    ctx.strokeStyle=view.visual.world.bridgeBlocked?'#76523d':'#e1d3b1';ctx.lineWidth=34;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    for(const [key,active] of [['CLINIC_FIXED',view.visual.clinics.fixed.deployed],['CLINIC_MOBILE_B',view.visual.clinics.mobileB.deployed],['CLINIC_MOBILE_C',view.visual.clinics.mobileC.deployed]] as const){
       const p=POINTS_OF_INTEREST[key];
       if(!p)continue;
       ctx.fillStyle=active?'#f1eddb':'#9d9b74';ctx.fillRect(p.x-26,p.y-35,52,30);
       if(active){ctx.fillStyle='#b94437';ctx.fillRect(p.x-4,p.y-31,8,24);ctx.fillRect(p.x-12,p.y-23,24,8);}
     }
-    if(s.mapId==='ha-tinh'&&s.hatinhState){
-      const ht=s.hatinhState;
-      const drawMarker=(key:string,color:string,size=16)=>{
-        const pt=POINTS_OF_INTEREST[key];
-        if(!pt)return;
-        ctx.fillStyle=color;ctx.beginPath();ctx.arc(pt.x,pt.y,size,0,Math.PI*2);ctx.fill();
-        ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.stroke();
-      };
-      if(ht.currentQuest===1){
-        drawMarker('WORKER_TUAN',ht.va.tuanReported?'#22c55e':'#f59e0b');
-        drawMarker('CAMERA',ht.va.cameraDeployed?'#22c55e':'#3b82f6');
-        drawMarker('SPILL',ht.va.spillCleaned?'#22c55e':'#ef4444');
-        drawMarker('TRAFFIC_VA',ht.va.trafficDiverted?'#22c55e':'#f59e0b');
-        drawMarker('WEIGH_STATION',ht.va.weighed?'#22c55e':'#8b5cf6');
-      } else if(ht.currentQuest===2){
-        drawMarker('RESCUE_STAGING',ht.dg.status==='ACTIVE'?'#22c55e':'#ef4444',20);
-        drawMarker('RESCUE_TRAFFIC_A',ht.dg.barrierA?'#22c55e':'#f59e0b');
-        drawMarker('RESCUE_TRAFFIC_B',ht.dg.barrierB?'#22c55e':'#f59e0b');
-        drawMarker('RESCUE_TECH',ht.dg.ropeReady?'#22c55e':'#3b82f6');
-        drawMarker('RESCUE_WINCH',ht.dg.namLifted?'#22c55e':'#8b5cf6');
-        drawMarker('RESCUE_NAM',ht.dg.firstAidGiven?'#22c55e':'#ef4444');
-        drawMarker('RESCUE_MEDICAL',ht.dg.medicalReceived?'#22c55e':'#10b981');
-      } else if(ht.currentQuest===3){
-        drawMarker('DONG_LOC_TUNG',ht.dl.tungBriefed?'#22c55e':'#f59e0b',20);
-        drawMarker('DONG_LOC_SAU',ht.dl.sauVerified?'#22c55e':'#ef4444');
-        drawMarker('DONG_LOC_TEO',ht.dl.teoVerified?'#22c55e':'#ef4444');
-        drawMarker('DONG_LOC_FLOW',ht.dl.flowOrganized?'#22c55e':'#3b82f6');
-        drawMarker('DONG_LOC_HAI',ht.dl.haiAssisted?'#22c55e':'#10b981');
-        drawMarker('DONG_LOC_ALTAR',ht.dl.incenseSupplied?'#22c55e':'#ec4899');
-        drawMarker('DONG_LOC_TIKTOKER',ht.dl.tiktokerCorrected?'#22c55e':'#8b5cf6');
-      }
+    for(const marker of view.markers){
+      const pt=POINTS_OF_INTEREST[marker.pointId];if(!pt)continue;
+      ctx.fillStyle=marker.color??(marker.done?'#22c55e':'#f59e0b');ctx.beginPath();ctx.arc(pt.x,pt.y,marker.size??16,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.stroke();
     }
     if(this.target){ctx.strokeStyle='#fff3b5';ctx.lineWidth=7;ctx.beginPath();ctx.arc(this.target.x,this.target.y,24,0,Math.PI*2);ctx.stroke();}
     for(const p of Object.values(s.players))if(p.isOnline){ctx.fillStyle=p.id===id?'#fff0a9':p.color;ctx.strokeStyle=p.id===id?'#634d2c':'#fff9e9';ctx.lineWidth=6;ctx.beginPath();ctx.arc(p.x,p.y,p.id===id?23:18,0,Math.PI*2);ctx.fill();ctx.stroke();}

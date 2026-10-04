@@ -1,3 +1,11 @@
+# Gameplay refactor checks — 04/10/2026
+
+Lượt mới/bằng chứng cụ thể trong PROJECT_STATUS. Baseline 103 tests PASS. ProvinceModules suite hiện 16 tests registry/map/view/state/reset; gameplayCapabilities 5 tests task/resource/vote/item/public-service state. Khi migrate tỉnh dùng regionalMaps `-t <tên tỉnh>` và ghi SKIPPED đúng, không gọi các tỉnh bị lọc là PASS.
+
+Build shared trước server/tests; client build riêng `npm run build --workspace=client -- --outDir dist-province-refactor`. Không ghi đè client/dist live. Browser/socket chưa chạy ở phase đầu, ghi NOT TESTED. Các số/commands/report dưới là lịch sử.
+
+---
+
 # Kiểm tra và tái hiện
 
 Mốc kiểm tra đã chạy, source và những phần chưa xác minh ghi ở [PROJECT_STATUS](PROJECT_STATUS.md). Lần bàn giao tài liệu không chạy lại toàn bộ test; kết quả phát triển trước đó và report còn trong repo được phân biệt với kiểm tra mới.

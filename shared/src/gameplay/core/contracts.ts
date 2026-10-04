@@ -2,6 +2,8 @@ import type { GameSnapshot, JobType } from '../../types.js';
 import type { MapId } from '../../worldMaps.js';
 import type { CollisionState } from '../../collisionGeometry.js';
 import type { MissionGuide } from '../../missionGuide.js';
+import type { CatalogueContext, InteractionAction } from './interactions.js';
+import type { GuideContext } from './guide.js';
 
 export interface QuestDefinition {
   id: string;
@@ -50,7 +52,7 @@ export interface ProvinceView {
   totalScore: number;
   guide: MissionGuide;
   minimapUrl: string;
-  markers: { pointId: string; done: boolean; color?: string }[];
+  markers: { pointId: string; done: boolean; color?: string; size?: number }[];
   visual: {
     world: CollisionState;
     bridgeFrame: number;
@@ -59,7 +61,17 @@ export interface ProvinceView {
   };
   results: {
     metrics: { label: string; value: string }[];
-    recap: string[];
+    recap: { mission: string; title: string; narrative: string; theoryLesson: string }[];
     bridgeLabel: string;
+    bridgePlan: string;
+    bridgeRepaired: boolean;
   };
+}
+
+export interface ProvinceModule {
+  definition: ProvinceDefinition;
+  interactions(context: CatalogueContext): void;
+  describeAction(intent: InteractionAction['intent']): string | undefined;
+  guide(context: GuideContext): MissionGuide;
+  view(snapshot: GameSnapshot, guide: MissionGuide): ProvinceView;
 }

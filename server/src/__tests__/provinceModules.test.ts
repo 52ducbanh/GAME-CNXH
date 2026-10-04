@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { MAP_IDS, getGameMap, getProvinceDefinition, PROVINCES } from 'shared';
+import { MAP_IDS, getGameMap, getProvinceDefinition, getProvinceView, getInteractionActions, PROVINCES } from 'shared';
+import { GameEngine } from '../gameEngine.js';
 
 describe('Province contract and static registry', () => {
   it('registers exactly the seven playable provinces', () => {
@@ -18,5 +19,22 @@ describe('Province contract and static registry', () => {
     expect(getProvinceDefinition('nghe-an').quests).toBe(getProvinceDefinition('hanoi').quests);
     expect(getProvinceDefinition('nghe-an').presentation.palms).not.toEqual(getProvinceDefinition('hai-phong').presentation.palms);
     expect(getProvinceDefinition('ha-tinh').gameplay).toBe('hatinh-rescue');
+  });
+  it.each(MAP_IDS)('%s owns fresh room state, reset and presentation selectors', id => {
+    const a = new GameEngine('A', 'host', id), b = new GameEngine('B', 'host', id);
+    const p = a.addPlayer('p', 'P'); a.startRunning();
+    const before = a.getSnapshot(), view = getProvinceView(before, p.id);
+    expect(view.quests.map(q => q.id)).toEqual(getProvinceDefinition(id).quests.map(q => q.id));
+    expect(view.totalScore).toBe(before.totalScore);
+    expect(view.minimapUrl).toBe(getGameMap(id).minimapUrl);
+    expect(view.guide.target).toBeDefined();
+    expect(view.results.recap).toBeInstanceOf(Array);
+    expect(getInteractionActions(before, p.id).length).toBeGreaterThan(0);
+    a.m1.surveys.A = true;
+    expect(b.m1.surveys.A).toBe(false);
+    a.resetToLobby();
+    expect(a.m1.surveys.A).toBe(false);
+    expect(a.getSnapshot().mapId).toBe(id);
+    expect(a.totalScore).toBe(0);
   });
 });

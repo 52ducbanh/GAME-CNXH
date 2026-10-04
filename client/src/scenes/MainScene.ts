@@ -1,3 +1,5 @@
+import { getProvincePresentation } from '../gameplay/registry.js';
+import { getProvinceView } from 'shared';
 import { InputController, InputAction } from '../game/inputController.js';
 import { InteractionAction, InteractionContext, resolveInteraction, getInteractionActions } from 'shared';
 import Phaser from 'phaser';
@@ -59,12 +61,12 @@ export class MainScene extends Phaser.Scene {
   public preload(){
     this.loadingLabel=this.add.text(this.scale.width/2,this.scale.height/2,`Đang mở bản đồ ${this.map.name}…`,{fontFamily:'Arial, sans-serif',fontSize:'16px',color:'#314c3c',backgroundColor:'#f5e8cb',padding:{x:18,y:12}}).setOrigin(.5).setDepth(10000);
     this.load.on('progress',(value:number)=>this.loadingLabel?.setText(`Đang mở bản đồ ${this.map.name}… ${Math.round(value*100)}%`));
-    if(this.map.id==='hanoi')preloadHanoi(this);else preloadRegion(this,this.map);
+    getProvincePresentation(this.map.id).preload(this,this.map);
   }
   public create(){
     this.loadingLabel?.destroy();
     createCharacterAnimations(this);
-    this.landmarks=this.map.id==='hanoi'?drawHanoi(this):drawRegion(this,this.map);
+    this.landmarks=getProvincePresentation(this.map.id).draw(this,this.map);
     this.groundHotspotsGraphics = this.add.graphics().setDepth(0);
     this.routeGraphics=this.add.graphics().setDepth(1);
     const circle=this.add.graphics();circle.lineStyle(3,0xffedb5,.9).strokeEllipse(0,0,40,22);
@@ -120,8 +122,8 @@ export class MainScene extends Phaser.Scene {
     if(this.overview)this.toggleOverview();
   }
   private isTyping(){return this.controls?.isTyping()??false;}
-  private collisionContext(){const s=this.currentSnapshot;return {bridgeBlocked:this.blockedBridge(),fixedDeployed:!!s?.m1.fixedDeployed,mobileBDeployed:!!s?.m1.mobileBDeployed,mobileCDeployed:!!s?.m1.mobileCDeployed};}
-  private blockedBridge(){const s=this.currentSnapshot;return !!s&&s.m2.bridgeBroken&&!s.m2.bridgeRepaired;}
+  private collisionContext(){return this.currentSnapshot?getProvinceView(this.currentSnapshot,this.localPlayerId).visual.world:{};}
+  private blockedBridge(){return !!this.collisionContext().bridgeBlocked;}
 
   private handleControlAction(action:InputAction){
     if(action==='MENU'){this.onMenu?.();this.resetInput();return;}

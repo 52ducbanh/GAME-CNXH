@@ -1,4 +1,4 @@
-import { GameSnapshot, generateRecap, KNOWLEDGE_SOURCES, getGameMap } from 'shared';
+import { GameSnapshot, getProvinceView, KNOWLEDGE_SOURCES, getGameMap } from 'shared';
 import { SocketClient } from '../network/socketClient.js';
 
 export class ResultsModal {
@@ -24,17 +24,9 @@ export class ResultsModal {
     const myId = this.socketClient.getPlayerId();
     const isHost = this.socketClient.getHostToken() !== '';
 
-    const recapData = generateRecap(
-      snapshot.m1.planCommitted,
-      snapshot.m2.planCommitted,
-      snapshot.m3.status === 'RESOLVED',
-      snapshot.citizensServedCount,
-      snapshot.totalCitizensCount,
-      snapshot.resources.currentBudget,
-      snapshot.resources.availableCrates
-    );
+    const view=getProvinceView(snapshot,myId);
 
-    let recapsHtml = recapData.recaps.map(r => `
+    let recapsHtml = view.results.recap.map(r => `
       <div class="p-4 bg-slate-800/80 border border-slate-700 rounded-xl space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs uppercase font-extrabold text-blue-400 tracking-wider">${r.mission}</span>
@@ -63,7 +55,7 @@ export class ResultsModal {
           <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-center">
             <div class="text-[11px] text-slate-400 uppercase font-semibold">Tổng điểm</div>
             <div class="text-2xl font-black text-emerald-400 mt-1">${snapshot.totalScore} <span class="text-xs text-slate-400">/100</span></div>
-            <div class="text-[10px] text-slate-400 mt-0.5">M1:${snapshot.m1.score} | M2:${snapshot.m2.score} | M3:${snapshot.m3.score}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${view.quests.map(q=>`${q.scoreLabel}:${q.score}`).join(' | ')}</div>
           </div>
 
           <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-center">
@@ -80,10 +72,10 @@ export class ResultsModal {
 
           <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-center">
             <div class="text-[11px] text-slate-400 uppercase font-semibold">Hạ tầng Cầu B</div>
-            <div class="text-lg font-bold ${snapshot.m2.bridgeRepaired ? 'text-emerald-400' : 'text-amber-400'} mt-2">
-              ${snapshot.m2.bridgeRepaired ? 'Đã sửa chữa' : 'Dùng tuyến vòng'}
+            <div class="text-lg font-bold ${view.results.bridgeRepaired ? 'text-emerald-400' : 'text-amber-400'} mt-2">
+              ${view.results.bridgeLabel}
             </div>
-            <div class="text-[10px] text-slate-400 mt-0.5">${snapshot.m2.planCommitted}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${view.results.bridgePlan}</div>
           </div>
         </div>
 

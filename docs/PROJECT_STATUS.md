@@ -2,13 +2,14 @@
 
 - Branch: `refactor/province-modules`.
 - REFRACTOR_BASELINE: `b76710245e8f19f2a871de67ff4b4d7d2e586546`; HEAD tại lúc kiểm Phase 1 là baseline này. Checkpoint mới được ghi trong Git, xem `git log`.
-- Tiến độ runtime: **0/7**. Phase 0/1 hoàn tất; Phase 2 đã extract task, items, voting, resource và public-service rules qua narrow ports, chưa đổi production routing.
+- Tiến độ runtime: **1/7**. Phase 0/1 hoàn tất; Phase 2 đã extract task, items, voting, resource và public-service rules qua narrow ports, đã có Ninh Bình đi qua registry.
 - Baseline hiện tại: **PASS** typecheck ba workspace, shared/server build, client build riêng `dist-province-refactor`, 103/103 tests (8 suites). Chưa dùng số tests lịch sử làm bằng chứng.
 - Phase 1: **PASS** typecheck/build; 9/9 contract tests. Đủ bảy definitions, semantic quest IDs, typed command/envelope boundary, ProvinceView và runtime contract.
 - **NOT TESTED** trong phase này: browser, socket hai client thực, host/projector trực quan. Unit tests đã kiểm authority, reset/rejoin, score, E/G catalogue, movement/collision.
 - Known behavior giữ nguyên: catalogue Hà Tĩnh range72/handler107; handler rescue không có phase guard chung; bridge MOVE chưa giới hạn tốc độ; Hà Tĩnh vẫn dùng recap public-service cũ; C11 floor/rail chưa được chứng nhận.
 - Phase 2: **PASS** typecheck/build và 14/14 contract/capability tests; runtime preset có semantic state, total score derive; không import movement/session/socket/GameEngine. Kiểm receipt/lifecycle cũ ở baseline; chưa gọi extracted preset là migrated production.
-- Tiếp theo: migrate từng province; không thay art/geometry/scoring/protocol.
+- Ninh Bình: **PASS** 6/6 region checks (24 cases tỉnh khác SKIPPED), 7/7 input catalogue checks, 7/7 Hà Tĩnh custom regression, 16/16 province contract/view/reset checks; typecheck/build PASS. Catalogue/guide đã chọn policy qua shared registry; HUD/minimap/results/projector và renderer đọc ProvinceView; native Hanoi adapter giữ art/depth.
+- Tiếp theo: Hải Phòng rồi migrate các province còn lại; không thay art/geometry/scoring/protocol.
 - Safety: source/config/runtime assets đã checkpoint; 594 file versioned/non-ignored được lưu zip có SHA256 ở thư mục backup Codex ngoài repo. 291 file art-source/screenshots/ZIP lớn được lưu archive, giữ nguyên tại chỗ và chưa stage.
 
 ---

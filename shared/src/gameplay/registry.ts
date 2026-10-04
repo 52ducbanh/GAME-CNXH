@@ -1,3 +1,7 @@
+import { publicServiceModule } from './presets/public-service/module.js';
+import { hatinhModule } from './provinces/ha-tinh/module.js';
+import { buildMissionGuide } from './core/guide.js';
+import type { GameSnapshot } from '../types.js';
 import type { MapId } from '../worldMaps.js';
 import type { ProvinceDefinition } from './core/contracts.js';
 import { hanoi } from './provinces/hanoi/definition.js';
@@ -13,3 +17,14 @@ export const PROVINCES: Readonly<Record<MapId, ProvinceDefinition>> = {
   'thanh-hoa': thanhHoa, 'nghe-an': ngheAn, 'ha-tinh': haTinh,
 };
 export function getProvinceDefinition(id: MapId): ProvinceDefinition { return PROVINCES[id]; }
+
+export const PROVINCE_MODULES = {
+  hanoi:publicServiceModule(hanoi),'ninh-binh':publicServiceModule(ninhBinh),'hai-phong':publicServiceModule(haiPhong),
+  'quang-ninh':publicServiceModule(quangNinh),'thanh-hoa':publicServiceModule(thanhHoa),'nghe-an':publicServiceModule(ngheAn),
+  'ha-tinh':hatinhModule,
+};
+export function getProvinceModule(id:MapId){return PROVINCE_MODULES[id];}
+export function getProvinceView(s:GameSnapshot,playerId=''){
+  const module=getProvinceModule(s.mapId);
+  return module.view(s,buildMissionGuide(s,playerId,module.guide));
+}

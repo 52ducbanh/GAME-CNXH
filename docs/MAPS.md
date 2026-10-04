@@ -2,6 +2,10 @@
 
 Cập nhật geometry04/10/2026: xem [collision report](COLLISION_IMPLEMENTATION_REPORT.md) và [PROJECT_STATUS](PROJECT_STATUS.md). Các handover hình ảnh03/10 là lịch sử. Tất cả bảy vùng đã có registry, cảnh, geometry, POI và gameplay; không có vùng thứ tám chỉ dự kiến trong source. Đồ họa là cảnh minh họa cố định + lớp che + đối tượng động, không có Tiled/TMX hoặc thư viện tileset ghép tự do.
 
+## Gameplay/map binding sau extraction
+
+Bảy definitions ở `shared/src/gameplay/provinces/<id>/definition.ts` bind bằng MapId đến `worldMaps.ts`. Province metadata chứa NPC/palms/waterfall/rescue scene; renderer nhận metadata. Geometry, generator, asset paths và generated TS không đổi trong refactor.
+
 ## Registry và kích thước
 
 Đối chiếu input/camera04/10/2026: lượt input không đổi art, POI, geometry hoặc generator. Các thay đổi camera/candidate tương tác nằm ở MainScene/shared interactions; [TASK_CURRENT](../TASK_CURRENT.md) xác định phạm vi bàn giao.

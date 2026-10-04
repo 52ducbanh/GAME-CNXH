@@ -1,3 +1,7 @@
+import { createProvinceRuntime } from './gameplay/registry.js';
+import type { ProvinceRuntime } from './gameplay/core/contracts.js';
+import type { GameplayPorts } from './gameplay/core/ports.js';
+import { startTask } from './gameplay/core/tasks.js';
 import { getInteractionActions } from 'shared';
 import {
   RoomPhase,
@@ -73,7 +77,9 @@ export class GameEngine {
   public m2: Mission2State;
   public m3: Mission3State;
   public voting: VoteState | null = null;
-  public totalScore: number = 0;
+  private legacyScore = 0;
+  public get totalScore(){return this.province?.totalScore() ?? this.legacyScore;}
+  public set totalScore(value:number){this.legacyScore=value;}
   public recentAuditEvents: AuditEvent[] = [];
   public personalContributions: Map<string, PersonalContribution> = new Map();
 
@@ -81,6 +87,8 @@ export class GameEngine {
   public practiceCrateDelivered: boolean = false;
   public ruleVersion: number = 1;
   public hatinhState?: HatinhState;
+
+  private province?: ProvinceRuntime;
 
   private processedActionIds = new Map<string, {fingerprint:string;ack:ServerAck}>();
   private hostToken: string;
@@ -115,6 +123,8 @@ export class GameEngine {
     this.m2 = this.initM2();
     this.m3 = this.initM3();
     this.initCrates();
+    this.province = createProvinceRuntime(mapId, this.gameplayPorts());
+    if (this.province) this.adoptProvinceState();
     if (mapId === 'ha-tinh') {
       this.hatinhState = this.initHatinhState();
       this.syncHatinhScores();
@@ -205,6 +215,30 @@ export class GameEngine {
     this.m1.status = va.status === 'RESOLVED' ? 'RESOLVED' : va.status === 'ACTIVE' ? 'ACTIVE' : 'LOCKED';
     this.m2.status = dg.status === 'RESOLVED' ? 'RESOLVED' : (dg.status === 'ACTIVE' || dg.status === 'GATHERING' || dg.status === 'COUNTDOWN') ? 'ACTIVE' : 'LOCKED';
     this.m3.status = dl.status === 'RESOLVED' ? 'RESOLVED' : dl.status === 'ACTIVE' ? 'ACTIVE' : 'LOCKED';
+  }
+
+  private adoptProvinceState(){
+    if(!this.province)return;
+    const projection=this.province.projection();
+    this.m1=projection.m1;this.m2=projection.m2;this.m3=projection.m3;this.citizens=projection.citizens;
+  }
+
+  private gameplayPorts():GameplayPorts {
+    return {
+      read:{map:this.map,phase:()=>this.phase,paused:()=>this.isPaused,snapshot:()=>this.getSnapshot()},
+      team:{contribution:id=>this.personalContributions.get(id),onlineCount:()=>this.getOnlinePlayerCount(),audit:this.addAuditEvent.bind(this)},
+      tasks:{manpower:this.manpower,start:(player,spec,id)=>startTask(player,spec,this.manpower,id)},
+      items:{get:id=>this.crates.get(id)},
+      resources:{ledger:this.resources,deduct:this.deductBudget.bind(this)},
+      votes:{active:()=>!!this.voting?.active,start:this.startVote.bind(this)},
+      lifecycle:{end:this.endMatch.bind(this),recoverWorld:reason=>{
+        for(const player of this.players.values())if(!isWalkableForMap(this.map.id,player.x,player.y,this.collisionContext())){
+          const point=safeSpawn(this.map.id,player,this.collisionContext());player.x=point.x;player.y=point.y;
+          this.addAuditEvent('PLAYER',reason(player),player.id);
+        }
+      }},
+      practice:{complete:()=>{this.practiceCompleted=true;},deliver:()=>{this.practiceCrateDelivered=true;}},
+    };
   }
 
   public getHostToken(): string {
@@ -499,6 +533,8 @@ export class GameEngine {
       }
     }
 
+    this.province?.tick(dtMs);
+
     // Hà Tĩnh Đèo Ngang countdown ticking and scene transition
     if (this.hatinhState && this.hatinhState.dg.status === 'COUNTDOWN') {
       this.hatinhState.dg.countdownRemaining = Math.max(0, this.hatinhState.dg.countdownRemaining - dtMs / 1000);
@@ -607,7 +643,9 @@ export class GameEngine {
     }
     this.manpower.busy = 0;
 
-    if (this.map.id === 'ha-tinh') {
+    if (this.province) {
+      this.province.start();
+    } else if (this.map.id === 'ha-tinh') {
       this.hatinhState = this.initHatinhState();
       this.hatinhState.va.status = 'ACTIVE';
       this.syncHatinhScores();
@@ -651,6 +689,7 @@ export class GameEngine {
     ];
 
     this.manpower.busy = 0;
+    if (this.province) { this.province.reset(); this.adoptProvinceState(); } else {
     this.initCitizens();
     this.m1 = this.initM1();
     this.m2 = this.initM2();
@@ -659,6 +698,8 @@ export class GameEngine {
     if (this.map.id === 'ha-tinh') {
       this.hatinhState = this.initHatinhState();
       this.syncHatinhScores();
+    }
+
     }
 
     for (const p of this.players.values()) {
@@ -816,6 +857,7 @@ export class GameEngine {
   }
 
   private handleStartJob(player: Player, payload: { type: JobType; targetId: string }, actionId: string): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId,type:'START_JOB',payload:payload});
     if (this.isPaused) {
       return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     }
@@ -948,6 +990,8 @@ export class GameEngine {
       this.manpower.busy--;
     }
     player.activeJob = null;
+
+    if(this.province){this.province.completeTask(player,job);return;}
 
     const contrib = this.personalContributions.get(player.id);
 
@@ -1217,6 +1261,7 @@ export class GameEngine {
   }
 
   private handleDeliverCrate(player: Player, targetId: string, actionId: string): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId,type:'DELIVER_CRATE',payload:{targetId}});
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     if (!player.carriedCrateId) return { actionId, success: false, reason: 'Bạn không mang kiện vật tư nào để giao.' };
 
@@ -1327,6 +1372,7 @@ export class GameEngine {
   }
 
   private handleProposePlan(player: Player, missionId: 'M1' | 'M2', plan: string, actionId: string): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId,type:'PROPOSE_PLAN',payload:{missionId,plan}});
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     const hq = this.map.points.HEADQUARTERS;
     if (distance(player.x, player.y, hq.x, hq.y) > INTERACTION_RADIUS) {
@@ -1454,6 +1500,8 @@ export class GameEngine {
       }
     }
 
+    if(this.province){this.province.commitVote(missionId,winningPlan);this.voting=null;return;}
+
     // Commit winning plan
     if (missionId === 'M1') {
       const plan = winningPlan as M1Plan;
@@ -1507,6 +1555,7 @@ export class GameEngine {
   }
 
   private handleConfirmM3Plan(player: Player, actionId: string): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId,type:'CONFIRM_M3_PLAN',payload:undefined});
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     const hq = this.map.points.HEADQUARTERS;
     if (distance(player.x, player.y, hq.x, hq.y) > INTERACTION_RADIUS) {
@@ -1531,6 +1580,7 @@ export class GameEngine {
   }
 
   private handlePublishNotice(player: Player, missionId: 'M1' | 'M2' | 'M3', actionId: string): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId,type:'PUBLISH_NOTICE',payload:{missionId}});
     if (this.isPaused) return { actionId, success: false, reason: 'Trận đấu đang tạm dừng.' };
     const board = this.map.points.NOTICE_BOARD;
     if (distance(player.x, player.y, board.x, board.y) > INTERACTION_RADIUS) {
@@ -1630,6 +1680,7 @@ export class GameEngine {
 
   // Quick helper for M2 and M3 field inquiries
   public surveyBridgeM2(player: Player): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId:'surveyBridgeM2',type:'START_JOB',payload:{type:'SURVEY_BRIDGE',targetId:'BRIDGE'}});
     if (this.m2.status !== 'ACTIVE') return { actionId: 'bridge_survey', success: false, reason: 'M2 chưa kích hoạt.' };
     const bridgePoi = this.map.points.BRIDGE;
     if (distance(player.x, player.y, bridgePoi.x, bridgePoi.y) > INTERACTION_RADIUS) {
@@ -1648,6 +1699,7 @@ export class GameEngine {
   }
 
   public receiveFeedbackM3(player: Player): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId:'receiveFeedbackM3',type:'START_JOB',payload:{type:'RECEIVE_FEEDBACK_C',targetId:'ZONE_C'}});
     if (this.m3.status !== 'ACTIVE') return { actionId: 'm3_feedback', success: false, reason: 'M3 chưa kích hoạt.' };
     const zoneC = this.map.points.ZONE_C;
     if (distance(player.x, player.y, zoneC.x, zoneC.y) > INTERACTION_RADIUS) {
@@ -1666,6 +1718,7 @@ export class GameEngine {
   }
 
   public crossCheckClinicM3(player: Player, targetId: string): ServerAck {
+    if(this.province)return this.province.dispatch(player,{actionId:'crossCheckClinicM3',type:'START_JOB',payload:{type:'CROSS_CHECK_CLINIC',targetId}});
     if (this.m3.status !== 'ACTIVE') return { actionId: 'm3_cross_check', success: false, reason: 'M3 chưa kích hoạt.' };
     const poi = this.map.points[targetId];
     if (!poi) return { actionId: 'm3_cross_check', success: false, reason: 'Địa điểm không hợp lệ.' };
