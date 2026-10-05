@@ -10,7 +10,8 @@ archive = ROOT / 'docs/art-source/hanoi-v3'
 archive.mkdir(parents=True, exist_ok=True)
 SOURCE = archive / 'clean-scene.png'
 if not SOURCE.exists():
- shutil.copy2(Path(r'C:/Users/52duc/.codex/generated_images/01a0fc0d-fb10-73a1-b5c1-ccab280049ee/exec-895a5fb7-e247-4d41-b201-2d954e2a73b6.png'),SOURCE)
+ fallback = OUT / 'scene.webp'
+ if fallback.exists(): SOURCE = fallback
 im = Image.open(SOURCE).convert('RGB')
 assert im.size == (1672, 941)
 im.save(OUT / 'scene.webp', quality=94, method=6)
@@ -44,18 +45,52 @@ for name,depth,poly in layers:
  manifest.append(dict(key=name,x=x0,y=y0,width=x1-x0,height=y1-y0,depth=depth,polygon=poly))
 (OUT / 'layers.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
 (ROOT / 'client/src/game/hanoiSceneLayers.ts').write_text('export const SCENE_LAYERS = '+json.dumps(manifest,indent=2)+' as const;\n',encoding='utf-8')
+
+def clean_alpha_halo(image, matte=(255,255,255)):
+ image=image.convert('RGBA'); w,h=image.size; pix=image.load()
+ for y in range(h):
+  for x in range(w):
+   r,g,b,a=pix[x,y]
+   if a==0: continue
+   is_edge=any(0<=x+dx<w and 0<=y+dy<h and pix[x+dx,y+dy][3]==0 for dx,dy in [(-1,0),(1,0),(0,-1),(0,1)])
+   if is_edge:
+    if a<250:
+     an=a/255.0
+     ur=max(0,min(255,int((r-(1.0-an)*matte[0])/max(0.01,an))))
+     ug=max(0,min(255,int((g-(1.0-an)*matte[1])/max(0.01,an))))
+     ub=max(0,min(255,int((b-(1.0-an)*matte[2])/max(0.01,an))))
+     pix[x,y]=(ur,ug,ub,a)
+    elif r>200 and g>200 and b>200:
+     for dist in range(1,4):
+      found=False
+      for dx,dy in [(-dist,0),(dist,0),(0,-dist),(0,dist)]:
+       nx,ny=x+dx,y+dy
+       if 0<=nx<w and 0<=ny<h and pix[nx,ny][3]>200:
+        nr,ng,nb,_=pix[nx,ny]
+        if not (nr>200 and ng>200 and nb>200):
+         pix[x,y]=(nr,ng,nb,255); found=True; break
+      if found: break
+ return image
+
 bridge_source=archive / 'bridge-states.png'
-if not bridge_source.exists():
- shutil.copy2(Path(r'C:/Users/52duc/.codex/generated_images/01a0fc0d-fb10-73a1-b5c1-ccab280049ee/exec-cbd98b66-fccf-4fe5-8b0d-4d70d1400358.png'),bridge_source)
+if not bridge_source.exists() and (OUT / 'bridge.png').exists():
+ bridge_source = OUT / 'bridge.png'
+
 bridge=Image.open(bridge_source).convert('RGBA')
-sheet=Image.new('RGBA',(216,240))
-for row,(top,bottom) in enumerate([(0,360),(360,685),(685,1024)]):
- cell=bridge.crop((0,top,bridge.width,bottom))
- alpha=cell.getchannel('A').point(lambda a:255 if a>=160 else 0)
- cell.putalpha(alpha)
- cell=cell.crop(alpha.getbbox())
- size=(216,round(cell.height*216/cell.width))
- cell=cell.resize(size,Image.Resampling.LANCZOS)
- sheet.alpha_composite(cell,(0,80*row+10))
-sheet.save(OUT / 'bridge.png', optimize=True)
+if bridge.height > 300:
+ sheet=Image.new('RGBA',(216,240))
+ for row,(top,bottom) in enumerate([(0,360),(360,685),(685,1024)]):
+  cell=bridge.crop((0,top,bridge.width,bottom))
+  alpha=cell.getchannel('A').point(lambda a:255 if a>=160 else 0)
+  cell.putalpha(alpha)
+  cell=cell.crop(alpha.getbbox())
+  size=(216,round(cell.height*216/cell.width))
+  cell=cell.resize(size,Image.Resampling.LANCZOS)
+  sheet.alpha_composite(cell,(0,80*row+10))
+ sheet=clean_alpha_halo(sheet)
+ sheet.save(OUT / 'bridge.png', optimize=True)
+else:
+ sheet=clean_alpha_halo(bridge)
+ sheet.save(OUT / 'bridge.png', optimize=True)
+
 print(json.dumps({'scene':im.size,'foregroundLayers':len(layers),'runtimeBytes':sum(p.stat().st_size for p in OUT.glob('*'))}))

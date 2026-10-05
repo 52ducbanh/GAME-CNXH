@@ -1226,7 +1226,7 @@ export const REGIONAL_LAYERS:Record<string,{key:string;x:number;y:number;width:n
  "ha-tinh": [
   {
    "key": "hq",
-   "depth": 460,
+   "depth": 480,
    "polygon": [
     [
      800,
@@ -1278,7 +1278,7 @@ export const REGIONAL_LAYERS:Record<string,{key:string;x:number;y:number;width:n
   },
   {
    "key": "port-roof",
-   "depth": 680,
+   "depth": 685,
    "polygon": [
     [
      30,
@@ -1301,6 +1301,172 @@ export const REGIONAL_LAYERS:Record<string,{key:string;x:number;y:number;width:n
    "y": 620,
    "width": 121,
    "height": 61
+  },
+  {
+   "key": "warehouse",
+   "depth": 744,
+   "polygon": [
+    [
+     0,
+     606
+    ],
+    [
+     251,
+     565
+    ],
+    [
+     304,
+     637
+    ],
+    [
+     271,
+     676
+    ],
+    [
+     0,
+     684
+    ]
+   ],
+   "x": 0,
+   "y": 565,
+   "width": 305,
+   "height": 120
+  },
+  {
+   "key": "clinic",
+   "depth": 487,
+   "polygon": [
+    [
+     282,
+     359
+    ],
+    [
+     424,
+     334
+    ],
+    [
+     523,
+     378
+    ],
+    [
+     509,
+     431
+    ],
+    [
+     311,
+     438
+    ]
+   ],
+   "x": 282,
+   "y": 334,
+   "width": 242,
+   "height": 105
+  },
+  {
+   "key": "west-canopy",
+   "depth": 644,
+   "polygon": [
+    [
+     465,
+     477
+    ],
+    [
+     524,
+     451
+    ],
+    [
+     579,
+     492
+    ],
+    [
+     584,
+     556
+    ],
+    [
+     545,
+     601
+    ],
+    [
+     487,
+     584
+    ],
+    [
+     456,
+     536
+    ]
+   ],
+   "x": 456,
+   "y": 451,
+   "width": 129,
+   "height": 151
+  },
+  {
+   "key": "south-roof",
+   "depth": 854,
+   "polygon": [
+    [
+     499,
+     751
+    ],
+    [
+     588,
+     725
+    ],
+    [
+     681,
+     768
+    ],
+    [
+     659,
+     813
+    ],
+    [
+     524,
+     810
+    ]
+   ],
+   "x": 499,
+   "y": 725,
+   "width": 183,
+   "height": 89
+  },
+  {
+   "key": "east-canopy",
+   "depth": 695,
+   "polygon": [
+    [
+     1494,
+     532
+    ],
+    [
+     1560,
+     508
+    ],
+    [
+     1625,
+     552
+    ],
+    [
+     1635,
+     615
+    ],
+    [
+     1591,
+     659
+    ],
+    [
+     1519,
+     644
+    ],
+    [
+     1490,
+     593
+    ]
+   ],
+   "x": 1490,
+   "y": 508,
+   "width": 146,
+   "height": 152
   }
  ]
 };

@@ -176,10 +176,15 @@ DATA['ha-tinh'] = dict(
         label(610, 160, 'ĐÈO NGANG\nĐIỂM TẬP KẾT', 12),
         label(1060, 400, 'KHU DI TÍCH\nNGÃ BA ĐỒNG LỘC', 12)
     ],
-    foreground=[
-        layer('hq', 460, [[800, 430], [900, 430], [900, 470], [800, 470]]),
+  foreground=[
+        layer('hq', 480, [[800, 430], [900, 430], [900, 470], [800, 470]]),
         layer('memorial', 230, [[970, 120], [1130, 120], [1130, 220], [970, 220]]),
-        layer('port-roof', 680, [[30, 620], [150, 620], [150, 680], [30, 680]])
+        layer('port-roof', 685, [[30, 620], [150, 620], [150, 680], [30, 680]]),
+        layer('warehouse', 744, [[0, 606], [251, 565], [304, 637], [271, 676], [0, 684]]),
+        layer('clinic', 487, [[282, 359], [424, 334], [523, 378], [509, 431], [311, 438]]),
+        layer('west-canopy', 644, [[465, 477], [524, 451], [579, 492], [584, 556], [545, 601], [487, 584], [456, 536]]),
+        layer('south-roof', 854, [[499, 751], [588, 725], [681, 768], [659, 813], [524, 810]]),
+        layer('east-canopy', 695, [[1494, 532], [1560, 508], [1625, 552], [1635, 615], [1591, 659], [1519, 644], [1490, 593]])
     ],
     water=[],
     boats=[]
@@ -193,15 +198,20 @@ def prepare_collision():
 def prepare():
  manifest={}
  for slug,data in DATA.items():
-  archive=ARCHIVE/slug; source=archive/'clean-scene.png'
-  if not source.exists(): continue
+  archive=ARCHIVE/slug
   out=ROOT/'client/public/assets/regions'/slug; out.mkdir(parents=True,exist_ok=True)
+  source=archive/'clean-scene.png'
+  if not source.exists():
+   source = out/'scene.webp'
+  if not source.exists(): continue
   im=Image.open(source).convert('RGB')
   assert im.size==(1672,941), (slug,im.size)
   im.save(out/'scene.webp',quality=94,method=6)
   im.resize((256,144),Image.Resampling.LANCZOS).save(out/'minimap.webp',quality=88)
   if slug == 'ha-tinh':
    rescue_src = archive / 'rescue-scene.png'
+   if not rescue_src.exists():
+    rescue_src = out / 'rescue-scene.webp'
    if rescue_src.exists():
     rim = Image.open(rescue_src).convert('RGB')
     assert rim.size == (1672, 941)
