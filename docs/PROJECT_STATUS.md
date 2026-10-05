@@ -32,6 +32,8 @@ Theo phản hồi người dùng, game còn lỗi hình ảnh và di chuyển. �
 
 Trạng thái ba gói: **chờ tái hiện và sửa**, tiêu chí gồm ảnh/video trước–sau và route kiểm lại. Không dùng 141 tests PASS để chứng nhận visual/movement đúng. Lượt này chỉ thay Markdown, không chạy lại test/build hoặc thay runtime. Các báo cáo riêng sẽ được tổng hợp khi tích hợp PR.
 
+Theo yêu cầu chốt phạm vi cụ thể, BUGFIX_ASSIGNMENTS bổ sung chủ file duy nhất và ba đầu việc mỗi người. leeduc giữ toàn bộ prepare-regions và regionalMapData; chuowng giữ toàn bộ MainScene; datmup giữ collision/solver/input/server MOVE. Thay DATA hình học hoặc reconcile ngoài ownership phải chuyển trace/đề xuất cho chủ file, tránh hai nhánh cùng sửa. Đây vẫn là tài liệu giao việc, chưa sửa lỗi game.
+
 ---
 
 # Lịch sử — Xác minh trước push GitHub — 04/10/2026
