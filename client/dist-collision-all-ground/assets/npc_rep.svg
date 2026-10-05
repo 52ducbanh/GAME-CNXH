@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <ellipse cx="16" cy="28" rx="8" ry="3" fill="#0f172a" opacity="0.3" />
+  <!-- Bìa kẹp hồ sơ khảo sát / tiếp nhận trên tay -->
+  <rect x="6" y="16" width="6" height="8" fill="#fef08a" stroke="#ca8a04" stroke-width="0.8" rx="0.5" />
+  <!-- Thân áo sơ mi xanh lá đại diện -->
+  <rect x="11" y="12" width="10" height="12" fill="#16a34a" stroke="#15803d" stroke-width="1" rx="2" />
+  <rect x="12" y="24" width="3" height="4" fill="#1e293b" />
+  <rect x="17" y="24" width="3" height="4" fill="#1e293b" />
+  <!-- Đầu -->
+  <circle cx="16" cy="8" r="5" fill="#fde047" stroke="#ca8a04" stroke-width="0.8" />
+  <!-- Mũ tai bèo / nón cán bộ -->
+  <ellipse cx="16" cy="6" rx="6" ry="2" fill="#15803d" />
+  <circle cx="16" cy="5" r="3.5" fill="#16a34a" />
+</svg>

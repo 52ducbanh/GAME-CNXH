@@ -23,7 +23,7 @@ export function floorPolygon(f:Floor):number[][] {
  return [[ax-ux*e-uy*w,ay-uy*e+ux*w],[bx+ux*e-uy*w,by+uy*e+ux*w],[bx+ux*e+uy*w,by+uy*e-ux*w],[ax-ux*e+uy*w,ay-uy*e-ux*w]];
 }
 export function footInsidePolygon(p:MapPoint,poly:number[][],radius:number):boolean {return polygonContains(p,poly)&&polygonDistance(p,poly)>=radius-1e-6;}
-export function rectTouchesFoot(p:MapPoint,r:Rect,radius:number):boolean {return Math.hypot(p.x-Math.max(r.x,Math.min(p.x,r.x+r.width)),p.y-Math.max(r.y,Math.min(p.y,r.y+r.height)))<radius;}
+export function rectTouchesFoot(p:MapPoint,r:Rect,radius:number):boolean {return Math.hypot(p.x-Math.max(r.x,Math.min(p.x,r.x+r.width)),p.y-Math.max(r.y,Math.min(p.y,r.y+r.height)))<radius-1e-5;}
 // At an approach, a foot may span dry land and deck. Only its wet portion needs
 // support. Never let a path tube exempt water, walls or other solid footprints.
 export function waterBlocksFoot(p:MapPoint,poly:number[][],floors:number[][][],radius:number):boolean {

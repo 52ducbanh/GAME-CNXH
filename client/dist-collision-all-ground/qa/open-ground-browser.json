@@ -1,0 +1,84 @@
+{
+  "method": "isolated production bundle; 7 Chrome pages with held arrow key; real teammate sockets route to new open ground; no engine or scene mutation",
+  "checks": [
+    {
+      "mapId": "hanoi",
+      "keyboardDistance": 36.70860000000005,
+      "socketRouteSegments": 12,
+      "target": {
+        "x": 400,
+        "y": 500
+      },
+      "screenshot": "hanoi-browser.png",
+      "pass": true
+    },
+    {
+      "mapId": "hai-phong",
+      "keyboardDistance": 65.22419999999943,
+      "socketRouteSegments": 14,
+      "target": {
+        "x": 760,
+        "y": 550
+      },
+      "screenshot": "hai-phong-browser.png",
+      "pass": true
+    },
+    {
+      "mapId": "quang-ninh",
+      "keyboardDistance": 100.16058462913848,
+      "socketRouteSegments": 7,
+      "target": {
+        "x": 400,
+        "y": 600
+      },
+      "screenshot": "quang-ninh-browser.png",
+      "pass": true
+    },
+    {
+      "mapId": "ninh-binh",
+      "keyboardDistance": 102.34800000000007,
+      "socketRouteSegments": 20,
+      "target": {
+        "x": 760,
+        "y": 305
+      },
+      "screenshot": "ninh-binh-browser.png",
+      "pass": true
+    },
+    {
+      "mapId": "thanh-hoa",
+      "keyboardDistance": 101.12039999999848,
+      "socketRouteSegments": 33,
+      "target": {
+        "x": 900,
+        "y": 535
+      },
+      "screenshot": "thanh-hoa-browser.png",
+      "pass": true
+    },
+    {
+      "mapId": "nghe-an",
+      "keyboardDistance": 101.12579999999957,
+      "socketRouteSegments": 22,
+      "target": {
+        "x": 600,
+        "y": 520
+      },
+      "screenshot": "nghe-an-browser.png",
+      "pass": true
+    },
+    {
+      "mapId": "ha-tinh",
+      "keyboardDistance": 52.935599999998885,
+      "socketRouteSegments": 8,
+      "target": {
+        "x": 950,
+        "y": 510
+      },
+      "screenshot": "ha-tinh-browser.png",
+      "pass": true
+    }
+  ],
+  "pageErrors": [],
+  "pass": true
+}

@@ -1,3 +1,25 @@
+# Collision đủ bảy bản đồ — 05/10/2026
+
+PASS thực chạy: `python scripts/prepare-regions.py --geometry-only`; `npm run build --workspace=shared`; `npm run typecheck`; `npm test` **182/182,20 suites**; `npm run build --workspace=server`; `npm run build --workspace=client -- --outDir dist-collision-all-ground`; `git diff --check`.
+
+`remainingOpenGround.test.ts` có24 tests mới (14 dry points,5 footprint suites,5 water points); route với bridge/deployment context đi qua server GameEngine, lấy mẫu <=1px và solver. `openGround.test.ts` 15 tests của lượt trước vẫn PASS. Full suite kiểm POI/cầu nguyên-hỏng/lều 7 maps.
+
+QA riêng: phục vụ `CLIENT_DIST_PATH=client/dist-collision-all-ground` trên server loopback riêng. Không dùng server đang chứa phòng người dùng. Đặt `QA_ISOLATED=1`, `PREVIEW_URL=<URL QA>`, `UI_QA_PLAYWRIGHT_PATH=<bundled playwright/index.mjs>` khi Playwright không có trong repo, `QA_REPORT_DIR=client/dist-collision-all-ground/qa`; chạy `node scripts/verify-open-ground-browser.mjs`. PASS7 maps: held key550ms -> server snapshot dịch chuyển36–102px, teammate socket theo116 route segments đến điểm ground mới,zero pageerror. Xem7 PNG browser. Không sửa engine/scene qua script, không lưu host/player tokens vào evidence.
+
+`python scripts/verify-open-ground-visual.py --out client/dist-collision-all-ground/qa` render7 overlays; xanh ground, xanh dương water, đỏ solids, vàng path centre. Overlay Hà Nội chỉ ground/extra footprints, không bao gồm geometry viết tay; không dùng như mask walkable. Đã xem5 overlays map vừa sửa. Build sẽ xóa evidence trong outDir, chạy QA sau build.
+
+NOT TESTED: thủ công mọi tuyến, mobile vật lý/Wi-Fi/load, toàn bộ bờ nước/cầu rail theo pixel, geometry cảnh cứu hộ Hà Tĩnh. IAB bị thiếu kernel.js; browser QA dùng Chrome headless hiện có. Chi tiết hiện hành ở PROJECT_STATUS.
+
+---
+
+# Collision đường/sân — 05/10/2026
+
+Lệnh đã chạy: `python scripts/prepare-regions.py --geometry-only`; `npm run build --workspace=shared`; `npm run typecheck`; `npm test`; `npm run build --workspace=server`; `npm run build --workspace=client -- --outDir dist-collision-open-ground`; `git diff --check`. Lần cuối PASS 158/158 tests, 19 suites và các build/typecheck. Vite cần quyền ghi khi sandbox chỉ đọc.
+
+Regression mới: `server/src/__tests__/openGround.test.ts` kiểm ground support, arbitrary sampling ở seam, route segments, solver, vật cản/nước. Suite regionalMaps kiểm server MOVE qua POI, movement kiểm solver 7 maps. Overlay nền chính hai tỉnh ở `client/dist-collision-open-ground/qa/`; chỉ kiểm geometry bằng mắt, chưa browser gameplay/cứu hộ Hà Tĩnh/mobile thật. Build outDir sẽ xóa evidence; không dùng ảnh overlay để chứng nhận runtime. Chi tiết hiện hành ở PROJECT_STATUS.
+
+---
+
 # Kiểm tra hiện hành — Host + Projector dashboard 04/10/2026
 
 **PASS141/141 tests,13 suites**, typecheck ba workspace, shared/server build và client build riêng. Dashboard, player modal và input regressions bên dưới đã thực chạy. Phần UI stability/refactor phía sau là lịch sử; không dùng số132 hoặc cổng cũ làm chứng nhận bản mới.

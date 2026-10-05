@@ -1,3 +1,15 @@
+# Hiện hành — Rà soát collision đủ bảy bản đồ — 05/10/2026
+
+Đã sửa lỗi đất/sân bị giới hạn vào dải đường ở năm map còn lại (Hà Nội, Quảng Ninh, Ninh Bình, Thanh Hóa, Nghệ An); giữ sửa Hải Phòng/Hà Tĩnh. PASS 182 tests/20 suites, typecheck/build và Chrome+Socket.IO smoke7 maps. Source, evidence, giới hạn và lệnh ở PROJECT_STATUS/TESTING. Bundle mới `client/dist-collision-all-ground`; chưa cập nhật các server đang dùng. Giới hạn còn mở: geometry cứu hộ Hà Tĩnh dùng chung nền chính, manual/mobile/shoreline-rail QA đầy đủ. Không tự chạy những phần ngoài scope hoặc commit.
+
+---
+
+# Hiện hành — Collision đường/sân Hải Phòng, Hà Tĩnh — 05/10/2026
+
+Đã bổ sung vùng đường/sân trong nguồn collision và 15 regression tests. PASS 158 tests/typecheck/shared-server-client build riêng. Chi tiết và giới hạn ở PROJECT_STATUS. Tiếp theo: browser QA bundle `client/dist-collision-open-ground`, nhất là chuyển cảnh cứu hộ Hà Tĩnh (nền khác nhưng geometry chung); chưa restart phiên đang dùng. Giữ các sửa working tree có trước.
+
+---
+
 # TASK_CURRENT — Sửa lỗi hình ảnh và di chuyển theo ba nhánh
 
 Người dùng yêu cầu chia việc sửa các lỗi hình ảnh/di chuyển còn thấy trong game. Phân công chi tiết, phạm vi file và nghiệm thu ở [BUGFIX_ASSIGNMENTS](docs/BUGFIX_ASSIGNMENTS.md):

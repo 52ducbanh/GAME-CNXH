@@ -482,13 +482,27 @@ export class GameEngine {
     if (!isWalkableForMap(this.map.id,newX,newY,isBridgeBlocked)) {
       return { actionId, success:false, reason:'Vướng vật cản!' };
     }
-    if(payload.path!==undefined&&(!Array.isArray(payload.path)||payload.path.length>MOVEMENT_CONFIG.maxPacketPoints))return {actionId,success:false,reason:'MOVE: đường đi không hợp lệ.'};
-    const path:unknown[]=[...((payload.path??[]) as unknown[]),{x:newX,y:newY}];
-    let from:MapPoint=player;
-    for(const rawPoint of path){
-      const point=readPayload(rawPoint);
-      if(!point||typeof point.x!=='number'||typeof point.y!=='number'||!Number.isFinite(point.x)||!Number.isFinite(point.y)||!isMovementSegmentClear(this.map.id,from,{x:point.x,y:point.y},isBridgeBlocked))return {actionId,success:false,reason:'MOVE: đoạn di chuyển đi qua vật cản.'};
-      from={x:point.x,y:point.y};
+    const rawPath = Array.isArray(payload.path) ? payload.path : [];
+    const pathPoints: MapPoint[] = [];
+    for (const rawPoint of rawPath) {
+      const pt = readPayload(rawPoint);
+      if (!pt || typeof pt.x !== 'number' || typeof pt.y !== 'number' || !Number.isFinite(pt.x) || !Number.isFinite(pt.y)) {
+        return { actionId, success: false, reason: 'MOVE: đường đi không hợp lệ.' };
+      }
+      pathPoints.push({ x: pt.x, y: pt.y });
+    }
+    if (!pathPoints.length || Math.hypot(pathPoints[pathPoints.length - 1].x - newX, pathPoints[pathPoints.length - 1].y - newY) > 1e-4) {
+      pathPoints.push({ x: newX, y: newY });
+    }
+
+    let from: MapPoint = player;
+    for (const point of pathPoints) {
+      if (Math.hypot(from.x - point.x, from.y - point.y) > 1e-4) {
+        if (!isMovementSegmentClear(this.map.id, from, point, isBridgeBlocked)) {
+          return { actionId, success: false, reason: 'MOVE: đoạn di chuyển đi qua vật cản.' };
+        }
+      }
+      from = point;
     }
 
     // Cancel in-place job if player moved significantly (> 10 units)

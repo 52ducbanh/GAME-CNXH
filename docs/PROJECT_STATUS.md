@@ -1,3 +1,31 @@
+# Hiện hành — Rà soát và mở sân/đường năm tỉnh còn lại — 05/10/2026
+
+Theo yêu cầu tiếp theo, đã đối chiếu ảnh nền và tái hiện vùng đất/sân bị chặn ở **Hà Nội, Quảng Ninh, Ninh Bình, Thanh Hóa, Nghệ An**. Bổ sung 14 groundAreas theo nền: Hà Nội 2 (sân phía bắc Hồ Gươm, lối phía tây); Quảng Ninh 4 (sân bảng thông tin, lối trước trạm/ven vịnh, lối phía tây, sân kho); Ninh Bình 3 (sân trụ sở–trạm, lối phía tây, sân kho/lối phía nam); Thanh Hóa 2 (đường trước thành/lối sang trạm và sân kho); Nghệ An 3 (sân trụ sở, lối vòng ao sen, sân kho). Giữ các vùng Hải Phòng/Hà Tĩnh của lượt trước.
+
+Nguồn: `scripts/collision-layout.json`, sinh `shared/src/collisionLayout.ts` bằng `python scripts/prepare-regions.py --geometry-only`. Hà Nội trước đây bỏ qua groundAreas: `shared/src/mapData.ts::isOnGroundArea` bổ sung support trong `isWalkable`, vẫn xét hồ/kênh/solids/cầu hỏng. `movement.ts::collisionContact` dùng normal cạnh sân cả Hà Nội. Không đổi footprints, nước, floor/cầu, POI, gameplay, foot14, sprint, swept movement/sliding hay network authority. Các sửa input/server/navigation trước lượt này được giữ nguyên.
+
+**PASS cuối:** `npm run build --workspace=shared`, `npm run typecheck`, `npm test` **182/182 tests, 20 suites**, server build, client build riêng `dist-collision-all-ground`, `git diff --check`. Có cảnh báo bundle >500kB. 24 tests mới ở `remainingOpenGround.test.ts`: 14 vị trí dry-ground, route qua GameEngine với cầu nguyên/hỏng và lều đã triển khai; lấy mẫu đoạn route mỗi <=1px để bắt khe support; solver di chuyển; mọi footprint và 5 điểm nước vẫn khóa. 15 tests Hải Phòng/Hà Tĩnh của lượt trước cũng PASS. Các điểm sát lều Hà Nội/cây Quảng Ninh/vùng cầu Thanh Hóa được giữ chặn đúng, không nới vật cản để ép test qua.
+
+**QA runtime mới:** `scripts/verify-open-ground-browser.mjs` trên server QA loopback riêng/bundle mới. 7 trang Chrome headless, 7 teammate sockets; browser giữ arrow550ms, snapshot server xác nhận dịch chuyển 36–102px; teammate đi theo route đến một điểm sân mới/map, tổng116 segments được ACK; zero pageerror. Đã xem 7 ảnh browser và 5 overlay geometry của các map vừa sửa. Tool IAB không khởi động được vì kernel.js thiếu, dùng Chrome headless/PW bundled thay thế. Đây là smoke test input/cảnh và tuyến mạng; không nhận là chơi thủ công toàn bộ bản đồ.
+
+Evidence local: `client/dist-collision-all-ground/qa/open-ground-browser.json`, `<mapId>-browser.png`, `<mapId>-geometry.png`. Script overlay `verify-open-ground-visual.py` có thể chạy lại, không thay ảnh nguồn; overlay Hà Nội chỉ hiển thị ground/footprints được sinh, geometry viết tay vẫn được xét trong tests. Build outDir sẽ xóa QA evidence. Hai bundle QA local có thể untracked, không stage build output.
+
+**Chưa kiểm:** mobile vật lý, Wi-Fi/load, cảm giác chơi thủ công mọi tuyến, từng góc công trình/shoreline/rail của toàn cảnh, geometry theo nền cứu hộ Hà Tĩnh vẫn còn giới hạn dùng chung. Server QA chỉ để xem bundle mới; chưa cập nhật/restart các server đang dùng, không ghi đè client/dist, không commit/stage hay xóa asset lịch sử. Không dùng cổng/phòng QA làm dữ kiện cấu hình bền vững.
+
+---
+
+# Hiện hành — Mở vùng đường/sân Hải Phòng và Hà Tĩnh — 05/10/2026
+
+Đã sửa source theo phản hồi đường đi bị chặn: bổ sung 4 groundAreas Hải Phòng (quảng trường trước nhà hát, lối phía tây/kho, khoảng sân trung tâm, lối phía đông) và 5 groundAreas Hà Tĩnh (đường đèo, nhánh Đồng Lộc, đường quốc lộ, sân điều phối, sân cảng). Nguồn `scripts/collision-layout.json`, sinh lại bằng `python scripts/prepare-regions.py --geometry-only`. Không đổi các colliders, waterCollision, floor/bridge flags, foot14, swept movement hoặc sliding. GroundAreas chỉ bổ sung support; solids/nước vẫn xét sau support. Các sửa input/server/navigation/movement có sẵn trong working tree được giữ nguyên, không thuộc lượt này.
+
+Thêm `server/src/__tests__/openGround.test.ts`: 15 tests cho 6 điểm sân/đường (cầu nguyên/hỏng, lều triển khai), route segments, solver đi ngang, 8 điểm vật cản/nước và continuity chỗ nối Hải Phòng. Lần đầu full suite phát hiện khe support tại (550,303.333); đã chỉnh cạnh sân và thêm regression lấy mẫu 0.5px. Lần cuối **PASS npm test 158/158, 19 suites**, typecheck 3 workspaces, shared/server build và client build riêng `dist-collision-open-ground`. Client build bị EPERM trong sandbox chỉ đọc; chạy lại có quyền ghi đã PASS, còn cảnh báo bundle >500kB. `git diff --check` PASS khi đọc ngoài sandbox.
+
+QA nhìn ảnh nền chính hai tỉnh và ảnh overlay geometry; evidence local `client/dist-collision-open-ground/qa/hai-phong-geometry.png`, `ha-tinh-geometry.png` (xanh lá ground, xanh dương water, đỏ solids, vàng paths). Đây là ảnh geometry, **không phải browser playtest**. RegionalMaps kiểm tuyến POI qua GameEngine/MOVE; Movement kiểm solver tới POI cả 7 map/cầu nguyên-hỏng.
+
+**Chưa kiểm:** browser gameplay với bundle mới, cảm giác giữ phím/joystick, thiết bị thật; alignment của nền cứu hộ Hà Tĩnh với geometry dùng chung vẫn cần task riêng. Chưa chứng nhận toàn bộ công trình/đường bờ đã trace đúng trên mọi cảnh. Không restart server đang dùng, không ghi đè client/dist, không commit/stage. Bundle QA mới nằm local và có thể hiện untracked; không stage build output. Source mới chỉ có hiệu lực khi phục vụ bundle/server mới.
+
+---
+
 # Hiện hành — Phân công sửa lỗi hình ảnh/di chuyển — 04/10/2026
 
 Theo phản hồi người dùng, game còn lỗi hình ảnh và di chuyển. Đã lập [BUGFIX_ASSIGNMENTS](BUGFIX_ASSIGNMENTS.md): leeduc sửa nền/ảnh/mask; chuowng sửa nhân vật/depth/animation/camera; datmup sửa collision/route/movement. Không giao nhiệm vụ cho ducbanh. Baseline source `69d95bb`; chưa có sửa code hoặc root cause mới được chứng minh trong lượt phân công.

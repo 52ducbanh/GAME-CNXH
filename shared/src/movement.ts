@@ -52,8 +52,8 @@ export function collisionContact(mapId:MapId,p:MapPoint,context:CollisionContext
     if(!map.floors.some(f=>footInsidePolygon(p,floorPolygon(f),radius))){
       for(const [i,poly] of map.waterCollision.entries())if(waterBlocksFoot(p,poly,map.floors.map(floorPolygon),radius))return {id:`${mapId}:water:${i}`,layer:'water',normal:polygonNormal(p,poly.map(([x,y])=>({x,y})),polygonContains(p,poly))};
     }
-    for(const poly of map.groundAreas)if(polygonContains(p,poly))return {id:`${mapId}:courtyard-edge`,layer:'walkway',normal:polygonNormal(p,poly.map(([x,y])=>({x,y})),false)};
   }
+  for(const poly of map.groundAreas)if(polygonContains(p,poly))return {id:`${mapId}:courtyard-edge`,layer:'walkway',normal:polygonNormal(p,poly.map(([x,y])=>({x,y})),false)};
   // Union of path tubes: use the segment with greatest clearance.
   let clearance=-Infinity,normal={x:0,y:0};
   for(const path of map.paths)for(let i=1;i<path.points.length;i++){

@@ -1,4 +1,4 @@
-﻿export interface Rect {
+export interface Rect {
   x: number;
   y: number;
   width: number;
@@ -32,6 +32,7 @@ export interface PointOfInterest {
 }
 
 import { MOVEMENT_CONFIG } from './constants.js';
+import { COLLISION_LAYOUT } from './collisionLayout.js';
 // Reference scene coordinates are native pixels (1672 × 941).
 // Server collision, guidance and minimap share the traced paths and shorelines.
 export const MAP_CONFIG = { width:1672, height:941, spawn:{x:490,y:400} };
@@ -119,11 +120,19 @@ export const STATIC_COLLIDERS:Rect[]=[
  // Trunks occupy the ground; overhanging foliage is a foreground layer.
  ...[[475,345],[513,632],[575,665],[724,219],[1109,279],[960,709],[1032,778],[1325,686]].map(([x,y])=>({x:x-8,y:y-8,width:16,height:16}))
 ];
+// Explicit dry plazas supplement path tubes; water and solid checks still run below.
+export function isOnGroundArea(x:number,y:number,radius:number=MOVEMENT_CONFIG.footRadius):boolean {
+ const p={x,y};
+ return COLLISION_LAYOUT.hanoi.groundAreas.some(poly=>{
+  const outline=poly.map(([px,py])=>({x:px,y:py}));
+  return inPolygon(x,y,outline)&&outline.every((a,i)=>distanceToSegment(p,a,outline[(i+1)%outline.length])>=radius-1e-6);
+ });
+}
 export function isWalkable(x:number,y:number,bridgeBlocked=false,radius:number=MOVEMENT_CONFIG.footRadius):boolean{
- return isOnWalkway(x,y,0)&&!isInLake(x,y,radius)&&!isInCanal(x,y,radius)&&
+ return (isOnWalkway(x,y,0)||isOnGroundArea(x,y,radius))&&!isInLake(x,y,radius)&&!isInCanal(x,y,radius)&&
  ![...STATIC_COLLIDERS,...(bridgeBlocked?[BRIDGE_COLLIDER]:[])].some(rect=>{
   const cx=Math.max(rect.x,Math.min(x,rect.x+rect.width)),cy=Math.max(rect.y,Math.min(y,rect.y+rect.height));
-  return Math.hypot(x-cx,y-cy)<radius;
+  return Math.hypot(x-cx,y-cy)<radius-1e-5;
  });
 }
 

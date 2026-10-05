@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Bóng đổ chân -->
+  <ellipse cx="16" cy="28" rx="8" ry="3" fill="#0f172a" opacity="0.3" />
+  
+  <!-- Chân / Giày -->
+  <rect x="12" y="22" width="3" height="6" fill="#1e293b" rx="1" />
+  <rect x="17" y="22" width="3" height="6" fill="#1e293b" rx="1" />
+
+  <!-- Thân áo công tác cán bộ -->
+  <rect x="10" y="12" width="12" height="11" fill="#2563eb" stroke="#1d4ed8" stroke-width="1" rx="2" />
+  <line x1="16" y1="12" x2="16" y2="23" stroke="#93c5fd" stroke-width="1" />
+
+  <!-- Cánh tay -->
+  <rect x="7" y="13" width="3" height="8" fill="#1d4ed8" rx="1" />
+  <rect x="22" y="13" width="3" height="8" fill="#1d4ed8" rx="1" />
+
+  <!-- Cổ & Đầu -->
+  <circle cx="16" cy="8" r="5" fill="#fde047" stroke="#ca8a04" stroke-width="0.8" />
+  <!-- Mái tóc ngắn chỉn chu -->
+  <path d="M 11 7 Q 16 3 21 7 Z" fill="#1e293b" />
+</svg>

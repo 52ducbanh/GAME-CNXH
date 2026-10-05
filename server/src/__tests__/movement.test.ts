@@ -54,4 +54,24 @@ describe('Movement safety and real-map regressions',()=>{
     expect(f.frame(0,'stone',true,16).bump).toBe(true);for(let i=0;i<300;i++){const e=f.frame(0,'stone',true,16);expect(e.bump).toBe(false);expect(e.steps).toHaveLength(0);}
     f.frame(0,'stone',false,160);expect(f.frame(0,'stone',true,16).bump).toBe(true);f.reset();expect(f.frame(0,'stone',false,16).steps).toHaveLength(0);
   });
+  it('navigation generates valid route even for POIs near building footprints or slightly offset',()=>{
+    for(const map of GAME_MAPS){
+      for(const poi of Object.values(map.points)){
+        const route=findWalkingRoute(map.spawn,poi,false,map.id);
+        expect(route.length,`Route to ${poi.id} on ${map.id}`).toBeGreaterThan(0);
+      }
+    }
+  });
+  it('server accepts multi-step sliding paths around obstacles without false rejections',()=>{
+    const e=new GameEngine('SLIDE_QA','host'),p=e.addPlayer('p1','Tester');
+    p.x=452.5;p.y=345;
+    let cur={x:p.x,y:p.y};
+    for(let step=0;step<5;step++){
+      const r=resolveMovement('hanoi',cur,{x:6,y:-6});
+      const ack=e.handleIntent(p.id,{actionId:`slide_${step}`,type:'MOVE',payload:{...r.position,path:r.path}});
+      expect(ack.success,`Step ${step} failed: ${ack.reason}`).toBe(true);
+      expect({x:p.x,y:p.y}).toEqual(r.position);
+      cur=r.position;
+    }
+  });
 });

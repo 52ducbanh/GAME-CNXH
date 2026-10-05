@@ -18,9 +18,21 @@ export class TouchControls {
       this.thumb.style.transform = `translate(${dx * scale}px,${dy * scale}px)`;
       this.input?.setTouchMove({ x: d > 6 ? dx * scale / radius : 0, y: d > 6 ? dy * scale / radius : 0 });
     };
-    zone.addEventListener('pointerdown', event => { if (this.pointer !== null) return; this.pointer = event.pointerId; zone.setPointerCapture(this.pointer); move(event); });
+    zone.addEventListener('pointerdown', event => {
+      if (this.pointer !== null) return;
+      this.pointer = event.pointerId;
+      try { zone.setPointerCapture(this.pointer); } catch {}
+      move(event);
+    });
     zone.addEventListener('pointermove', event => { if (event.pointerId === this.pointer) move(event); });
-    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) zone.addEventListener(name, event => { if ((event as PointerEvent).pointerId === this.pointer) this.reset(); });
+    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      zone.addEventListener(name, event => { if ((event as PointerEvent).pointerId === this.pointer) this.reset(); });
+      window.addEventListener(name, event => { if ((event as PointerEvent).pointerId === this.pointer) this.reset(); });
+    }
+    window.addEventListener('touchend', () => { if (this.pointer !== null) this.reset(); });
+    window.addEventListener('touchcancel', () => { if (this.pointer !== null) this.reset(); });
+    window.addEventListener('blur', () => this.reset());
+    document.addEventListener('visibilitychange', () => { if (document.hidden) this.reset(); });
     for (const [id, action] of [['btn-touch-interact', 'INTERACT'], ['btn-touch-secondary', 'SECONDARY_ACTION']] as const)
       this.container.querySelector(`#${id}`)!.addEventListener('click', () => this.input?.request(action));
   }

@@ -15,6 +15,11 @@ export function findWalkingRoute(start:MapPoint,end:MapPoint,bridgeBlocked:Colli
       const q=point(i),dist=Math.hypot(p.x-q.x,p.y-q.y);
       if(dist<d&&clear(q.x,q.y)&&segmentClear(p,q)){best=i;d=dist;}
     }
+    if(best>=0)return best;
+    for(let i=0;i<cols*rows;i++) {
+      const q=point(i),dist=Math.hypot(p.x-q.x,p.y-q.y);
+      if(dist<d&&clear(q.x,q.y)){best=i;d=dist;}
+    }
     return best;
   };
   const from=nearest(start),to=nearest(end);
@@ -33,5 +38,12 @@ export function findWalkingRoute(start:MapPoint,end:MapPoint,bridgeBlocked:Colli
   if(previous[to]===-1)return step===20?findWalkingRoute(start,end,bridgeBlocked,mapId,10):[];
   const route:MapPoint[]=[];
   for(let i=to;i!==from;i=previous[i])route.push(point(i));
-  return [start,point(from),...route.reverse(),end];
+  const raw=[start,point(from),...route.reverse(),end];
+  const out:MapPoint[]=[];
+  for(const pt of raw){
+    if(!out.length||Math.hypot(pt.x-out[out.length-1].x,pt.y-out[out.length-1].y)>0.1){
+      out.push(pt);
+    }
+  }
+  return out;
 }

@@ -1,0 +1,107 @@
+{
+  "clinic": {
+    "width": 140,
+    "height": 115,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\clinic.png",
+    "bytes": 26764
+  },
+  "mobile-clinic": {
+    "width": 116,
+    "height": 104,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\mobile-clinic.png",
+    "bytes": 19730
+  },
+  "tree": {
+    "width": 96,
+    "height": 116,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\tree.png",
+    "bytes": 27349
+  },
+  "willow": {
+    "width": 110,
+    "height": 135,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\willow.png",
+    "bytes": 28927
+  },
+  "bridge": {
+    "width": 160,
+    "height": 252,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\bridge-v3.png",
+    "bytes": 73499
+  },
+  "props": {
+    "width": 256,
+    "height": 192,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\props.png",
+    "bytes": 21719
+  },
+  "volunteer": {
+    "width": 128,
+    "height": 192,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\volunteer.png",
+    "bytes": 29790
+  },
+  "citizen": {
+    "width": 128,
+    "height": 192,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\citizen.png",
+    "bytes": 31403
+  },
+  "doctor": {
+    "width": 128,
+    "height": 192,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\doctor.png",
+    "bytes": 33452
+  },
+  "house-a": {
+    "width": 152,
+    "height": 103,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\house-a.png",
+    "bytes": 33095
+  },
+  "house-b": {
+    "width": 136,
+    "height": 164,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\house-b.png",
+    "bytes": 49531
+  },
+  "house-c": {
+    "width": 164,
+    "height": 122,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\house-c.png",
+    "bytes": 39662
+  },
+  "headquarters": {
+    "width": 240,
+    "height": 134,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\headquarters.png",
+    "bytes": 56118
+  },
+  "warehouse": {
+    "width": 185,
+    "height": 113,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\warehouse.png",
+    "bytes": 40062
+  },
+  "tower": {
+    "width": 100,
+    "height": 137,
+    "anchor": "bottom-center",
+    "source": "docs\\art-source\\hanoi-v2\\tower.png",
+    "bytes": 24203
+  }
+}

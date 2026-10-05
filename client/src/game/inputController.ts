@@ -20,6 +20,7 @@ export class InputController {
   constructor() {
     window.addEventListener('keydown', this.keydown); window.addEventListener('keyup', this.keyup);
     window.addEventListener('blur', this.reset); document.addEventListener('visibilitychange', this.visibility);
+    window.addEventListener('contextmenu', this.reset); window.addEventListener('pagehide', this.reset);
   }
   public request(action: InputAction) { if (action === 'MENU' || (!this.locked && !this.isTyping())) this.onAction?.(action); }
   public setTouchMove(value: { x: number; y: number }) { this.touch = this.locked ? { x: 0, y: 0 } : value; }
@@ -29,9 +30,9 @@ export class InputController {
     const down = (...keys: string[]) => keys.some(k => this.held.has(k)) ? 1 : 0;
     const x = down('KeyD', 'ArrowRight') - down('KeyA', 'ArrowLeft') + this.touch.x;
     const y = down('KeyS', 'ArrowDown') - down('KeyW', 'ArrowUp') + this.touch.y;
-    const length = Math.hypot(x, y), scale = 1 / Math.max(1, length);
+    const length = Math.hypot(x, y), scale = length > 1 ? 1 / length : 1;
     return { move: { x: x * scale, y: y * scale }, sprint: this.held.has('ShiftLeft') || this.held.has('ShiftRight') || Math.hypot(this.touch.x, this.touch.y) >= .92 };
   }
   public reset = () => { this.held.clear(); this.touch = { x: 0, y: 0 }; this.onReset?.(); };
-  public destroy() { this.reset(); window.removeEventListener('keydown', this.keydown); window.removeEventListener('keyup', this.keyup); window.removeEventListener('blur', this.reset); document.removeEventListener('visibilitychange', this.visibility); }
+  public destroy() { this.reset(); window.removeEventListener('keydown', this.keydown); window.removeEventListener('keyup', this.keyup); window.removeEventListener('blur', this.reset); document.removeEventListener('visibilitychange', this.visibility); window.removeEventListener('contextmenu', this.reset); window.removeEventListener('pagehide', this.reset); }
 }
